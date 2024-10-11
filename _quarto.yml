@@ -1,0 +1,37 @@
+project:
+  type: website
+preview:
+  exclude:
+    - "Take_Home_Exercises/Take_Home_Exercise_1/Take_Home_Exercise1.qmd"
+website:
+  title: "IS415-GAA: "
+  navbar:
+    left:
+      - text: "About Us"
+        href: "About/About.html"
+      - text: "Proposal"
+        href: "Proposal/Proposal.html"
+      - text: "Poster"
+        href: "Poster/Poster.html"
+      - text: "Application User Guide"
+        href: "UserGuide/UserGuide.html"
+      - text: "Web Shiny App"
+        href: "WebShinyApp/WebShiny.html"
+
+    right:
+      - href: index.qmd
+        text: "Home"
+        icon: fas fa-home
+      - href: "404.qmd"
+        text: "About"
+        icon: fas fa-info-circle
+   
+format:
+  html:
+    theme: Darkly 
+    freeze: false
+    css: styles.css # Custom styles for non-code elements
+    toc: true
+    toc-location: right
+
+editor: visual

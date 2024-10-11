@@ -1,0 +1,21 @@
+---
+title: "Work in Progress"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+---
+
+# Hold Up... 🚧
+
+![Under Construction](https://media.giphy.com/media/3o7aD7V40XbTKN6GL2/giphy.gif)
+
+Looks like you’ve stumbled upon a construction zone! 🚜🔧 This page is still a work in progress – kind of like me trying to decide what to have for lunch. 🍕🍣
+
+But don't worry! I'll have this space filled with something amazing soon. Until then, how about heading back to safer ground? The homepage is just a click away.
+
+[**Take Me Home!**](index.qmd)
+
+------------------------------------------------------------------------
+
+If you were expecting something cool, well… good things take time, right? 😎 For now, just enjoy the journey back to the homepage – it’s a classic move!
