@@ -1,5 +1,6 @@
 ---
-title: "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data" 
+title: "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data" 
+subtitle: "Theme: Exploratory Spatial Data Analysis"
 author: "Jezelei, Jiale, Samanatha"
 date: "October  13, 2024"
 date-modified: "last-modified"

@@ -37,14 +37,14 @@
   {
     "objectID": "Proposal/Proposal.html",
     "href": "Proposal/Proposal.html",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "",
     "text": "Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms like Grab offer an alternative means of transportation, yet the relationship between mobility patterns and congestion is still not fully understood.\nWith the availability of Grab Posisi data, which provides real-time movement patterns, we can study the demand for ride-hailing services around different points of interest (POIs) such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify bottlenecks and high-demand zones to optimize urban mobility and support better traffic management strategies."
   },
   {
     "objectID": "Proposal/Proposal.html#motivation",
     "href": "Proposal/Proposal.html#motivation",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "2.1 Motivation",
     "text": "2.1 Motivation\n\n\nThe increasing availability of ride-hailing data presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and which POIs generate the most demand can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a user-centric approach by identifying ride-hailing hotspots around key locations.\nOur analysis will focus on the broader mobility landscape of Jakarta, examining how Grab services are utilized across the city. The insights gained will support policymakers, urban planners, and transportation authorities in optimizing traffic management and public transport, with the potential to serve as a model for other urban areas."
   },
@@ -79,7 +79,7 @@
   {
     "objectID": "Proposal/Proposal.html#r-packages",
     "href": "Proposal/Proposal.html#r-packages",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "8.2 R Packages",
     "text": "8.2 R Packages\nWith majority of the analysis will be done through R, below are some packages the team will be using to help with the bulk chunk of analysis.\n\nshiny: For building interactive web applications in R.\nshinythemes: Provides ready-to-use themes for Shiny apps.\nshinyWidgets: Enhances Shiny apps with additional UI widgets.\nRColorBrewer: Color palettes for R, especially useful in maps and visualizations.\ntidyverse: A collection of R packages for data science, including dplyr, ggplot2, tidyr, and others.\nleaflet: For interactive maps within Shiny or RMarkdown.\ntmap: Thematic mapping for visualizing spatial data.\nsfdep: Tools for spatial dependence and autocorrelation analysis.\nrgeos: Geometry operations for spatial data.\nsf: Simple Features for R for handling and analyzing spatial data.\nsp: Provides classes and methods for spatial data analysis.\nrgdal: Interface to GDAL for reading and writing spatial data.\nplotly: Interactive plots and graphs.\nClustGeo: Hierarchical clustering with spatial constraints.\ndendextend: Extending R’s dendrogram functionality for better visualization.\nGGally: Extensions to ggplot2 for correlation matrices and other visualizations.\nggdendro: Tools for creating dendrograms using ggplot2.\ncorrplot: Visualization of correlation matrices.\nDT: Provides data tables for R with interactive features."
   },
@@ -93,7 +93,7 @@
   {
     "objectID": "Proposal/Proposal.html#project-objectives",
     "href": "Proposal/Proposal.html#project-objectives",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "2.2 Project Objectives",
     "text": "2.2 Project Objectives\n\n\nAnalyze ride-hailing demand across Jakarta to identify patterns at key POIs and traffic bottlenecks.\nInvestigate spatial and temporal trends in Grab usage to understand how ride demand fluctuates.\nProvide recommendations for traffic management based on the analysis of high-demand areas and movement flows.\nOptimize mobility services by suggesting improvements to ride-hailing operations.\nDevelop a scalable framework that other cities can use to address similar urban mobility challenges."
   },
@@ -121,21 +121,21 @@
   {
     "objectID": "Proposal/Proposal.html#wireframe",
     "href": "Proposal/Proposal.html#wireframe",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "6.2 Wireframe",
     "text": "6.2 Wireframe\nThe dashboard will consist of a sidebar with filters to customize the displayed data, including options to select vehicle type, date ranges, and specific POIs. The central section will showcase interactive maps and visualizations that respond dynamically to the applied filters. A summary section at the bottom of the interface will display key statistics, such as the POIs with the highest demand and the most frequently traveled routes. This layout ensures that users can seamlessly explore traffic patterns and mobility behavior while interacting with the data.\n\n6.2.1 About the dataset\nThis section introduces users to the dataset used for the analysis, providing context on the data sources, columns, and key features. It includes a selection interface allowing users to filter specific columns and datasets, facilitating exploration and understanding of the available data.\n\n\n\n6.2.2 EDA\nThe EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.\n\n\n\n6.2.3 ESDA\nThe ESDA section offers spatial insights into ride-hailing demand. Choropleth maps visualize demand across the city, while corresponding heatmaps highlight high-activity areas. Users can adjust the time range using an interactive slider to view traffic patterns during specific hours, and filters allow exploration by vehicle type and location point, segmented by weekday or weekend activity.\n\n\n\n6.2.4 Flow Data Analysis\nThis section focuses on analyzing movement patterns between POIs using desire line maps. It visualizes frequently traveled routes and helps identify traffic flow patterns across peak times (morning, afternoon, evening, night). Users can switch between car and motorcycle data to compare travel behavior and assess which routes experience the highest demand."
   },
   {
     "objectID": "Proposal/Proposal.html#software-architecture",
     "href": "Proposal/Proposal.html#software-architecture",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "8.1 Software Architecture",
     "text": "8.1 Software Architecture\n\nThe project will use RStudio for data analysis, visualization, and Shiny app development.\nShiny will enable the creation of an interactive dashboard with dynamic visualizations, whilePlotly, Leaflet, and tmap will support interactive charts and geospatial maps. Spatial data will be handled through sf and rgeos for accurate mapping.\nFor version control and collaboration, GitHub will track changes, manage updates, and store project files. Once developed, the dashboard will be deployed using Netlify, which integrates with GitHub to enable automated and continuous deployment. This setup ensures the app remains accessible and up-to-date with every change pushed to the repository."
   },
   {
     "objectID": "Proposal/Proposal.html#a-shiny-web-app-website-for-analysis",
     "href": "Proposal/Proposal.html#a-shiny-web-app-website-for-analysis",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data",
+    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data",
     "section": "6.1 A Shiny Web App & Website for Analysis",
     "text": "6.1 A Shiny Web App & Website for Analysis\n\n\n\nAn Example of Shiny Web App Dashboard\n\n\nThe Shiny web application will feature an interactive dashboard designed to explore Jakarta’s ride-hailing demand. Users will have access to filters that allow them to narrow data by date, time, vehicle type, and specific POIs. The visualizations will include heatmaps and choropleth maps to provide spatial insights, as well as desire line maps to track movement patterns between origins and destinations. Additionally, data tables will offer further breakdowns, enabling detailed analysis of rides segmented by POI, time, and vehicle type."
   }
