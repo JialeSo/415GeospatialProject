@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Jezelei, Jiale, Samanatha">
+<meta name="dcterms.date" content="2024-10-13">
 
-<title>IS415-GAA: - Proposal</title>
+<title>IS415-GAA: - Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -166,22 +134,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background"><strong>1.0 Background</strong></a></li>
+  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link" data-scroll-target="#problem-statement"><strong>2.0 Problem Statement</strong></a>
+  <ul class="collapse">
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation"><strong>2.1 Motivation</strong></a></li>
+  <li><a href="#project-objectives" id="toc-project-objectives" class="nav-link" data-scroll-target="#project-objectives"><strong>2.2 Project Objectives</strong></a></li>
+  </ul></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset"><strong>3.0 Dataset</strong></a></li>
+  <li><a href="#expected-outcomes" id="toc-expected-outcomes" class="nav-link" data-scroll-target="#expected-outcomes"><strong>4.0 Expected Outcomes</strong></a></li>
+  <li><a href="#proposed-scope" id="toc-proposed-scope" class="nav-link" data-scroll-target="#proposed-scope">5.0 Proposed Scope</a></li>
+  <li><a href="#planned-features" id="toc-planned-features" class="nav-link" data-scroll-target="#planned-features"><strong>6.0 Planned Features</strong></a>
+  <ul class="collapse">
+  <li><a href="#a-shiny-web-app-website-for-analysis" id="toc-a-shiny-web-app-website-for-analysis" class="nav-link" data-scroll-target="#a-shiny-web-app-website-for-analysis"><strong>6.1 A Shiny Web App &amp; Website for Analysis</strong></a></li>
+  <li><a href="#wireframe" id="toc-wireframe" class="nav-link" data-scroll-target="#wireframe"><strong>6.2 Wireframe</strong></a>
+  <ul class="collapse">
+  <li><a href="#about-the-dataset" id="toc-about-the-dataset" class="nav-link" data-scroll-target="#about-the-dataset"><strong>6.2.1 About the dataset</strong></a></li>
+  <li><a href="#eda" id="toc-eda" class="nav-link" data-scroll-target="#eda">6.2.2 EDA</a></li>
+  <li><a href="#esda" id="toc-esda" class="nav-link" data-scroll-target="#esda">6.2.3 ESDA</a></li>
+  <li><a href="#flow-data-analysis" id="toc-flow-data-analysis" class="nav-link" data-scroll-target="#flow-data-analysis">6.2.4 Flow Data Analysis</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#planned-timeline" id="toc-planned-timeline" class="nav-link" data-scroll-target="#planned-timeline"><strong>7.0 Planned Timeline</strong></a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><img src="images/clipboard-1708045356.png" class="img-fluid" width="703"></a></li>
+  <li><a href="#software-tools" id="toc-software-tools" class="nav-link" data-scroll-target="#software-tools"><strong>8.0 Software Tools</strong></a>
+  <ul class="collapse">
+  <li><a href="#software-architecture" id="toc-software-architecture" class="nav-link" data-scroll-target="#software-architecture">8.1 Software Architecture</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">8.2 R Packages</a></li>
+  </ul></li>
+  <li><a href="#team-members" id="toc-team-members" class="nav-link" data-scroll-target="#team-members"><strong>9.0 Team Members</strong></a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">10.0 References</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Proposal</h1>
+<h1 class="title">Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jezelei, Jiale, Samanatha </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 13, 2024</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">October 13, 2024</p>
+    </div>
+  </div>
     
   </div>
   
@@ -190,15 +210,203 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Proposal this site</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<section id="background" class="level1">
+<h1><strong>1.0 Background</strong></h1>
+<hr>
+<p><img src="images/clipboard-2612382224.png" class="img-fluid"></p>
+<p>Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms like <strong>Grab</strong> offer an alternative means of transportation, yet the relationship between <strong>mobility patterns and congestion</strong> is still not fully understood.</p>
+<p>With the availability of <strong>Grab Posisi data</strong>, which provides real-time movement patterns, we can study the <strong>demand for ride-hailing services</strong> around different <strong>points of interest (POIs)</strong> such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify <strong>bottlenecks and high-demand zones</strong> to optimize urban mobility and support better traffic management strategies.</p>
+<hr>
+</section>
+<section id="problem-statement" class="level1">
+<h1><strong>2.0 Problem Statement</strong></h1>
+<p><img src="images/clipboard-3096906590.png" class="img-fluid" width="668"></p>
+<p>Jakarta’s increasing urbanization drives a growing need for <strong>on-demand transportation services</strong> like Grab, particularly in areas with high concentrations of <strong>POIs</strong>. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:</p>
+<ul>
+<li><p>Which POIs generate the most ride-hailing traffic?</p></li>
+<li><p>How does demand vary across different times of the day, week, and seasons?</p></li>
+<li><p>Can ride-hailing services improve access to key locations while alleviating congestion?</p></li>
+</ul>
+<p>Answering these questions will provide insights into <strong>Jakarta’s mobility patterns</strong> and inform strategies to <strong>reduce traffic bottlenecks</strong> while maintaining access to key locations.</p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation"><strong>2.1 Motivation</strong></h2>
+<hr>
+<p><img src="images/clipboard-338652397.png" class="img-fluid"></p>
+<p>The increasing availability of <strong>ride-hailing data</strong> presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and <strong>which POIs generate the most demand</strong> can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a <strong>user-centric approach</strong> by identifying <strong>ride-hailing hotspots</strong> around key locations.</p>
+<p>Our analysis will focus on the broader mobility landscape of Jakarta, examining how Grab services are utilized across the city. The insights gained will support <strong>policymakers, urban planners, and transportation authorities</strong> in optimizing traffic management and public transport, with the potential to <strong>serve as a model for other urban areas</strong>.</p>
+</section>
+<section id="project-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="project-objectives"><strong>2.2 Project Objectives</strong></h2>
+<hr>
+<ol type="1">
+<li><p><strong>Analyze ride-hailing demand</strong> across Jakarta to identify patterns at key POIs and traffic bottlenecks.</p></li>
+<li><p><strong>Investigate spatial and temporal trends</strong> in Grab usage to understand how ride demand fluctuates.</p></li>
+<li><p><strong>Provide recommendations</strong> for traffic management based on the analysis of high-demand areas and movement flows.</p></li>
+<li><p><strong>Optimize mobility services</strong> by suggesting improvements to ride-hailing operations.</p></li>
+<li><p><strong>Develop a scalable framework</strong> that other cities can use to address similar urban mobility challenges.</p></li>
+</ol>
+</section>
+</section>
+<section id="dataset" class="level1">
+<h1><strong>3.0 Dataset</strong></h1>
+<hr>
+<ol type="1">
+<li><p><strong>Grab Posisi Data (</strong><a href="https://engineering.grab.com/grab-posisi">Grab Posisi Data</a>)</p>
+<ul>
+<li><p>Contains GPS pings from Grab vehicles, including <strong>timestamps, route data, and vehicle type</strong> (motorcycle/car).</p></li>
+<li><p>Provides insights into <strong>ride-hailing demand, traffic hotspots, and movement patterns</strong> around key locations in Jakarta.</p></li>
+</ul></li>
+<li><p><strong>Supporting Datasets</strong></p>
+<ul>
+<li><p><strong>Jakarta Points of Interest (POI) <a href="https://data.humdata.org/dataset/hotosm_idn_points_of_interest?">(HumData)</a></strong>: Includes office buildings, shopping malls, parks, and other key locations.</p></li>
+<li><p><strong>Indonesia Population Density Data</strong> <a href="WorldPop Indonesia Population Density"><strong>(WorldPop)</strong>:</a> Adds demographic context for understanding mobility trends.</p></li>
+<li><p><strong>Jarkata Tourism Attraction Dataset</strong>&nbsp; <a href="https://dataportal.asia/en/dataset?tags=tourism&amp;organization=ctlg_data-go-id&amp;vocab_economy_names=Indonesia">(Open Asia Data Portal):</a> Includes Tourist attraction places</p></li>
+<li><p><strong>Traffic Data</strong>: Historical and real-time data to correlate ride-hailing demand with road congestion levels.</p></li>
+<li><p><strong>External Factors</strong>: Weather data, holidays, and local events that may influence demand patterns.</p></li>
+</ul></li>
+</ol>
+</section>
+<section id="expected-outcomes" class="level1">
+<h1><strong>4.0 Expected Outcomes</strong></h1>
+<hr>
+<p>This project aims to <strong>offer a comprehensive data-driven dashboard</strong> that provides insights into Jakarta’s traffic network based on Grab Posisi data. The dashboard will serve as a <strong>platform for exploration and learning</strong>, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using <strong>interactive visualizations and analysis tools</strong>, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.</p>
+<p>The primary objective is to <strong>provide a rich dataset and analytical interface</strong>, allowing users to <strong>conduct their own analyses</strong> and <strong>interpret trends</strong> based on real-time and historical data. The dashboard does not offer prescriptive recommendations but acts as a <strong>data point reference</strong> where users can explore key questions such as:</p>
+<ul>
+<li><p>Which points of interest (POIs) generate the highest ride-hailing traffic?</p></li>
+<li><p>How does ride-hailing demand fluctuate across different times of the day or seasons?</p></li>
+<li><p>Where are the primary traffic bottlenecks forming, and how do they shift over time?</p></li>
+</ul>
+<p>This project will provide an opportunity for <strong>users to draw their own conclusions</strong> about Jakarta’s traffic system and mobility patterns. By offering access to detailed data visualizations—such as <strong>heatmaps, demand clusters, and desire line maps</strong>—the dashboard empowers users to <strong>experiment with the data</strong> and explore <strong>what-if scenarios</strong> without enforcing specific solutions.</p>
+<p>For <strong>Jakarta officials and transportation planners</strong>, the dashboard will act as a <strong>decision-support tool</strong>, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage <strong>exploration and deeper inquiry</strong> into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that <strong>multiple stakeholders</strong> can use the insights to make data-informed decisions based on their unique contexts and priorities.Proposed Scoped and Methodology</p>
+</section>
+<section id="proposed-scope" class="level1">
+<h1>5.0 Proposed Scope</h1>
+<hr>
+<p>The proposed methodology involves a combination of</p>
+<ol type="1">
+<li><p><strong>Exploratory Data Analysis (EDA)</strong> will include both aspatial and temporal insights. Bar charts will reveal the top five points of interest (POIs) generating the highest demand for ride-hailing services. Histograms will compare trip durations across different vehicle types, such as cars and motorcycles, while line graphs will track demand trends throughout the day, segmented into morning, afternoon, evening, and night.</p></li>
+<li><p><strong>Exploratory Spatial Data Analysis (ESDA)</strong>, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.</p></li>
+<li><p><strong>Geographically Weighted Regression (GWR)</strong>, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.</p></li>
+<li><p><strong>Traffic Flow Analysis</strong>, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.</p></li>
+<li><p><strong>Forecasting and Optimization</strong> will apply advanced time series models such as <strong>ARIMA</strong> and <strong>LSTM</strong> to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.</p></li>
+</ol>
+</section>
+<section id="planned-features" class="level1">
+<h1><strong>6.0 Planned Features</strong></h1>
+<hr>
+<section id="a-shiny-web-app-website-for-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="a-shiny-web-app-website-for-analysis"><strong>6.1 A Shiny Web App &amp; Website for Analysis</strong></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-1753788649.png" class="img-fluid figure-img"></p>
+<figcaption>An Example of Shiny Web App Dashboard</figcaption>
+</figure>
 </div>
-</div>
+<p>The Shiny web application will feature an <strong>interactive dashboard</strong> designed to explore Jakarta’s ride-hailing demand. Users will have access to filters that allow them to narrow data by date, time, vehicle type, and specific POIs. The visualizations will include heatmaps and choropleth maps to provide spatial insights, as well as desire line maps to track movement patterns between origins and destinations. Additionally, data tables will offer further breakdowns, enabling detailed analysis of rides segmented by POI, time, and vehicle type.</p>
+</section>
+<section id="wireframe" class="level2">
+<h2 class="anchored" data-anchor-id="wireframe"><strong>6.2 Wireframe</strong></h2>
+<p>The dashboard will consist of a sidebar with filters to customize the displayed data, including options to select vehicle type, date ranges, and specific POIs. The central section will showcase interactive maps and visualizations that respond dynamically to the applied filters. A summary section at the bottom of the interface will display key statistics, such as the POIs with the highest demand and the most frequently traveled routes. This layout ensures that users can seamlessly explore traffic patterns and mobility behavior while interacting with the data.</p>
+<section id="about-the-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="about-the-dataset"><strong>6.2.1 About the dataset</strong></h3>
+<p>This section introduces users to the dataset used for the analysis, providing context on the data sources, columns, and key features. It includes a selection interface allowing users to filter specific columns and datasets, facilitating exploration and understanding of the available data.</p>
+<p><img src="images/clipboard-519845278.png" class="img-fluid"></p>
+</section>
+<section id="eda" class="level3">
+<h3 class="anchored" data-anchor-id="eda">6.2.2 EDA</h3>
+<p>The EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.</p>
+<p><img src="images/clipboard-2375845328.png" class="img-fluid"></p>
+</section>
+<section id="esda" class="level3">
+<h3 class="anchored" data-anchor-id="esda">6.2.3 ESDA</h3>
+<p>The ESDA section offers spatial insights into ride-hailing demand. Choropleth maps visualize demand across the city, while corresponding heatmaps highlight high-activity areas. Users can adjust the time range using an interactive slider to view traffic patterns during specific hours, and filters allow exploration by vehicle type and location point, segmented by weekday or weekend activity.</p>
+<p><img src="images/clipboard-3249265897.png" class="img-fluid"></p>
+</section>
+<section id="flow-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="flow-data-analysis">6.2.4 Flow Data Analysis</h3>
+<p>This section focuses on analyzing movement patterns between POIs using desire line maps. It visualizes frequently traveled routes and helps identify traffic flow patterns across peak times (morning, afternoon, evening, night). Users can switch between car and motorcycle data to compare travel behavior and assess which routes experience the highest demand.</p>
+<p><img src="images/clipboard-2619441323.png" class="img-fluid"></p>
+</section>
+</section>
+</section>
+<section id="planned-timeline" class="level1">
+<h1><strong>7.0 Planned Timeline</strong></h1>
+<hr>
+</section>
+<section id="section" class="level1">
+<h1><img src="images/clipboard-1708045356.png" class="img-fluid" width="703"></h1>
+<p><strong>Phase 1 – Data Collection and Preparation:</strong><br>
+This phase involves gathering and cleaning the <strong>Grab Posisi data</strong> along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing <strong>background research</strong> on Jakarta’s mobility challenges to contextualize the study.</p>
+<p><strong>Phase 2 – Exploratory Data Analysis (EDA) &amp; Exploratory Spatial Data Analysis (ESDA):</strong><br>
+In this phase, <strong>aspatial EDA</strong> methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The <strong>spatial component (ESDA)</strong> will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through <strong>Kernel Density Estimation (KDE).</strong></p>
+<p><strong>Phase 3 – Geographically Weighted Regression (GWR) Analysis:</strong><br>
+This phase focuses on <strong>GWR analysis</strong> to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The GWR results will reveal <strong>spatial variations</strong> in demand patterns and provide deeper insights into mobility trends at the local level.</p>
+<p><strong>Phase 4 – R Markdown Development for Functionality Checks:</strong><br>
+R Markdown will be used to document the analysis workflow and perform functionality checks on the scripts. This ensures that all analysis components are working as expected and will serve as a foundation for the final dashboard integration.</p>
+<p><strong>Phase 5 – R-Shiny App Development for User Interactivity:</strong><br>
+The <strong>Shiny web app</strong> will be developed to provide users with an interactive dashboard. It will allow users to explore demand patterns dynamically using filters, visualizations, and maps, enabling personalized data exploration through intuitive interfaces.</p>
+<p><strong>Phase 6 – Testing, Optimization, and Final Submission:</strong><br>
+The final phase involves <strong>user testing and optimization</strong> of the dashboard to ensure it performs efficiently and meets user expectations. After refining the app based on feedback, it will be <strong>deployed on Netlify</strong>, followed by final project submission.</p>
+</section>
+<section id="software-tools" class="level1">
+<h1><strong>8.0 Software Tools</strong></h1>
+<hr>
+<section id="software-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="software-architecture">8.1 Software Architecture</h2>
+<p><img src="images/Test.png" class="img-fluid" width="708"></p>
+<p>The project will use <strong>RStudio</strong> for data analysis, visualization, and Shiny app development.</p>
+<p><strong>Shiny</strong> will enable the creation of an interactive dashboard with dynamic visualizations, whilePlotly, Leaflet, and tmap will support interactive charts and geospatial maps. Spatial data will be handled through <strong>sf</strong> and <strong>rgeos</strong> for accurate mapping.</p>
+<p>For version control and collaboration, <strong>GitHub</strong> will track changes, manage updates, and store project files. Once developed, the dashboard will be deployed using <strong>Netlify</strong>, which integrates with GitHub to enable automated and continuous deployment. This setup ensures the app remains accessible and up-to-date with every change pushed to the repository.</p>
+</section>
+<section id="r-packages" class="level2">
+<h2 class="anchored" data-anchor-id="r-packages">8.2 R Packages</h2>
+<p>With majority of the analysis will be done through R, below are some packages the team will be using to help with the bulk chunk of analysis.</p>
+<ul>
+<li><p><a href="https://shiny.rstudio.com"><strong>shiny</strong></a>: For building interactive web applications in R.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/shinythemes"><strong>shinythemes</strong></a>: Provides ready-to-use themes for Shiny apps.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/shinyWidgets"><strong>shinyWidgets</strong></a>: Enhances Shiny apps with additional UI widgets.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/RColorBrewer"><strong>RColorBrewer</strong></a>: Color palettes for R, especially useful in maps and visualizations.</p></li>
+<li><p><a href="https://www.tidyverse.org"><strong>tidyverse</strong></a>: A collection of R packages for data science, including dplyr, ggplot2, tidyr, and others.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/leaflet"><strong>leaflet</strong></a>: For interactive maps within Shiny or RMarkdown.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/tmap"><strong>tmap</strong></a>: Thematic mapping for visualizing spatial data.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sfdep"><strong>sfdep</strong></a>: Tools for spatial dependence and autocorrelation analysis.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/rgeos"><strong>rgeos</strong></a>: Geometry operations for spatial data.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sf"><strong>sf</strong></a>: Simple Features for R for handling and analyzing spatial data.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sp"><strong>sp</strong></a>: Provides classes and methods for spatial data analysis.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/rgdal"><strong>rgdal</strong></a>: Interface to GDAL for reading and writing spatial data.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/plotly"><strong>plotly</strong></a>: Interactive plots and graphs.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/ClustGeo"><strong>ClustGeo</strong></a>: Hierarchical clustering with spatial constraints.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dendextend"><strong>dendextend</strong></a>: Extending R’s dendrogram functionality for better visualization.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/GGally"><strong>GGally</strong></a>: Extensions to ggplot2 for correlation matrices and other visualizations.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/ggdendro"><strong>ggdendro</strong></a>: Tools for creating dendrograms using ggplot2.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/corrplot"><strong>corrplot</strong></a>: Visualization of correlation matrices.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/DT"><strong>DT</strong></a>: Provides data tables for R with interactive features.</p></li>
+</ul>
+</section>
+</section>
+<section id="team-members" class="level1">
+<h1><strong>9.0 Team Members</strong></h1>
+<hr>
+<p><strong>Jezelei Manangan</strong> | 01465785 | jmanangan.2022@scis.smu.edu.sg</p>
+<p><strong>Foo Jia Yi Samantha</strong> | 01461144 | samanthafoo.2022@scis.smu.edu.sg</p>
+<p><strong>Jia le So.</strong> | 01455940 | jiale.so.2022@scis.smu.edu.sg</p>
+<p>Consulting Professor: <strong>KAM Tin Seong |</strong> tskam@smu.edu.sg</p>
+</section>
+<section id="references" class="level1">
+<h1>10.0 References</h1>
+<hr>
+<p>Grab Posisi Data, 2024. <em>Posisi - Understanding Traffic Flows with Real-Time Data</em>. Available at: <a href="https://engineering.grab.com/grab-posisi" class="uri">https://engineering.grab.com/grab-posisi</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>WorldPop, 2024. <em>Indonesia Population Data</em>. Available at: <a href="https://www.worldpop.org" class="uri">https://www.worldpop.org</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>OpenStreetMaps, 2024. <em>Jakarta Mobility and Points of Interest Data</em>. Available at: <a href="https://www.openstreetmap.org" class="uri">https://www.openstreetmap.org</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>Data Portal Asia, 2024. <em>Points of Interest in Indonesia</em>. Available at: <a href="https://dataportal.asia/en/dataset" class="uri">https://dataportal.asia/en/dataset</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>Grab Indonesia, 2022. <em>Reducing Reckless Driving in Indonesia Using Telematics Data</em>. Grab Press Release. Available at: <a href="https://www.grab.com/id/en/press/tech-product/grab-kurangi-kebut-kebutan-di-indonesia-dengan-data-telematika/" class="uri">https://www.grab.com/id/en/press/tech-product/grab-kurangi-kebut-kebutan-di-indonesia-dengan-data-telematika/</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>Jakarta Smart City, 2019. <em>Visualizing Jakarta’s Mobility Trends and Traffic</em>. Available at: <a href="https://medium.com/jakartasmartcity/data-science-trainee-program-visualizing-jakartas-mobility-trends-and-traffic-830bf5a5ba8f" class="uri">https://medium.com/jakartasmartcity/data-science-trainee-program-visualizing-jakartas-mobility-trends-and-traffic-830bf5a5ba8f</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>Jakarta Globe, 2023. <em>Jakarta Among Top 10 Most Congested Cities – INRIX Traffic Scorecard</em>. Available at: <a href="https://jakartaglobe.id/lifestyle/jakarta-among-top-10-most-congested-cities-inrix-traffic-scorecard" class="uri">https://jakartaglobe.id/lifestyle/jakarta-among-top-10-most-congested-cities-inrix-traffic-scorecard</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>Humdata, 2024. <em>WorldPop Population Counts for Indonesia</em>. Available at: <a href="https://data.humdata.org/dataset/worldpop-population-counts-for-indonesia?force_layout=desktop" class="uri">https://data.humdata.org/dataset/worldpop-population-counts-for-indonesia?force_layout=desktop</a> [Accessed 13 Oct.&nbsp;2024].</p>
+<p>Humdata, 2024. <em>Points of Interest Dataset – Indonesia</em>. Available at: <a href="https://data.humdata.org/dataset/hotosm_idn_points_of_interest" class="uri">https://data.humdata.org/dataset/hotosm_idn_points_of_interest</a> [Accessed 13 Oct.&nbsp;2024].</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
