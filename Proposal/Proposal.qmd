@@ -73,9 +73,9 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
     -   **Jakarta Points of Interest (POI) [(HumData)](https://data.humdata.org/dataset/hotosm_idn_points_of_interest?)**: Includes office buildings, shopping malls, parks, and other key locations.
 
-    -   **Indonesia Population Density Data** [**(WorldPop)**:](WorldPop Indonesia Population Density) Adds demographic context for understanding mobility trends.
+    -   **Indonesia Population Density Data** [**(WorldPop)**:](WorldPop%20Indonesia%20Population%20Density) Adds demographic context for understanding mobility trends.
 
-    -   **Jarkata Tourism Attraction Dataset**  [(Open Asia Data Portal):](https://dataportal.asia/en/dataset?tags=tourism&organization=ctlg_data-go-id&vocab_economy_names=Indonesia ) Includes Tourist attraction places
+    -   **Jarkata Tourism Attraction Dataset**  [(Open Asia Data Portal):](https://dataportal.asia/en/dataset?tags=tourism&organization=ctlg_data-go-id&vocab_economy_names=Indonesia) Includes Tourist attraction places
 
     -   **Traffic Data**: Historical and real-time data to correlate ride-hailing demand with road congestion levels.
 
@@ -97,7 +97,7 @@ The primary objective is to **provide a rich dataset and analytical interface**,
 
 This project will provide an opportunity for **users to draw their own conclusions** about Jakarta’s traffic system and mobility patterns. By offering access to detailed data visualizations—such as **heatmaps, demand clusters, and desire line maps**—the dashboard empowers users to **experiment with the data** and explore **what-if scenarios** without enforcing specific solutions.
 
-For **Jakarta officials and transportation planners**, the dashboard will act as a **decision-support tool**, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage **exploration and deeper inquiry** into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that **multiple stakeholders** can use the insights to make data-informed decisions based on their unique contexts and priorities.Proposed Scoped and Methodology
+For **Jakarta officials and transportation planners**, the dashboard will act as a **decision-support tool**, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage **exploration and deeper inquiry** into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that **multiple stakeholders** can use the insights to make data-informed decisions based on their unique contexts and priorities.
 
 # 5.0 Proposed Scope
 
@@ -113,7 +113,7 @@ The proposed methodology involves a combination of
 
 4.  **Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.
 
-5.   **Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.
+5.  **Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.
 
 # **6.0 Planned Features**
 
@@ -135,7 +135,7 @@ This section introduces users to the dataset used for the analysis, providing co
 
 ![](images/clipboard-519845278.png)
 
-### 6.2.2  EDA
+### 6.2.2 EDA
 
 The EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.
 
@@ -233,7 +233,7 @@ With majority of the analysis will be done through R, below are some packages th
 
 -   [**DT**](https://cran.r-project.org/web/packages/DT): Provides data tables for R with interactive features.
 
-# **9.0 Team Members** 
+# **9.0 Team Members**
 
 ------------------------------------------------------------------------
 
