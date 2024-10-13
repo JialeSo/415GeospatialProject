@@ -157,7 +157,7 @@ This section focuses on analyzing movement patterns between POIs using desire li
 
 ------------------------------------------------------------------------
 
-# ![](images/clipboard-1708045356.png){width="703"}
+![](images/clipboard-1820776631.png)
 
 **Phase 1 – Data Collection and Preparation:**\
 This phase involves gathering and cleaning the **Grab Posisi data** along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing **background research** on Jakarta’s mobility challenges to contextualize the study.
