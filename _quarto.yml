@@ -7,8 +7,6 @@ website:
   title: "IS415-GAA: "
   navbar:
     left:
-      - text: "About Us"
-        href: "About/About.html"
       - text: "Proposal"
         href: "Proposal/Proposal.html"
       - text: "Poster"
@@ -22,9 +20,6 @@ website:
       - href: index.qmd
         text: "Home"
         icon: fas fa-home
-      - href: "404.qmd"
-        text: "About"
-        icon: fas fa-info-circle
    
 format:
   html:

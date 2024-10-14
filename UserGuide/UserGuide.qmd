@@ -1,9 +1,27 @@
 ---
-title: "UserGuide"
+title: "" 
+format:    
+  html:     
+    css: styles.css     
+    toc: false 
 ---
 
-UserGuide this site
+::: {style="text-align:center; margin-top: 100px;"}
+<h1 style="font-size: 4em; color: #95a5a6;">
 
-```{r}
-1 + 1
-```
+🚧 Page Coming Soon 🚧
+
+</h1>
+
+<p style="font-size: 1.5em; color: #7f8c8d; margin-top: 30px;">
+
+We are currently building something amazing for you. Stay tuned for updates!
+
+</p>
+
+<p style="font-size: 1.2em; color: #95a5a6; margin-top: 50px;">
+
+Meanwhile, feel free to explore other sections of our site.
+
+</p>
+:::
