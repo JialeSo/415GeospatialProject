@@ -1,11 +1,32 @@
 ---
-title: "Geospatial"
+title: "Team's 2 IS415 Geospatial Analytics Project Experience"
+about:
+  template: jolla
+  id: about-block
+  links:
+    - icon: envelope
+      text: Jezelei Manangan
+      href: "mailto:manangan.2022@scis.smu.edu.sg"
+    - icon: envelope
+      text: Foo Jia Yi Samantha
+      href: "mailto:samanthafoo.2022@scis.smu.edu.sg"
+    - icon: envelope
+      text: So Jia Le
+      href: "mailto:jiale.so.2022@scis.smu.edu.sg"
 ---
 
-This is a Quarto website.
+::: {#hero-heading}
+Hi there! 👋 We are a trio-team of **Information Systems students** from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under **Prof. Kam Tin Seong**! 🌍
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+We invite you to explore the contents of our project website below!
+:::
 
-```{r}
-1 + 1
-```
++-------------------+-----------------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
+| <p id="contents"> | ## [**Project Proposal**](https://is415-projectgrab-g2.netlify.app/proposal/proposal)                                 | <p id="contents">                                 |
+|                   |                                                                                                                       |                                                   |
+| Oct 13, 2024      | Take a glimpse into our proposed project including our problem statement, dataset, ShinyApp UI and proposed timeline. | ![](images/clipboard-2612382224.png){width="300"} |
+|                   |                                                                                                                       |                                                   |
+| *Phase 0*         |                                                                                                                       | </p>                                              |
+|                   |                                                                                                                       |                                                   |
+| </p>              |                                                                                                                       |                                                   |
++-------------------+-----------------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
