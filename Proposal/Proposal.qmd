@@ -1,6 +1,7 @@
 ---
-title: "Project Proposal: Navigating Jakarta’s Traffic Network: A Geospatial Analysis Using Grab Posisi Data" 
-author: "Jezelei, Jiale, Samanatha"
+title: "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data" 
+subtitle: "Theme: Exploratory Spatial Data Analysis"
+author: "Jezelei, Jiale, Samantha"
 date: "October  13, 2024"
 date-modified: "last-modified"
 execute: 
@@ -97,7 +98,7 @@ The primary objective is to **provide a rich dataset and analytical interface**,
 
 This project will provide an opportunity for **users to draw their own conclusions** about Jakarta’s traffic system and mobility patterns. By offering access to detailed data visualizations—such as **heatmaps, demand clusters, and desire line maps**—the dashboard empowers users to **experiment with the data** and explore **what-if scenarios** without enforcing specific solutions.
 
-For **Jakarta officials and transportation planners**, the dashboard will act as a **decision-support tool**, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage **exploration and deeper inquiry** into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that **multiple stakeholders** can use the insights to make data-informed decisions based on their unique contexts and priorities.Proposed Scoped and Methodology
+For **Jakarta officials and transportation planners**, the dashboard will act as a **decision-support tool**, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage **exploration and deeper inquiry** into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that **multiple stakeholders** can use the insights to make data-informed decisions based on their unique contexts and priorities.
 
 # 5.0 Proposed Scope
 
