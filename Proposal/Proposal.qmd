@@ -54,11 +54,9 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
 2.  **Investigate spatial and temporal trends** in Grab usage to understand how ride demand fluctuates.
 
-3.  **Provide recommendations** for traffic management based on the analysis of high-demand areas and movement flows.
+3.  **Optimize mobility services** by understanding possible bottlenecks in district flows.
 
-4.  **Optimize mobility services** by suggesting improvements to ride-hailing operations.
-
-5.  **Develop a scalable framework** that other cities can use to address similar urban mobility challenges.
+4.  **Develop a scalable framework** that other cities can use to address similar urban mobility challenges.
 
 # **3.0 Dataset**
 
@@ -74,13 +72,13 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
     -   **Jakarta Points of Interest (POI) [(HumData)](https://data.humdata.org/dataset/hotosm_idn_points_of_interest?)**: Includes office buildings, shopping malls, parks, and other key locations.
 
-    -   **Indonesia Population Density Data** [**(WorldPop)**:](WorldPop%20Indonesia%20Population%20Density) Adds demographic context for understanding mobility trends.
+    -   **Indonesia Population Density Data** [**(ArcGIS)**](https://storymaps.arcgis.com/stories/36e38ceefab0455eb6059a734381723c)[:](WorldPop%20Indonesia%20Population%20Density) Adds demographic context for understanding mobility trends.
 
-    -   **Jarkata Tourism Attraction Dataset**  [(Open Asia Data Portal):](https://dataportal.asia/en/dataset?tags=tourism&organization=ctlg_data-go-id&vocab_economy_names=Indonesia) Includes Tourist attraction places
+    -   **Weather API [(Weatherbit)](https://www.weatherbit.io/):** Supplements our analysis with weather categories to allow for analysis of Grab Demand according to the presence or absence of rain.
 
-    -   **Traffic Data**: Historical and real-time data to correlate ride-hailing demand with road congestion levels.
+    -   **Jakarta Map [(HDX)](https://data.humdata.org/dataset/cod-ab-idn?): Visualize the** geographical districts of the City-State.
 
-    -   **External Factors**: Weather data, holidays, and local events that may influence demand patterns.
+    -   
 
 # **4.0 Expected Outcomes**
 
@@ -110,11 +108,11 @@ The proposed methodology involves a combination of
 
 2.  **Exploratory Spatial Data Analysis (ESDA)**, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.
 
-3.  **Geographically Weighted Regression (GWR)**, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.
+3.  ***Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.*
 
-4.  **Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.
+4.  ***Geographically Weighted Regression (GWR)**, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.*
 
-5.  **Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.
+5.  ***Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.*
 
 # **6.0 Planned Features**
 
