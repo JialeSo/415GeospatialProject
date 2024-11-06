@@ -38,8 +38,6 @@ Answering these questions will provide insights into **Jakarta’s mobility patt
 
 ## **2.1 Motivation**
 
-------------------------------------------------------------------------
-
 ![](images/clipboard-338652397.png)
 
 The increasing availability of **ride-hailing data** presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and **which POIs generate the most demand** can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a **user-centric approach** by identifying **ride-hailing hotspots** around key locations.
@@ -47,8 +45,6 @@ The increasing availability of **ride-hailing data** presents a unique opportuni
 Our analysis will focus on the broader mobility landscape of Jakarta, examining how Grab services are utilized across the city. The insights gained will support **policymakers, urban planners, and transportation authorities** in optimizing traffic management and public transport, with the potential to **serve as a model for other urban areas**.
 
 ## **2.2 Project Objectives**
-
-------------------------------------------------------------------------
 
 1.  **Analyze ride-hailing demand** across Jakarta to identify patterns at key POIs and traffic bottlenecks.
 
@@ -108,11 +104,15 @@ The proposed methodology involves a combination of
 
 2.  **Exploratory Spatial Data Analysis (ESDA)**, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.
 
+<<<<<<< Updated upstream
 3.  ***Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.*
 
 4.  ***Geographically Weighted Regression (GWR)**, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.*
 
 5.  ***Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.*
+=======
+3.  **Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.
+>>>>>>> Stashed changes
 
 # **6.0 Planned Features**
 
@@ -164,7 +164,7 @@ This phase involves gathering and cleaning the **Grab Posisi data** along with s
 **Phase 2 – Exploratory Data Analysis (EDA) & Exploratory Spatial Data Analysis (ESDA):**\
 In this phase, **aspatial EDA** methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The **spatial component (ESDA)** will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through **Kernel Density Estimation (KDE).**
 
-**Phase 3 – Geographically Weighted Regression (GWR) Analysis:**\
+**Phase 3 – Traffic Flow Analysis**\
 This phase focuses on **GWR analysis** to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The GWR results will reveal **spatial variations** in demand patterns and provide deeper insights into mobility trends at the local level.
 
 **Phase 4 – R Markdown Development for Functionality Checks:**\

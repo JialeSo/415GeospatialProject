@@ -5,5 +5,10 @@ title: "Shiny App"
 Shiny App
 
 ```{r}
-1 + 1
+pacman::p_load(sf,st,arrow,lubridate,tidyverse,raster,tmap,ggplot2, patchwork,spatstat,spNetwork,classInt,viridis,gifski,dplyr, geosphere, httr, jsonlite, DT, stplanr, chorddiag)
+```
+
+```{r}
+trip_data <- read_rds("datasource/trip_data.rds")
+colnames(trip_data)
 ```

@@ -1,0 +1,16 @@
+/* Ensure text in sidebar menu items wraps and expands */
+.sidebar-menu > li > a {
+    white-space: normal;  /* Allows text to wrap */
+    overflow: visible;    /* Prevents text from being clipped */
+  }
+  
+  /* Optional: Adjust sidebar header padding */
+  .sidebar-header {
+    padding-left: 10px;
+  }
+  
+  /* Optional: Adjust padding/margin for menu items */
+  .sidebar-menu > li {
+    padding-right: 10px;
+  }
+  
