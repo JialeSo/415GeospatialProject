@@ -61,53 +61,31 @@ exploratory_data_ui <- function(id) {
 }
 
 # Server Function for Exploratory Data Exploration with Dropdown Filters
-exploratory_data_server <- function(id, input, output, session, trip_data) {
+exploratory_data_server <- function(id, input, output, session, datasets) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
+    # Access trip_data reactively
+    trip_data <- datasets$trip_data
 
-    # Initialize filter options based on data
-    observe({
+    # Use observeEvent or another reactive context to work with the data
+    observeEvent(trip_data(), {
       data <- trip_data()
       if (!is.null(data)) {
-        # Populate driving mode options
-        driving_modes <- unique(data$driving_mode)
-        shinyWidgets::updatePickerInput(
-          session, "driving_mode_filter",
-          choices = driving_modes,
-          selected = driving_modes
-        )
-
-        # Populate district options
-        districts <- unique(data$destination_district)
-        shinyWidgets::updatePickerInput(
-          session, "district_filter",
-          choices = districts,
-          selected = districts
-        )
+        print(head(data))  # This will print when the data is available
       }
     })
 
-    # Render plot with filters applied
-    output$trip_plot <- renderPlot({
+    # Render a plot based on the data
+    output$lisa_plot <- renderPlot({
       data <- trip_data()
       if (is.null(data)) {
-        return(NULL)
+        return(NULL)  # Handle case where data is missing
       }
 
-      # Apply filters
-      filtered_data <- data
-      if (!is.null(input$driving_mode_filter) && length(input$driving_mode_filter) > 0) {
-        filtered_data <- filtered_data[filtered_data$driving_mode %in% input$driving_mode_filter, ]
-      }
-      if (!is.null(input$district_filter) && length(input$district_filter) > 0) {
-        filtered_data <- filtered_data[filtered_data$destination_district %in% input$district_filter, ]
-      }
-
-      # Plot filtered data
-      ggplot(filtered_data, aes(x = destination_district)) +
-        geom_bar() +  # No hardcoded color to allow dynamic theming
+      # Example plot using the data
+      ggplot(data, aes(x = destination_district)) +
+        geom_bar(fill = "steelblue") +  # Customize as needed
         labs(
-          title = "Trips by Destination District",
+          title = paste("LISA Plot using", input$cluster_method),
           x = "Destination District",
           y = "Number of Trips"
         ) +

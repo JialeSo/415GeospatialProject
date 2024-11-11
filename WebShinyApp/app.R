@@ -43,17 +43,45 @@ ui <- dashboardPage(
 
 # Define the main server function
 server <- function(input, output, session) {
-  # Load trip data (assuming `trip_data.rds` is present)
+  # Load datasets reactively
   trip_data <- reactive({
     readRDS("datasource/trip_data.rds")  # Adjust the file path as needed
   })
-
-  # Call each tab module's server function
+  
+  jakarta_village <- reactive({
+    readRDS("datasource/jakarta_village.rds")  # Adjust the file path as needed
+  })
+  
+  jakarta_poi_final <- reactive({
+    readRDS("datasource/jakarta_poi_final.rds")  # Adjust the file path as needed
+  })
+  
+  jakarta_district <- reactive({
+    readRDS("datasource/jakarta_district.rds")  # Adjust the file path as needed
+  })
+  jakarta_district_population <- reactive({
+    readRDS("datasource/jakarta_district_population")  # Adjust the file path as needed
+  })
+  jakarta_village_population <- reactive({
+    readRDS("datasource/jakarta_village_population")  # Adjust the file path as needed
+  })
+  
+  # Create a list to hold all datasets for easier passing
+  datasets <- list(
+    trip_data = trip_data,
+    jakarta_village = jakarta_village,
+    jakarta_poi_final = jakarta_poi_final,
+    jakarta_district = jakarta_district,
+    jakarta_district_population = jakarta_district_population,
+    jakarta_village_population = jakarta_village_population
+  )
+  
+  # Call each tab module's server function with the datasets as needed
   project_overview_server("project_overview", input, output, session)
-  exploratory_data_server("exploratory_data", input, output, session, trip_data)
+  exploratory_data_server("exploratory_data", input, output, session, datasets)
   exploratory_spatial_server("exploratory_spatial", input, output, session)
   kernel_density_server("kernel_density", input, output, session)
-  lisa_analysis_server("lisa_analysis", input, output, session)
+  lisa_analysis_server("lisa_analysis", input, output, session, datasets)
   od_analysis_server("od_analysis", input, output, session)
   datasets_server("datasets", input, output, session)
 }
