@@ -16,7 +16,7 @@ source("tabs/datasets.R")
 source("tabs/exploratory_data.R")
 source("tabs/exploratory_spatial.R")
 source("tabs/kernel_density.R")
-source("tabs/lisa_analysis.R")
+source("tabs/lisa_analysis.r")
 source("tabs/od_analysis.R")
 
 # Define the main UI
@@ -81,7 +81,7 @@ server <- function(input, output, session) {
   exploratory_data_server("exploratory_data", input, output, session, datasets)
   exploratory_spatial_server("exploratory_spatial", input, output, session)
   kernel_density_server("kernel_density", input, output, session)
-  lisa_analysis_server("lisa_analysis", input, output, session, datasets)
+  lisa_analysis_server("lisa_analysis", datasets)
   od_analysis_server("od_analysis", input, output, session)
   datasets_server("datasets", input, output, session)
 }
