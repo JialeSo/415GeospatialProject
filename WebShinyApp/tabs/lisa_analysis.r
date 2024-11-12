@@ -1,3 +1,5 @@
+# tabs/lisa_analysis.r
+
 # Load required libraries
 library(shiny)
 library(bs4Dash)
@@ -102,7 +104,7 @@ lisa_analysis_ui <- function(id) {
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
-        plotOutput(ns("lisa_plot"))
+        dataTableOutput(ns("filtered_data_table"))
       )
     )
   )
@@ -149,10 +151,37 @@ lisa_analysis_server <- function(id, datasets) {
                         selected = village_choices)  # Select all villages by default
     })
     
-    
     # Filter data by user's input
-    filtered_data <- reactive({
+    filtered_data <- eventReactive(input$apply_filter, {
       data <- trip_data()
+      
+      # Combine the checks for required inputs and show corresponding error modal
+      # Initialize an empty vector to hold error messages
+      error_messages <- character()
+      
+      # Check if required inputs are selected and add the respective error message
+      if (length(input$district) == 0 && length(input$village) == 0) {
+        error_messages <- c(error_messages, "Please select at least one district and village.")
+      }
+      
+      if (length(input$day_of_week) == 0) {
+        error_messages <- c(error_messages, "Please select at least one day of the week.")
+      }
+      
+      if (length(input$time_cluster) == 0) {
+        error_messages <- c(error_messages, "Please select at least one time cluster.")
+      }
+      
+      # If there are any error messages, show a modal with all errors
+      if (length(error_messages) > 0) {
+        showModal(modalDialog(
+          title = "Error",
+          HTML(paste(error_messages, collapse = "<br/>")),  # Combine error messages with line breaks
+          easyClose = TRUE,
+          footer = NULL
+        ))
+        return(NULL)
+      }
       
       # Filter by driving mode
       if (input$driving_mode == "Car and Motorcycle") {
@@ -202,44 +231,51 @@ lisa_analysis_server <- function(id, datasets) {
       
       # Case 3: If "Origin and Destination" is selected and Villages are selected
       if (input$trip_type == "Origin and Destination" && length(input$village) > 0) {
-        
-        # Combine both origin and destination data
-        trips_combined <- data %>%
-          filter(
-            (origin_village %in% input$village | destination_village %in% input$village),
-            (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
-            (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
-          ) %>%
-          # Create a unified dataset by stacking origin and destination
-          bind_rows(
-            data %>%
-              filter(origin_village %in% input$village) %>%
-              mutate(village = origin_village,
-                     day_of_week = origin_day,
-                     time_cluster = origin_time_cluster)
-          ) %>%
-          bind_rows(
-            data %>%
-              filter(destination_village %in% input$village) %>%
-              mutate(village = destination_village,
-                     day_of_week = destination_day,
-                     time_cluster = destination_time_cluster)
-          ) %>%
-          # Group by the necessary columns to count the number of trips, including driving_mode
-          group_by(village, day_of_week, time_cluster, driving_mode) %>%
+        trips_village_origin <- data %>%
+          filter(origin_village %in% input$village,
+                 origin_day %in% input$day_of_week,
+                 origin_time_cluster %in% input$time_cluster) %>%
+          group_by(origin_village, origin_day, origin_time_cluster, driving_mode) %>%
           summarise(num_of_trips = n(), .groups = "drop") %>%
-          # Join with jakarta_village to add geometry
-          left_join(jakarta_village(), by = c("village" = "village")) %>%
-          # Rename columns for consistency
-          rename(
-            location = village,
-            day_of_week = day_of_week,
-            time_cluster = time_cluster
-          ) %>%
+          left_join(jakarta_village(), by = c("origin_village" = "village")) %>%
+          rename(location = origin_village,
+                 day_of_week = origin_day,
+                 time_cluster = origin_time_cluster) %>%
           select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        
-        # Return the combined trips with geometry
-        return(trips_combined)
+        return(trips_village_origin)
+        # # Combine both origin and destination data
+        # trips_combined <- data %>%
+        #   filter(
+        #     (origin_village %in% input$village | destination_village %in% input$village),
+        #     (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
+        #     (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
+        #   ) %>%
+        #   bind_rows(
+        #     data %>%
+        #       filter(origin_village %in% input$village) %>%
+        #       mutate(village = origin_village,
+        #              day_of_week = origin_day,
+        #              time_cluster = origin_time_cluster)
+        #   ) %>%
+        #   bind_rows(
+        #     data %>%
+        #       filter(destination_village %in% input$village) %>%
+        #       mutate(village = destination_village,
+        #              day_of_week = destination_day,
+        #              time_cluster = destination_time_cluster)
+        #   ) %>%
+        #   group_by(village, day_of_week, time_cluster, driving_mode) %>%
+        #   summarise(num_of_trips = n(), .groups = "drop") %>%
+        #   left_join(jakarta_village(), by = c("village" = "village")) %>%
+        #   rename(
+        #     location = village,
+        #     day_of_week = day_of_week,
+        #     time_cluster = time_cluster
+        #   ) %>%
+        #   filter(!is.na(location)) %>%
+        #   select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+        # 
+        # return(trips_combined)
       }
       
       # Case 4: If "Origin" is selected and no Village selected (only District level)
@@ -276,46 +312,55 @@ lisa_analysis_server <- function(id, datasets) {
       
       # Case 6: If "Origin and Destination" is selected and no Village selected (only District level)
       if (input$trip_type == "Origin and Destination" && length(input$village) == 0) {
-        
-        # Combine both origin and destination data for districts
-        trips_district_combined <- data %>%
-          filter(
-            (origin_district %in% input$district | destination_district %in% input$district),
-            (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
-            (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
-          ) %>%
-          # Create a unified dataset by stacking origin and destination
-          bind_rows(
-            data %>%
-              filter(origin_district %in% input$district) %>%
-              mutate(district = origin_district,
-                     day_of_week = origin_day,
-                     time_cluster = origin_time_cluster)
-          ) %>%
-          bind_rows(
-            data %>%
-              filter(destination_district %in% input$district) %>%
-              mutate(district = destination_district,
-                     day_of_week = destination_day,
-                     time_cluster = destination_time_cluster)
-          ) %>%
-          # Group by district and time-related columns, including driving_mode, to count the number of trips
-          group_by(district, day_of_week, time_cluster, driving_mode) %>%
+        trips_district_origin <- data %>%
+          filter(origin_district %in% input$district,
+                 origin_day %in% input$day_of_week,
+                 origin_time_cluster %in% input$time_cluster) %>%
+          group_by(origin_district, origin_day, origin_time_cluster, driving_mode) %>%
           summarise(num_of_trips = n(), .groups = "drop") %>%
-          # Join with jakarta_district to add geometry
-          left_join(jakarta_district(), by = c("district" = "district")) %>%
-          # Rename columns for consistency
-          rename(
-            location = district,
-            day_of_week = day_of_week,
-            time_cluster = time_cluster
-          ) %>%
+          left_join(jakarta_district(), by = c("origin_district" = "district")) %>%
+          rename(location = origin_district,
+                 day_of_week = origin_day,
+                 time_cluster = origin_time_cluster) %>%
           select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        
-        # Return the combined trips with geometry
-        return(trips_district_combined)
+        return(trips_district_origin)
+        # # similar logic for combining origin and destination trips at district level
+        # trips_combined_district <- data %>%
+        #   filter(
+        #     (origin_district %in% input$district | destination_district %in% input$district),
+        #     (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
+        #     (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
+        #   ) %>%
+        #   bind_rows(
+        #     data %>%
+        #       filter(origin_district %in% input$district) %>%
+        #       mutate(district = origin_district,
+        #              day_of_week = origin_day,
+        #              time_cluster = origin_time_cluster)
+        #   ) %>%
+        #   bind_rows(
+        #     data %>%
+        #       filter(destination_district %in% input$district) %>%
+        #       mutate(district = destination_district,
+        #              day_of_week = destination_day,
+        #              time_cluster = destination_time_cluster)
+        #   ) %>%
+        #   group_by(district, day_of_week, time_cluster, driving_mode) %>%
+        #   summarise(num_of_trips = n(), .groups = "drop") %>%
+        #   left_join(jakarta_district(), by = c("district" = "district")) %>%
+        #   rename(
+        #     location = district,
+        #     day_of_week = day_of_week,
+        #     time_cluster = time_cluster
+        #   ) %>%
+        #   filter(!is.na(location)) %>%
+        #   select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+        # 
+        # return(trips_combined_district)
       }
-    })
+      
+      return(data)  # If no other conditions, return the data as is
+    }, ignoreNULL = FALSE)  # This allows the default data to be used when the button is not clicked
     
     
     # Update the value boxes with correct filtered data
@@ -376,44 +421,28 @@ lisa_analysis_server <- function(id, datasets) {
     
     
     # Plot the density of the 'num_of_trips' column
-    output$lisa_plot <- renderPlot({
+    output$filtered_data_table <- renderDataTable({
       data <- filtered_data()
       
       # Plot num_of_trips density using ggplot2
-      ggplot(data, aes(x = num_of_trips)) +
-        geom_density(fill = "skyblue", alpha = 0.5) +
-        labs(title = "Density Plot of Number of Trips",
-             x = "Number of Trips",
-             y = "Density") +
-        theme_minimal()
+      DT::datatable(data, options = list(pageLength = 10))
     })
     
     # Display filter criteria when applied
     observeEvent(input$apply_filter, {
       showModal(modalDialog(
         title = "Filter Applied",
-        paste("Districts:", paste(input$district, collapse = ", "), "<br>",
-              "Villages:", paste(input$village, collapse = ", "), "<br>",
-              "Trip Type:", input$trip_type, "<br>",
-              "Day of Week:", paste(input$day_of_week, collapse = ", "), "<br>",
-              "Time Cluster:", paste(input$time_cluster, collapse = ", ")),
+        HTML(paste("<strong>Districts:</strong>", length(input$district), "selected", "<br>", 
+                   "<strong>Villages:</strong>", length(input$village), "selected", "<br>", 
+                   "<strong>Trip Type:</strong>", input$trip_type, "<br>",
+                   "<strong>Driving Mode:</strong>", input$driving_mode, "<br>",
+                   "<strong>Day of Week:</strong>", paste(input$day_of_week, collapse = ", "), "<br>",
+                   "<strong>Time Cluster:</strong>", paste(input$time_cluster, collapse = ", "))),
         easyClose = TRUE,
         footer = NULL
       ))
       # Trigger a log message to track the action
       message("Filter applied: ", Sys.time())
-    })
-    
-    # Show an error if no districts or villages are selected
-    observeEvent(input$apply_filter, {
-      if (length(input$district) == 0 || length(input$village) == 0) {
-        showModal(modalDialog(
-          title = "Error",
-          "Please select at least one district and one village.",
-          easyClose = TRUE,
-          footer = NULL
-        ))
-      }
     })
   })
 }
