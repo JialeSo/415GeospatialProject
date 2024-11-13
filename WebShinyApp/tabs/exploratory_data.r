@@ -100,7 +100,7 @@ exploratory_data_ui <- function(id) {
     fluidRow(
       box(
         title = "Most Popular Locations",
-        width = 3,
+        width = 4,
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
@@ -109,7 +109,7 @@ exploratory_data_ui <- function(id) {
       ),
       box(
         title = "Least Popular Locations",
-        width = 3,
+        width = 4,
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
@@ -121,7 +121,7 @@ exploratory_data_ui <- function(id) {
     fluidRow(
       box(
         title = "Popularity of POIs",
-        width = 3,
+        width = 4,
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
@@ -130,12 +130,21 @@ exploratory_data_ui <- function(id) {
       ),
       box(
         title = "Spread of Trips by Time",
-        width = 3,
+        width = 4,
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
         plotOutput(ns("num_trips_plot"))
+      ),
+      box(
+        title = "Trips Distribution by Location",
+        width = 4,
+        status = "primary",
+        solidHeader = TRUE,
+        collapsible = TRUE,
+        maximizable = TRUE,
+        tmapOutput(ns("trips_choropleth"))
       )
     )
   )
@@ -604,6 +613,39 @@ exploratory_data_server <- function(id, datasets) {
              fill = "Time Cluster") +
         theme_minimal() +  # Use a minimal theme
         theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+    })
+    
+    # Display choropleth map
+    output$trips_choropleth <- renderTmap({
+      # Ensure data is available
+      req(filtered_data(), jakarta_district)
+      
+      # Aggregate trips by location, excluding "outside of Jakarta" entries and handle missing geometries
+      trip_data <- filtered_data() %>%
+        filter(location != "outside of Jakarta") %>%  # Exclude "outside of Jakarta" location
+        group_by(location) %>%
+        summarise(
+          total_trips = sum(as.numeric(num_of_trips), na.rm = TRUE),  # Convert to numeric and sum
+          geometry = first(geometry)  # Take the first geometry for each location
+        ) %>%
+        filter(!st_is_empty(geometry)) %>%  # Remove rows with empty geometries
+        st_as_sf()  # Convert to sf if not already an sf object
+      
+      # Add a 'label' column for hover text, showing location and total_trips with HTML formatting
+      trip_data <- trip_data %>%
+        mutate(label = paste(location, ": ", total_trips, " trips"))  # Bold the location name
+      
+      # Plot interactive map
+      tm_shape(trip_data) +
+        tm_polygons(
+          col = "total_trips",
+          palette = "Blues",
+          border.col = "black",
+          lwd = 0.5,
+          id = "label"  # Show the label on hover
+        ) +
+        tm_text("location", size = 0.6, col = "black") +  # Add text for all locations
+        tm_basemap("OpenStreetMap")
     })
     
     

@@ -8,6 +8,7 @@ library(tidyr)
 library(DT)
 library(plotly)
 library(treemap)
+library(tmap)
 
 thematic_shiny()
 
