@@ -8,12 +8,52 @@ library(ggplot2)
 library(shinyWidgets)
 library(sf)
 
-# UI for the LISA Analysis tab
+# UI
 lisa_analysis_ui <- function(id) {
   ns <- NS(id)
   
+  # UI structure
   tabItem(
     tabName = id,
+    tags$head(
+      # Custom CSS and JavaScript to ensure interactive plots resize on maximize
+      tags$style(HTML("
+        /* Custom styles for value boxes */
+        .small-value-box .small-box {
+          padding: 10px;  /* Reduce padding */
+          font-size: 12px; /* Smaller font size */
+        }
+        .small-value-box .small-box .icon {
+          font-size: 24px;  /* Adjust icon size */
+        }
+        .small-value-box .small-box .inner {
+          font-size: 14px; /* Adjust text size */
+        }
+
+        /* Ensure the interactive plot takes full height and width */
+        .box.maximized {
+          height: 100% !important;
+          width: 100% !important;
+        }
+      ")),
+      # JavaScript to trigger resize of interactive plots on maximize
+      tags$script(HTML("
+        $(document).on('shown.bs.collapse', function(e) {
+          if ($(e.target).hasClass('box')) {
+            // Check if the box has been maximized
+            var plotId = $(e.target).find('div[aria-labelledby]').attr('id').replace('box-', '');
+            // Trigger a resize on the plot when maximized
+            setTimeout(function() {
+              var plotElement = $('#' + plotId).find('div.plotly');
+              if (plotElement.length > 0) {
+                Plotly.Plots.resize(plotElement[0]);
+              }
+            }, 100);
+          }
+        });
+      "))
+    ),
+    
     fluidRow(
       # Left Tab: Filter Trip Data
       box(
@@ -43,8 +83,8 @@ lisa_analysis_ui <- function(id) {
                     ),
                     width = "100%"),
         selectInput(ns("trip_type"), "Trip Type", 
-                    choices = c("Origin and Destination", "Origin", "Destination"), 
-                    selected = "Origin and Destination"),
+                    choices = c("Origin", "Destination"), 
+                    selected = "Origin"),
         selectInput(ns("driving_mode"), "Driving Mode", 
                     choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
                     selected = "Car and Motorcycle"),
@@ -91,26 +131,21 @@ lisa_analysis_ui <- function(id) {
       )
     ),
     
+    # Value Boxes with reduced size (without the class argument)
     fluidRow(
       valueBoxOutput(ns("totalTripsBox"), width = 4),
       valueBoxOutput(ns("tripsWithinJakartaBox"), width = 4),
       valueBoxOutput(ns("tripsOutsideJakartaBox"), width = 4)
     ),
     
-    fluidRow(
-      box(
-        title = "LISA Plot",
-        width = 12,
-        status = "primary",
-        solidHeader = TRUE,
-        collapsible = TRUE,
-        dataTableOutput(ns("filtered_data_table"))
-      )
-    )
+    ####################################
+    #### Continue adding plots here ####
+    ####################################
+    
   )
 }
 
-# Server for LISA Analysis
+# Server
 lisa_analysis_server <- function(id, datasets) {
   moduleServer(id, function(input, output, session) {
     trip_data <- datasets$trip_data
@@ -210,6 +245,7 @@ lisa_analysis_server <- function(id, datasets) {
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
           select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+        print(trips_village_origin %>% filter(is.na(location)))
         return(trips_village_origin)
       }
       
@@ -229,56 +265,7 @@ lisa_analysis_server <- function(id, datasets) {
         return(trips_village_dest)
       }
       
-      # Case 3: If "Origin and Destination" is selected and Villages are selected
-      if (input$trip_type == "Origin and Destination" && length(input$village) > 0) {
-        trips_village_origin <- data %>%
-          filter(origin_village %in% input$village,
-                 origin_day %in% input$day_of_week,
-                 origin_time_cluster %in% input$time_cluster) %>%
-          group_by(origin_village, origin_day, origin_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_village(), by = c("origin_village" = "village")) %>%
-          rename(location = origin_village,
-                 day_of_week = origin_day,
-                 time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        return(trips_village_origin)
-        # # Combine both origin and destination data
-        # trips_combined <- data %>%
-        #   filter(
-        #     (origin_village %in% input$village | destination_village %in% input$village),
-        #     (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
-        #     (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(origin_village %in% input$village) %>%
-        #       mutate(village = origin_village,
-        #              day_of_week = origin_day,
-        #              time_cluster = origin_time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(destination_village %in% input$village) %>%
-        #       mutate(village = destination_village,
-        #              day_of_week = destination_day,
-        #              time_cluster = destination_time_cluster)
-        #   ) %>%
-        #   group_by(village, day_of_week, time_cluster, driving_mode) %>%
-        #   summarise(num_of_trips = n(), .groups = "drop") %>%
-        #   left_join(jakarta_village(), by = c("village" = "village")) %>%
-        #   rename(
-        #     location = village,
-        #     day_of_week = day_of_week,
-        #     time_cluster = time_cluster
-        #   ) %>%
-        #   filter(!is.na(location)) %>%
-        #   select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        # 
-        # return(trips_combined)
-      }
-      
-      # Case 4: If "Origin" is selected and no Village selected (only District level)
+      # Case 3: If "Origin" is selected and no Village selected (only District level)
       if (input$trip_type == "Origin" && length(input$village) == 0) {
         trips_district_origin <- data %>%
           filter(origin_district %in% input$district,
@@ -294,7 +281,7 @@ lisa_analysis_server <- function(id, datasets) {
         return(trips_district_origin)
       }
       
-      # Case 5: If "Destination" is selected and no Village selected (only District level)
+      # Case 4: If "Destination" is selected and no Village selected (only District level)
       if (input$trip_type == "Destination" && length(input$village) == 0) {
         trips_district_dest <- data %>%
           filter(destination_district %in% input$district,
@@ -310,58 +297,8 @@ lisa_analysis_server <- function(id, datasets) {
         return(trips_district_dest)
       }
       
-      # Case 6: If "Origin and Destination" is selected and no Village selected (only District level)
-      if (input$trip_type == "Origin and Destination" && length(input$village) == 0) {
-        trips_district_origin <- data %>%
-          filter(origin_district %in% input$district,
-                 origin_day %in% input$day_of_week,
-                 origin_time_cluster %in% input$time_cluster) %>%
-          group_by(origin_district, origin_day, origin_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_district(), by = c("origin_district" = "district")) %>%
-          rename(location = origin_district,
-                 day_of_week = origin_day,
-                 time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        return(trips_district_origin)
-        # # similar logic for combining origin and destination trips at district level
-        # trips_combined_district <- data %>%
-        #   filter(
-        #     (origin_district %in% input$district | destination_district %in% input$district),
-        #     (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
-        #     (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(origin_district %in% input$district) %>%
-        #       mutate(district = origin_district,
-        #              day_of_week = origin_day,
-        #              time_cluster = origin_time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(destination_district %in% input$district) %>%
-        #       mutate(district = destination_district,
-        #              day_of_week = destination_day,
-        #              time_cluster = destination_time_cluster)
-        #   ) %>%
-        #   group_by(district, day_of_week, time_cluster, driving_mode) %>%
-        #   summarise(num_of_trips = n(), .groups = "drop") %>%
-        #   left_join(jakarta_district(), by = c("district" = "district")) %>%
-        #   rename(
-        #     location = district,
-        #     day_of_week = day_of_week,
-        #     time_cluster = time_cluster
-        #   ) %>%
-        #   filter(!is.na(location)) %>%
-        #   select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        # 
-        # return(trips_combined_district)
-      }
-      
       return(data)  # If no other conditions, return the data as is
     }, ignoreNULL = FALSE)  # This allows the default data to be used when the button is not clicked
-    
     
     # Update the value boxes with correct filtered data
     output$totalTripsBox <- renderValueBox({
@@ -376,7 +313,7 @@ lisa_analysis_server <- function(id, datasets) {
         value = HTML(paste("<b style='font-size: 24px;'>", total_trips, "</b>")),
         subtitle = "Total Trips",
         color = "lightblue",
-        icon = icon("route"),
+        icon = icon("car"),
         width = 4
       )
     })
@@ -402,7 +339,7 @@ lisa_analysis_server <- function(id, datasets) {
     
     output$tripsOutsideJakartaBox <- renderValueBox({
       data <- filtered_data()
-
+      
       trips_outside_jakarta <- if (!is.null(data) && nrow(data) > 0) {
         data %>%
           filter(location == "outside of jakarta") %>%
@@ -417,15 +354,6 @@ lisa_analysis_server <- function(id, datasets) {
         icon = icon("road"),
         width = 4
       )
-    })
-    
-    
-    # Plot the density of the 'num_of_trips' column
-    output$filtered_data_table <- renderDataTable({
-      data <- filtered_data()
-      
-      # Plot num_of_trips density using ggplot2
-      DT::datatable(data, options = list(pageLength = 10))
     })
     
     # Display filter criteria when applied
@@ -444,5 +372,11 @@ lisa_analysis_server <- function(id, datasets) {
       # Trigger a log message to track the action
       message("Filter applied: ", Sys.time())
     })
+    
+    
+    ####################################
+    #### Continue adding plots here ####
+    ####################################
   })
 }
+

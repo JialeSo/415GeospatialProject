@@ -7,6 +7,9 @@ library(dplyr)
 library(ggplot2)
 library(shinyWidgets)
 library(sf)
+library(treemap)
+library(tibble)
+library(circlize)
 
 # UI
 exploratory_data_ui <- function(id) {
@@ -16,7 +19,7 @@ exploratory_data_ui <- function(id) {
   tabItem(
     tabName = id,
     tags$head(
-      # Custom CSS to minimize value box size
+      # Custom CSS and JavaScript to ensure interactive plots resize on maximize
       tags$style(HTML("
         /* Custom styles for value boxes */
         .small-value-box .small-box {
@@ -29,14 +32,36 @@ exploratory_data_ui <- function(id) {
         .small-value-box .small-box .inner {
           font-size: 14px; /* Adjust text size */
         }
+
+        /* Ensure the interactive plot takes full height and width */
+        .box.maximized {
+          height: 100% !important;
+          width: 100% !important;
+        }
+      ")),
+      # JavaScript to trigger resize of interactive plots on maximize
+      tags$script(HTML("
+        $(document).on('shown.bs.collapse', function(e) {
+          if ($(e.target).hasClass('box')) {
+            // Check if the box has been maximized
+            var plotId = $(e.target).find('div[aria-labelledby]').attr('id').replace('box-', '');
+            // Trigger a resize on the plot when maximized
+            setTimeout(function() {
+              var plotElement = $('#' + plotId).find('div.plotly');
+              if (plotElement.length > 0) {
+                Plotly.Plots.resize(plotElement[0]);
+              }
+            }, 100);
+          }
+        });
       "))
     ),
     
     fluidRow(
-      # Left Tab: Filter Trip Data
+      # Tab: Filter Trip Data
       box(
         title = "Filter Trip Data",
-        width = 6,
+        width = 12,
         collapsible = TRUE, collapsed = TRUE,
         pickerInput(ns("district"), "District", 
                     choices = NULL, 
@@ -61,8 +86,8 @@ exploratory_data_ui <- function(id) {
                     ),
                     width = "100%"),
         selectInput(ns("trip_type"), "Trip Type", 
-                    choices = c("Origin and Destination", "Origin", "Destination"), 
-                    selected = "Origin and Destination"),
+                    choices = c("Origin", "Destination"), 
+                    selected = "Origin"),
         selectInput(ns("driving_mode"), "Driving Mode", 
                     choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
                     selected = "Car and Motorcycle"),
@@ -89,23 +114,6 @@ exploratory_data_ui <- function(id) {
                       selectedTextFormat = "count > 3"
                     )),
         actionButton(ns("apply_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
-      ),
-      
-      # Right Tab: Filter LISA Parameters
-      box(
-        title = "Filter LISA Parameters",
-        width = 6,
-        collapsible = TRUE, collapsed = TRUE,
-        selectInput(ns("mapping_feature"), "Mapping Feature", 
-                    choices = c("Overall Number of Trips", "Number of Trips per Capita", "Number of Trips per POI"), 
-                    selected = "Overall Number of Trips"),
-        selectInput(ns("contiguity_method"), "Contiguity Method", 
-                    choices = c("Queen", "Rook"), selected = "Queen"),
-        radioButtons(ns("result_type"), "Statistical Significance",
-                     choices = c("All Results" = "all", "Statistically Significant Only" = "significant"),
-                     selected = "all"),
-        sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10),
-        actionButton(ns("apply_lisa_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
       )
     ),
     
@@ -125,7 +133,8 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("top_5_locations"), height = "250px")
+        height = "250px",  # Set the box height
+        plotOutput(ns("top_5_locations"), height = "100%")  # Set plot to take full box height
       ),
       box(
         title = "Least Popular Locations",
@@ -134,28 +143,41 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("bottom_5_locations"), height = "250px")
+        height = "250px",  # Set the box height
+        plotOutput(ns("bottom_5_locations"), height = "100%")  # Set plot to take full box height
+      ),
+      box(
+        title = "Push-Pull Factors",
+        width = 4,
+        status = "primary",
+        solidHeader = TRUE,
+        collapsible = TRUE,
+        maximizable = TRUE,
+        height = "250px",  # Set the box height
+        plotOutput(ns("chord_diagram"), height = "100%")  # Set plot to take full box height
       )
     ),
     
     fluidRow(
       box(
-        title = "Popularity of POIs",
+        title = "Distribution of POIs",
         width = 4,
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("top_poi_categories"), height = "250px")
+        height = "250px",  # Set the box height
+        plotlyOutput(ns("top_poi_categories"), height = "100%")  # Set plot to take full box height
       ),
       box(
-        title = "Spread of Trips by Time",
+        title = "Trips Distribution by Time",
         width = 4,
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("num_trips_plot"), height = "250px")
+        height = "250px",  # Set the box height
+        plotlyOutput(ns("num_trips_plot"), height = "100%")  # Set plot to take full box height
       ),
       box(
         title = "Trips Distribution by Location",
@@ -164,7 +186,8 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        tmapOutput(ns("trips_choropleth"), height = "250px")
+        height = "250px",  # Set the box height
+        tmapOutput(ns("trips_choropleth"), height = "100%")  # Set plot to take full box height
       )
     )
   )
@@ -290,58 +313,8 @@ exploratory_data_server <- function(id, datasets) {
           select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_village_dest)
       }
-      
-      # Case 3: If "Origin and Destination" is selected and Villages are selected
-      if (input$trip_type == "Origin and Destination" && length(input$village) > 0) {
-        trips_village_origin <- data %>%
-          filter(origin_village %in% input$village,
-                 origin_day %in% input$day_of_week,
-                 origin_time_cluster %in% input$time_cluster) %>%
-          group_by(origin_village, origin_day, origin_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_village(), by = c("origin_village" = "village")) %>%
-          rename(location = origin_village,
-                 day_of_week = origin_day,
-                 time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        print(glimpse(trips_village_origin))
-        return(trips_village_origin)
-        # # Combine both origin and destination data
-        # trips_combined <- data %>%
-        #   filter(
-        #     (origin_village %in% input$village | destination_village %in% input$village),
-        #     (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
-        #     (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(origin_village %in% input$village) %>%
-        #       mutate(village = origin_village,
-        #              day_of_week = origin_day,
-        #              time_cluster = origin_time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(destination_village %in% input$village) %>%
-        #       mutate(village = destination_village,
-        #              day_of_week = destination_day,
-        #              time_cluster = destination_time_cluster)
-        #   ) %>%
-        #   group_by(village, day_of_week, time_cluster, driving_mode) %>%
-        #   summarise(num_of_trips = n(), .groups = "drop") %>%
-        #   left_join(jakarta_village(), by = c("village" = "village")) %>%
-        #   rename(
-        #     location = village,
-        #     day_of_week = day_of_week,
-        #     time_cluster = time_cluster
-        #   ) %>%
-        #   filter(!is.na(location)) %>%
-        #   select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        # 
-        # return(trips_combined)
-      }
-      
-      # Case 4: If "Origin" is selected and no Village selected (only District level)
+
+      # Case 3: If "Origin" is selected and no Village selected (only District level)
       if (input$trip_type == "Origin" && length(input$village) == 0) {
         trips_district_origin <- data %>%
           filter(origin_district %in% input$district,
@@ -357,7 +330,7 @@ exploratory_data_server <- function(id, datasets) {
         return(trips_district_origin)
       }
       
-      # Case 5: If "Destination" is selected and no Village selected (only District level)
+      # Case 4: If "Destination" is selected and no Village selected (only District level)
       if (input$trip_type == "Destination" && length(input$village) == 0) {
         trips_district_dest <- data %>%
           filter(destination_district %in% input$district,
@@ -371,55 +344,6 @@ exploratory_data_server <- function(id, datasets) {
                  time_cluster = destination_time_cluster) %>%
           select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_dest)
-      }
-      
-      # Case 6: If "Origin and Destination" is selected and no Village selected (only District level)
-      if (input$trip_type == "Origin and Destination" && length(input$village) == 0) {
-        trips_district_origin <- data %>%
-          filter(origin_district %in% input$district,
-                 origin_day %in% input$day_of_week,
-                 origin_time_cluster %in% input$time_cluster) %>%
-          group_by(origin_district, origin_day, origin_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_district(), by = c("origin_district" = "district")) %>%
-          rename(location = origin_district,
-                 day_of_week = origin_day,
-                 time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        return(trips_district_origin)
-        # # similar logic for combining origin and destination trips at district level
-        # trips_combined_district <- data %>%
-        #   filter(
-        #     (origin_district %in% input$district | destination_district %in% input$district),
-        #     (origin_day %in% input$day_of_week | destination_day %in% input$day_of_week),
-        #     (origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(origin_district %in% input$district) %>%
-        #       mutate(district = origin_district,
-        #              day_of_week = origin_day,
-        #              time_cluster = origin_time_cluster)
-        #   ) %>%
-        #   bind_rows(
-        #     data %>%
-        #       filter(destination_district %in% input$district) %>%
-        #       mutate(district = destination_district,
-        #              day_of_week = destination_day,
-        #              time_cluster = destination_time_cluster)
-        #   ) %>%
-        #   group_by(district, day_of_week, time_cluster, driving_mode) %>%
-        #   summarise(num_of_trips = n(), .groups = "drop") %>%
-        #   left_join(jakarta_district(), by = c("district" = "district")) %>%
-        #   rename(
-        #     location = district,
-        #     day_of_week = day_of_week,
-        #     time_cluster = time_cluster
-        #   ) %>%
-        #   filter(!is.na(location)) %>%
-        #   select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        # 
-        # return(trips_combined_district)
       }
       
       return(data)  # If no other conditions, return the data as is
@@ -508,7 +432,6 @@ exploratory_data_server <- function(id, datasets) {
         scale_fill_manual(values = c("car" = "#A8DADC", "motorcycle" = "#EBA3B4"), 
                           labels = c("Car", "Motorcycle")) +  # Set labels for legend
         labs(
-          title = "Most Popular Locations",
           x = "Number of Trips",
           y = "Location",
           fill = "Driving Mode"
@@ -547,7 +470,6 @@ exploratory_data_server <- function(id, datasets) {
         scale_fill_manual(values = c("car" = "#A8DADC", "motorcycle" = "#EBA3B4"), 
                           labels = c("Car", "Motorcycle")) +  # Set labels for legend
         labs(
-          title = "Least Popular Locations",
           x = "Number of Trips",
           y = "Location",
           fill = "Driving Mode"
@@ -558,50 +480,142 @@ exploratory_data_server <- function(id, datasets) {
         )
     })
     
-    output$top_poi_categories <- renderPlot({
+    # Chord diagram
+    # Define a reactive expression for the data, applying filters only after "Apply Filter" is clicked
+    filtered_data_chord <- eventReactive(input$apply_filter, {
+      trip_data <- datasets$trip_data()
+      
+      # Filter driving mode based on input
+      if (input$driving_mode == "Car and Motorcycle") {
+        trip_data <- trip_data %>%
+          filter(driving_mode %in% c("car", "motorcycle"))
+      } else if (input$driving_mode == "Car") {
+        trip_data <- trip_data %>%
+          filter(driving_mode == "car")
+      } else if (input$driving_mode == "Motorcycle") {
+        trip_data <- trip_data %>%
+          filter(driving_mode == "motorcycle")
+      }
+      
+      # Check and apply filtering by village or district if selected
+      if (!is.null(input$village)) {
+        trip_data <- trip_data %>%
+          filter(
+            origin_village %in% input$village | destination_village %in% input$village
+          )
+      } else if (!is.null(input$district)) {
+        trip_data <- trip_data %>%
+          filter(
+            origin_district %in% input$district | destination_district %in% input$district
+          )
+      }
+      
+      # Additional filters
+      trip_data <- trip_data %>%
+        filter(
+          origin_day %in% input$day_of_week | destination_day %in% input$day_of_week,
+          origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster
+        )
+      
+      # Summarize data for chord diagram
+      trips_combined_origin_dest <- trip_data %>%
+        group_by(origin_district, destination_district) %>%
+        summarise(trips_count = n(), .groups = "drop") %>%
+        filter(!is.na(origin_district) & !is.na(destination_district))
+      
+      # Return summarized data
+      trips_combined_origin_dest
+    }, ignoreNULL = FALSE) # Set ignoreNULL to FALSE so the data is shown without filtering initially
+    
+    # Render chord diagram based on filtered or unfiltered data
+    output$chord_diagram <- renderPlot({
+      # Get filtered data when "Apply Filter" is clicked; show unfiltered data initially
+      chord_data <- filtered_data_chord()
+      
+      # Create a matrix for the chord diagram
+      chord_matrix <- chord_data %>%
+        spread(key = destination_district, value = trips_count, fill = 0) %>%
+        tibble::column_to_rownames(var = "origin_district") %>%
+        as.matrix()
+      
+      # Generate unique colors
+      categories <- unique(c(chord_data$origin_district, chord_data$destination_district))
+      category_colors <- colorRampPalette(c("lightblue", "lightpink", "lightgreen", "lightcoral", "lightyellow"))(length(categories))
+      
+      # Plot the chord diagram
+      chordDiagram(
+        chord_matrix,
+        grid.col = category_colors,
+        transparency = 0.3,
+        annotationTrack = "grid",
+        annotationTrackHeight = mm_h(1),
+        preAllocateTracks = list(track.height = 0.05)
+      )
+      
+      # Add custom labels to each sector with reduced space and smaller text
+      circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+        sector.index <- get.cell.meta.data("sector.index")
+        
+        # Adjust the vertical position (reduce space) and make text smaller
+        circos.text(
+          CELL_META$xcenter, 
+          CELL_META$ylim[1] + mm_y(1),  # Reduce space by changing the offset
+          sector.index, 
+          facing = "clockwise", 
+          niceFacing = TRUE, 
+          adj = c(0, 0.5), 
+          cex = 0.7  # Make text smaller by reducing cex
+        )
+      }, bg.border = NA)
+      
+    })
+    
+    
+    # Treemap
+    output$top_poi_categories <- renderPlotly({
       # Ensure the necessary data is available
-      req(jakarta_poi_final(), filtered_data())  # Ensure that data is available
+      req(jakarta_poi_final(), filtered_data())
       
       # Group the data by district or village, and then by category to count the total number of POIs
       poi_data <- if (is.null(input$village)) {
         jakarta_poi_final() %>%
-          st_drop_geometry() %>%  # Remove geometry column
-          filter(district %in% input$district) %>%  # Filter by selected district
-          group_by(category) %>%  # Group by category
-          summarise(count = n(), .groups = "drop")  # Count total POIs per category in the selected district
+          st_drop_geometry() %>%
+          filter(district %in% input$district) %>%
+          group_by(category) %>%
+          summarise(count = n(), .groups = "drop")
       } else {
         jakarta_poi_final() %>%
-          st_drop_geometry() %>%  # Remove geometry column
-          filter(village %in% input$village) %>%  # Filter by selected village
-          group_by(category) %>%  # Group by category
-          summarise(count = n(), .groups = "drop")  # Count total POIs per category in the selected village
+          st_drop_geometry() %>%
+          filter(village %in% input$village) %>%
+          group_by(category) %>%
+          summarise(count = n(), .groups = "drop")
       }
       
-      # Print to inspect the result
-      print(poi_data)
-      
       # Ensure no missing categories or counts
-      poi_data <- poi_data %>% filter(!is.na(category) & !is.na(count))
+      req(nrow(poi_data) > 0)  # Ensure that poi_data has rows
       
-      # Expanded pastel blue colors for 9 categories
+      # Define the pastel blue color palette
       pastel_blues <- c("#A6C8FF", "#80BFFF", "#66B2FF", "#4D99FF", "#3385FF", 
                         "#1A73E8", "#0066CC", "#005BB5", "#004999")
       
-      # Plot the static treemap
-      treemap(poi_data, 
-              index = "category",  # Group by category
-              vSize = "count",  # Size of the blocks based on POI count
-              vColor = "count",  # Color blocks based on POI count
-              draw = TRUE,  # Draw the treemap
-              palette = pastel_blues,
-              border.col = "white",  # Set border color to white
-              border.lw = 0.5,  # Reduce the border line width
-              title = paste("Distribution of POI Categories in", 
-                            ifelse(is.null(input$village), "District", "Village")))
+      # Create the interactive treemap using plotly
+      plot_ly(
+        data = poi_data,
+        type = "treemap",
+        labels = poi_data$category,  # POI category names
+        parents = NA,                # No hierarchical parent category
+        values = poi_data$count,     # POI counts as tile sizes
+        textinfo = "label+value",    # Display both category and count on tiles
+        marker = list(colors = pastel_blues, line = list(width = 0.5, color = "white"))
+      ) %>%
+        layout(title = NULL,
+               height = NULL,    # Remove fixed height to allow it to fit its container
+               width = NULL,     # Remove fixed width to allow it to fit its container
+               margin = list(t = 0, l = 0, b = 0, r = 0))  # Adjust margins to prevent clipping
     })
     
     # Plot the number of trips for each day of week and time cluster
-    output$num_trips_plot <- renderPlot({
+    output$num_trips_plot <- renderPlotly({
       # Ensure the necessary data is available
       req(jakarta_poi_final(), filtered_data())  # Ensure that data is available
       
@@ -610,32 +624,52 @@ exploratory_data_server <- function(id, datasets) {
         group_by(day_of_week, time_cluster) %>%  # Group by day_of_week and time_cluster
         summarise(total_trips = n(), .groups = "drop")  # Count the total number of trips for each combination
       
-      # Print to inspect the result
-      print(trip_data)
-      
-      # Order the 'time_cluster' variable according to the specified order
+      # Order the 'day_of_week' and 'time_cluster' variables according to the specified order
+      trip_data$day_of_week <- factor(trip_data$day_of_week, 
+                                      levels = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                                 "Friday", "Saturday", "Sunday"))
       trip_data$time_cluster <- factor(trip_data$time_cluster, 
                                        levels = c("Morning Peak", "Morning Lull", 
                                                   "Afternoon Peak", "Afternoon Lull", 
                                                   "Evening Peak", "Evening Lull", 
                                                   "Midnight Peak", "Midnight Lull"))
       
-      # Plot the stacked bar graph
-      ggplot(trip_data, aes(x = day_of_week, y = total_trips, fill = time_cluster)) +
+      # Create the ggplot
+      plot <- ggplot(trip_data, aes(x = day_of_week, y = total_trips, fill = time_cluster)) +
         geom_bar(stat = "identity", position = "stack") +  # Stacked bar chart
         geom_text(aes(label = total_trips), 
                   position = position_stack(vjust = 0.5), 
                   color = "black", 
                   size = 3) +
         scale_fill_brewer(palette = "Blues") +  # Apply the Blues color palette
-        labs(title = "Number of Trips by Time",
-             x = "Day of Week",
+        labs(x = "Day of Week",
              y = "Total Number of Trips",
              fill = "Time Cluster") +
         theme_minimal() +  # Use a minimal theme
         theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+      
+      # Convert ggplot to plotly for interactivity
+      plotly_plot <- ggplotly(plot)
+      
+      # Initially hide the legend by setting showlegend = FALSE
+      plotly_plot <- plotly_plot %>%
+        layout(
+          showlegend = FALSE  # Set showlegend to FALSE initially to hide it
+        )
+      
+      # Listen to the checkbox input to toggle legend visibility
+      observe({
+        show_legend <- input$show_legend
+        plotly_plot <- plotly_plot %>%
+          layout(
+            showlegend = show_legend  # Toggle legend visibility based on checkbox input
+          )
+      })
+      
+      return(plotly_plot)
     })
     
+      
     # Display choropleth map
     output$trips_choropleth <- renderTmap({
       # Ensure data is available
@@ -664,9 +698,7 @@ exploratory_data_server <- function(id, datasets) {
           border.col = "black",
           lwd = 0.5,
           id = "label"  # Show the label on hover
-        ) +
-        tm_text("location", size = 0.6, col = "black") +  # Add text for all locations
-        tm_basemap("OpenStreetMap")
+        )
     })
     
     

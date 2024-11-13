@@ -7,9 +7,7 @@ library(dplyr)
 library(tidyr)
 library(DT)
 library(plotly)
-library(treemap)
 library(tmap)
-
 thematic_shiny()
 
 # Source all component files and tab modules
@@ -85,9 +83,9 @@ server <- function(input, output, session) {
   project_overview_server("project_overview", input, output, session)
   exploratory_data_server("exploratory_data", datasets)
   exploratory_spatial_server("exploratory_spatial", input, output, session)
-  kernel_density_server("kernel_density", input, output, session)
+  kernel_density_server("kernel_density", datasets)
   lisa_analysis_server("lisa_analysis", datasets)
-  od_analysis_server("od_analysis", input, output, session)
+  od_analysis_server("od_analysis", datasets)
   datasets_server("datasets", input, output, session)
 }
 
