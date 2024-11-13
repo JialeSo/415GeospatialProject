@@ -12,8 +12,26 @@ library(sf)
 exploratory_data_ui <- function(id) {
   ns <- NS(id)
   
+  # UI structure
   tabItem(
     tabName = id,
+    tags$head(
+      # Custom CSS to minimize value box size
+      tags$style(HTML("
+        /* Custom styles for value boxes */
+        .small-value-box .small-box {
+          padding: 10px;  /* Reduce padding */
+          font-size: 12px; /* Smaller font size */
+        }
+        .small-value-box .small-box .icon {
+          font-size: 24px;  /* Adjust icon size */
+        }
+        .small-value-box .small-box .inner {
+          font-size: 14px; /* Adjust text size */
+        }
+      "))
+    ),
+    
     fluidRow(
       # Left Tab: Filter Trip Data
       box(
@@ -91,12 +109,14 @@ exploratory_data_ui <- function(id) {
       )
     ),
     
+    # Value Boxes with reduced size (without the class argument)
     fluidRow(
       valueBoxOutput(ns("totalTripsBox"), width = 4),
       valueBoxOutput(ns("tripsWithinJakartaBox"), width = 4),
       valueBoxOutput(ns("tripsOutsideJakartaBox"), width = 4)
     ),
     
+    # Reduced Height Plot Boxes
     fluidRow(
       box(
         title = "Most Popular Locations",
@@ -105,7 +125,7 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("top_5_locations"))
+        plotOutput(ns("top_5_locations"), height = "250px")
       ),
       box(
         title = "Least Popular Locations",
@@ -114,7 +134,7 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("bottom_5_locations"))
+        plotOutput(ns("bottom_5_locations"), height = "250px")
       )
     ),
     
@@ -126,7 +146,7 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("top_poi_categories"))
+        plotOutput(ns("top_poi_categories"), height = "250px")
       ),
       box(
         title = "Spread of Trips by Time",
@@ -135,7 +155,7 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        plotOutput(ns("num_trips_plot"))
+        plotOutput(ns("num_trips_plot"), height = "250px")
       ),
       box(
         title = "Trips Distribution by Location",
@@ -144,11 +164,12 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        tmapOutput(ns("trips_choropleth"))
+        tmapOutput(ns("trips_choropleth"), height = "250px")
       )
     )
   )
 }
+
 
 # Server
 exploratory_data_server <- function(id, datasets) {
@@ -417,7 +438,7 @@ exploratory_data_server <- function(id, datasets) {
         value = HTML(paste("<b style='font-size: 24px;'>", total_trips, "</b>")),
         subtitle = "Total Trips",
         color = "lightblue",
-        icon = icon("route"),
+        icon = icon("car"),
         width = 4
       )
     })
@@ -455,7 +476,7 @@ exploratory_data_server <- function(id, datasets) {
         value = HTML(paste("<b style='font-size: 24px;'>", trips_outside_jakarta, "</b>")),
         subtitle = "Trips Outside Jakarta",
         color = "warning",
-        icon = icon("car"),
+        icon = icon("road"),
         width = 4
       )
     })
