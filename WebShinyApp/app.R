@@ -63,10 +63,10 @@ server <- function(input, output, session) {
     readRDS("datasource/jakarta_district.rds")  # Adjust the file path as needed
   })
   jakarta_district_population <- reactive({
-    readRDS("datasource/jakarta_district_population")  # Adjust the file path as needed
+    readRDS("datasource/jakarta_district_population.rds")  # Adjust the file path as needed
   })
   jakarta_village_population <- reactive({
-    readRDS("datasource/jakarta_village_population")  # Adjust the file path as needed
+    readRDS("datasource/jakarta_village_population.rds")  # Adjust the file path as needed
   })
   
   # Create a list to hold all datasets for easier passing
