@@ -18,33 +18,27 @@ lisa_analysis_ui <- function(id) {
   tabItem(
     tabName = id,
     tags$head(
-      # Custom CSS and JavaScript to ensure interactive plots resize on maximize
+      # Custom CSS and JavaScript
       tags$style(HTML("
-        /* Custom styles for value boxes */
         .small-value-box .small-box {
-          padding: 10px;  /* Reduce padding */
-          font-size: 12px; /* Smaller font size */
+          padding: 10px;
+          font-size: 12px;
         }
         .small-value-box .small-box .icon {
-          font-size: 24px;  /* Adjust icon size */
+          font-size: 24px;
         }
         .small-value-box .small-box .inner {
-          font-size: 14px; /* Adjust text size */
+          font-size: 14px;
         }
-
-        /* Ensure the interactive plot takes full height and width */
         .box.maximized {
           height: 100% !important;
           width: 100% !important;
         }
       ")),
-      # JavaScript to trigger resize of interactive plots on maximize
       tags$script(HTML("
         $(document).on('shown.bs.collapse', function(e) {
           if ($(e.target).hasClass('box')) {
-            // Check if the box has been maximized
             var plotId = $(e.target).find('div[aria-labelledby]').attr('id').replace('box-', '');
-            // Trigger a resize on the plot when maximized
             setTimeout(function() {
               var plotElement = $('#' + plotId).find('div.plotly');
               if (plotElement.length > 0) {
@@ -57,102 +51,86 @@ lisa_analysis_ui <- function(id) {
     ),
     
     fluidRow(
-      # Left Tab: Filter Trip Data
+      # Combined Filter Box
       box(
-        title = "Filter Trip Data",
-        width = 6,
+        title = "Filter Options",
+        width = 12,
         collapsible = TRUE, collapsed = TRUE,
-        pickerInput(ns("district"), "District", 
-                    choices = NULL, 
-                    selected = NULL,  # Select all districts by default in the server
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3",
-                      liveSearch = TRUE
-                    ),
-                    width = "100%"),
-        pickerInput(ns("village"), "Village", 
-                    choices = NULL, 
-                    selected = NULL,  # Select all villages by default in the server
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3",
-                      liveSearch = TRUE
-                    ),
-                    width = "100%"),
-        selectInput(ns("trip_type"), "Trip Type", 
-                    choices = c("Origin", "Destination"), 
-                    selected = "Origin"),
-        selectInput(ns("driving_mode"), "Driving Mode", 
-                    choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
-                    selected = "Car and Motorcycle"),
-        pickerInput(ns("day_of_week"), "Day of Week", 
-                    choices = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                "Friday", "Saturday", "Sunday"), 
-                    selected = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                 "Friday", "Saturday", "Sunday"),  # Select everything by default
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3"
-                    )),
-        pickerInput(ns("time_cluster"), "Time Cluster", 
-                    choices = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
-                                "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"), 
-                    selected = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
-                                 "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"),  # Select everything by default
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3"
-                    )),
-        actionButton(ns("apply_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
-      ),
-      
-      # Right Tab: Filter LISA Parameters
-      box(
-        title = "Filter LISA Parameters",
-        width = 6,
-        collapsible = TRUE, collapsed = TRUE,
-        selectInput(ns("mapping_feature"), "Mapping Feature", 
-                    choices = c("Overall Number of Trips", "Number of Trips per Capita", "Number of Trips per POI"), 
-                    selected = "Overall Number of Trips"),
-        selectInput(ns("contiguity_method"), "Contiguity Method", 
-                    choices = c("Queen", "Rook"), selected = "Queen"),
-        radioButtons(ns("result_type"), "Statistical Significance",
-                     choices = c("All Results" = "all", "Statistically Significant Only" = "statistically significant"),
-                     selected = "all"),
-        sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10),
-        actionButton(ns("apply_lisa_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
+        fluidRow(
+          column(
+            width = 6,
+            h4("Filter Trip Data"),
+            pickerInput(ns("district"), "District", 
+                        choices = NULL, 
+                        selected = NULL,  # Select all districts by default in the server
+                        multiple = TRUE,
+                        options = pickerOptions(
+                          actionsBox = TRUE, 
+                          size = 10,
+                          selectedTextFormat = "count > 3",
+                          liveSearch = TRUE
+                        ),
+                        width = "100%"),
+            pickerInput(ns("village"), "Village", 
+                        choices = NULL, 
+                        selected = NULL,  # Select all villages by default in the server
+                        multiple = TRUE,
+                        options = pickerOptions(
+                          actionsBox = TRUE, 
+                          size = 10,
+                          selectedTextFormat = "count > 3",
+                          liveSearch = TRUE
+                        ),
+                        width = "100%"),
+            selectInput(ns("trip_type"), "Trip Type", choices = c("Origin", "Destination"), selected = "Origin"),
+            selectInput(ns("driving_mode"), "Driving Mode", choices = c("Car and Motorcycle", "Car", "Motorcycle")),
+            pickerInput(ns("day_of_week"), "Day of Week", 
+                        choices = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                    "Friday", "Saturday", "Sunday"), 
+                        selected = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                     "Friday", "Saturday", "Sunday"),
+                        multiple = TRUE,
+                        options = pickerOptions(actionsBox = TRUE, size = 10, selectedTextFormat = "count > 3")),
+            pickerInput(ns("time_cluster"), "Time Cluster", 
+                        choices = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
+                                    "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"), 
+                        selected = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
+                                     "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"),
+                        multiple = TRUE,
+                        options = pickerOptions(actionsBox = TRUE, size = 10, selectedTextFormat = "count > 3"))
+          ),
+          column(
+            width = 6,
+            h4("Filter LISA Parameters"),
+            selectInput(ns("mapping_feature"), "Mapping Feature", 
+                        choices = c("Overall Number of Trips", "Number of Trips per Capita", "Number of Trips per POI")),
+            selectInput(ns("contiguity_method"), "Contiguity Method", choices = c("Queen", "Rook")),
+            radioButtons(ns("result_type"), "Statistical Significance", 
+                         choices = c("All Results" = "all", "Statistically Significant Only" = "statistically significant")),
+            sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10)
+          )
+        ),
+        actionButton(ns("apply_filters"), "Apply Filters", style = "background-color: #8BD3E6; width: 100%")
       )
     ),
     
-    # Value Boxes with reduced size (without the class argument)
     fluidRow(
       valueBoxOutput(ns("totalTripsBox"), width = 4),
       valueBoxOutput(ns("tripsWithinJakartaBox"), width = 4),
       valueBoxOutput(ns("tripsOutsideJakartaBox"), width = 4)
     ),
-
-    # Add LISA charts
+    
     fluidRow(
       column(
-        # Left column (width = 8) for the main plot
         width = 8,
         box(
           title = "Local Autospatial Correlation of Trips in Jakarta",
-          width = 12,  # Adjust to 12 to span the full width of the column
+          width = 12,
           status = "primary",
           solidHeader = TRUE,
           collapsible = TRUE,
-          height = "500px",  # Set box height for the left plot
-          tmapOutput(ns("lisa_plot"), height = "100%")  # Unique ID for main plot
+          height = "500px",
+          tmapOutput(ns("lisa_plot"), height = "100%")
         )
       ),
       box(
@@ -161,12 +139,13 @@ lisa_analysis_ui <- function(id) {
         status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
-        height = "250px",  # Set box height for bottom right plot
-        plotlyOutput(ns("lisa_bar_chart"), height = "100%")  # Unique ID for bottom right plot
+        height = "250px",
+        plotlyOutput(ns("lisa_bar_chart"), height = "100%")
       )
     )
   )
 }
+
 
 # Server
 lisa_analysis_server <- function(id, datasets) {
@@ -210,9 +189,9 @@ lisa_analysis_server <- function(id, datasets) {
     })
     
     # Filter data by user's input
-    filtered_data <- eventReactive(input$apply_filter, {
+    filtered_data <- eventReactive(input$apply_filters, {
       data <- trip_data()
-      
+      print(paste("TRIP DATA: ", input$result_type))
       # Combine the checks for required inputs and show corresponding error modal
       # Initialize an empty vector to hold error messages
       error_messages <- character()
@@ -380,179 +359,167 @@ lisa_analysis_server <- function(id, datasets) {
     })
     
     # Display filter criteria when applied
-    observeEvent(input$apply_filter, {
+    observeEvent(input$apply_filters, {
       showModal(modalDialog(
         title = "Filter Applied",
-        HTML(paste("<strong>Districts:</strong>", length(input$district), "selected", "<br>", 
+        HTML(paste("<h5><strong>Trip Data</strong></h5>",
+                   "<strong>Districts:</strong>", length(input$district), "selected", "<br>", 
                    "<strong>Villages:</strong>", length(input$village), "selected", "<br>", 
                    "<strong>Trip Type:</strong>", input$trip_type, "<br>",
                    "<strong>Driving Mode:</strong>", input$driving_mode, "<br>",
                    "<strong>Day of Week:</strong>", paste(input$day_of_week, collapse = ", "), "<br>",
-                   "<strong>Time Cluster:</strong>", paste(input$time_cluster, collapse = ", "))),
-        easyClose = TRUE,
-        footer = NULL
-      ))
-      # Trigger a log message to track the action
-      message("Filter applied: ", Sys.time())
-    })
-    
-    # Display filter criteria when applied
-    observeEvent(input$apply_lisa_filter, {
-      showModal(modalDialog(
-        title = "Filter Applied",
-        HTML(paste("<strong>Mapping Feature:</strong>", input$mapping_feature, "<br>", 
+                   "<strong>Time Cluster:</strong>", paste(input$time_cluster, collapse = ", "), "<br><br>",
+                   "<h5><strong>LISA Parameters</strong></h5>",
+                   "<strong>Mapping Feature:</strong>", input$mapping_feature, "<br>", 
                    "<strong>Contiguity Method:</strong>", input$contiguity_method, "<br>",
                    "<strong>Statistical Significance:</strong>", input$result_type, "<br>",
-                   "<strong>Number of Simulations:</strong>", input$num_simulation, "<br>")),
-        easyClose = TRUE,
-        footer = NULL
-      ))
-      # Trigger a log message to track the action
-      message("Filter applied: ", Sys.time())
+                   "<strong>Number of Simulations:</strong>", input$num_simulation, "<br>"))),
+        #easyClose = TRUE,
+        #footer = modalButton("Close")
+      )
     })
+    
 
-    # Calculate LISA for filtered data
-    lisa_data <- eventReactive(
-      input$apply_filter | input$apply_lisa_filter, {  # React to both apply_filter and apply_lisa_filter
-        req(filtered_data(), jakarta_poi_final())  # Ensure filtered data is available
+    
+    # For when filter is applied
+    lisa_data <- eventReactive(input$apply_filters, {
+      req(filtered_data(), jakarta_poi_final())  # Ensure filtered data is available
+      print(paste("LISA FILTERED: ", input$result_type))
+      # Step 1: Group and summarize data by location
+      if(input$mapping_feature == "Overall Number of Trips"){
+        lisa_data <- filtered_data() %>%
+          filter(location != "outside of jakarta") %>%  # Exclude 'outside of jakarta'
+          group_by(location) %>%
+          summarize(
+            num_of_trips = sum(num_of_trips, na.rm = TRUE),
+            geometry = first(geometry),
+            .groups = "drop"
+          ) %>%
+          st_as_sf()
+      } 
+      if(input$mapping_feature == "Number of Trips per Capita") {
+        if(!is.null(input$village)){
+          pop_data <- jakarta_village_population() %>%
+            filter(village != "outside of jakarta") %>% 
+            group_by(village) %>%
+            summarise(population = sum(total_population), .groups = "drop") %>%
+            st_drop_geometry() %>%
+            select(location = village, population) 
+        } else{
+          pop_data <- jakarta_village_population() %>%
+            filter(district != "outside of jakarta") %>% 
+            group_by(district) %>%
+            summarise(population = sum(total_population), .groups = "drop") %>%
+            st_drop_geometry() %>%
+            select(location = district, population)
+        }
         
-        # Step 1: Group and summarize data by location
-        if(input$mapping_feature == "Overall Number of Trips"){
-          lisa_data <- filtered_data() %>%
-            filter(location != "outside of jakarta") %>%  # Exclude 'outside of jakarta'
-            group_by(location) %>%
-            summarize(
-              num_of_trips = sum(num_of_trips, na.rm = TRUE),
-              geometry = first(geometry),
-              .groups = "drop"
-            ) %>%
-            st_as_sf()
-        } 
-        if(input$mapping_feature == "Number of Trips per Capita") {
-          if(!is.null(input$village)){
-            pop_data <- jakarta_village_population() %>%
-              filter(village != "outside of jakarta") %>% 
-              group_by(village) %>%
-              summarise(population = sum(total_population), .groups = "drop") %>%
-              st_drop_geometry() %>%
-              select(location = village, population) 
-          } else{
-            pop_data <- jakarta_village_population() %>%
-              filter(district != "outside of jakarta") %>% 
-              group_by(district) %>%
-              summarise(population = sum(total_population), .groups = "drop") %>%
-              st_drop_geometry() %>%
-              select(location = district, population)
-          }
-          
-          lisa_data <- filtered_data() %>%
-            filter(location != "outside of jakarta") %>%  # Exclude 'outside of jakarta'
-            group_by(location) %>%
-            summarize(
-              total_trips = sum(num_of_trips, na.rm = TRUE),
-              geometry = first(geometry),
-              .groups = "drop"
-            ) %>%
-            left_join(pop_data, by = c("location" = "location")) %>%
-            mutate(
-              num_of_trips = if_else(population > 0, total_trips / population, 0)  # Calculate trips per capita, set to 0 if total_population is 0
-            ) %>%
-            st_as_sf()
-        } 
+        lisa_data <- filtered_data() %>%
+          filter(location != "outside of jakarta") %>%  # Exclude 'outside of jakarta'
+          group_by(location) %>%
+          summarize(
+            total_trips = sum(num_of_trips, na.rm = TRUE),
+            geometry = first(geometry),
+            .groups = "drop"
+          ) %>%
+          left_join(pop_data, by = c("location" = "location")) %>%
+          mutate(
+            num_of_trips = if_else(population > 0, total_trips / population, 0)  # Calculate trips per capita, set to 0 if total_population is 0
+          ) %>%
+          st_as_sf()
+      } 
+      
+      if(input$mapping_feature == "Number of Trips per POI") {
+        if(!is.null(input$village)){
+          poi_data <- jakarta_poi_final() %>%
+            filter(village != "outside of jakarta") %>% 
+            group_by(village) %>%
+            summarise(num_of_poi = n(), .groups = "drop") %>%
+            st_drop_geometry() %>%
+            select(location = village, num_of_poi) 
+        } else{
+          poi_data <- jakarta_poi_final() %>%
+            filter(district != "outside of jakarta") %>% 
+            group_by(district) %>%
+            summarise(num_of_poi = n(), .groups = "drop") %>%
+            st_drop_geometry() %>%
+            select(location = district, num_of_poi)
+        }
         
-        if(input$mapping_feature == "Number of Trips per POI") {
-          if(!is.null(input$village)){
-            poi_data <- jakarta_poi_final() %>%
-              filter(village != "outside of jakarta") %>% 
-              group_by(village) %>%
-              summarise(num_of_poi = n(), .groups = "drop") %>%
-              st_drop_geometry() %>%
-              select(location = village, num_of_poi) 
-          } else{
-            poi_data <- jakarta_poi_final() %>%
-              filter(district != "outside of jakarta") %>% 
-              group_by(district) %>%
-              summarise(num_of_poi = n(), .groups = "drop") %>%
-              st_drop_geometry() %>%
-              select(location = district, num_of_poi)
-          }
-          
-          lisa_data <- filtered_data() %>%
-            filter(location != "outside of jakarta") %>%  # Exclude 'outside of jakarta'
-            group_by(location) %>%
-            summarize(
-              total_trips = sum(num_of_trips, na.rm = TRUE),
-              geometry = first(geometry),
-              .groups = "drop"
-            ) %>%
-            left_join(poi_data, by = c("location" = "location")) %>%
-            mutate(
-              num_of_trips = if_else(!is.na(num_of_poi), total_trips / num_of_poi, 0)  # Calculate trips per POI, set to 0 if num_of_poi is 0
-            ) %>%
-            st_as_sf()
-        } 
-        
-        
-        # Step 2: Set contiguity method based on user input (Queen or Rook)
-        contiguity_method <- ifelse(input$contiguity_method == "Queen", TRUE, FALSE)
-        
-        # Create spatial contiguity and weight matrices
-        nb <- st_contiguity(lisa_data$geometry, queen = contiguity_method)
-        wt <- st_weights(nb, style = "W", allow_zero = TRUE)
-        
-        # Step 3: Attach neighborhood and weight matrices to the data
-        wm <- lisa_data %>%
-          mutate(nb = nb,
-                 wt = wt,
-                 .before = 1)
-        
-        # Step 4: Calculate local Moran's I for spatial association
-        lisa <- wm %>% 
-          mutate(local_moran = local_moran(num_of_trips, nb, wt, 
-                                           zero.policy = TRUE, nsim = input$num_simulation),
-                 .before = 1) %>%
-          unnest(local_moran)
-        
-        # Step 5: Prepare data for plotting with labels
-        lisa_all <- lisa %>%
-          mutate(label = paste("Location:", location, "| LISA:", mean))  # Add label for all results
-        
-        lisa_significant <- lisa %>%
-          filter(p_ii_sim < 0.05) %>%  # Filter for statistically significant results
-          mutate(label = paste("Location:", location, "| LISA:", mean))  # Label for significant results only
-        
-        # Convert both to sf (Simple Features) format for spatial plotting
-        lisa_all_sf <- st_as_sf(lisa_all) %>% st_transform(crs = 6384)
-        lisa_significant_sf <- st_as_sf(lisa_significant) %>% st_transform(crs = 6384)
-        
-        # Return the datasets for plotting
-        list(all = lisa_all_sf, significant = lisa_significant_sf)
-      }
-    )
+        lisa_data <- filtered_data() %>%
+          filter(location != "outside of jakarta") %>%  # Exclude 'outside of jakarta'
+          group_by(location) %>%
+          summarize(
+            total_trips = sum(num_of_trips, na.rm = TRUE),
+            geometry = first(geometry),
+            .groups = "drop"
+          ) %>%
+          left_join(poi_data, by = c("location" = "location")) %>%
+          mutate(
+            num_of_trips = if_else(!is.na(num_of_poi), total_trips / num_of_poi, 0)  # Calculate trips per POI, set to 0 if num_of_poi is 0
+          ) %>%
+          st_as_sf()
+      } 
+      
+      # Step 2: Set contiguity method based on user input (Queen or Rook)
+      contiguity_method <- ifelse(input$contiguity_method == "Queen", TRUE, FALSE)
+      
+      # Create spatial contiguity and weight matrices
+      nb <- st_contiguity(lisa_data$geometry, queen = contiguity_method)
+      wt <- st_weights(nb, style = "W", allow_zero = TRUE)
+      
+      # Step 3: Attach neighborhood and weight matrices to the data
+      wm <- lisa_data %>%
+        mutate(nb = nb,
+               wt = wt,
+               .before = 1)
+      
+      # Step 4: Calculate local Moran's I for spatial association
+      lisa <- wm %>% 
+        mutate(local_moran = local_moran(num_of_trips, nb, wt, 
+                                         zero.policy = TRUE, nsim = input$num_simulation),
+               .before = 1) %>%
+        unnest(local_moran)
+      
+      # Step 5: Prepare data for plotting with labels
+      lisa_all <- lisa %>%
+        mutate(label = paste("Location:", location, "| LISA:", mean))  # Add label for all results
+      
+      lisa_significant <- lisa %>%
+        filter(p_ii_sim < 0.05) %>%  # Filter for statistically significant results
+        mutate(label = paste("Location:", location, "| LISA:", mean))  # Label for significant results only
+      
+      # Convert both to sf (Simple Features) format for spatial plotting
+      lisa_all_sf <- st_as_sf(lisa_all) %>% st_transform(crs = 6384)
+      lisa_significant_sf <- st_as_sf(lisa_significant) %>% st_transform(crs = 6384)
+      
+      # Return the datasets for plotting
+      return(list(all = lisa_all_sf, significant = lisa_significant_sf, result_type = input$result_type))
+    }, ignoreNULL = FALSE)
+    
     
     # Render LISA plot using renderTmap for spatial data
     output$lisa_plot <- renderTmap({
-      req(lisa_data())  # Ensure LISA data is available
+      print(paste("LISA PLOT: ", input$result_type))
       
-      # Get LISA data (both all and significant results)
-      lisa_all <- lisa_data()$all
-      lisa_significant <- lisa_data()$significant
 
-      # Define base map layer with neutral color for all regions
-      base_map <- tm_shape(lisa_all) +
-        tm_polygons(id = "", col = "lightgray") +  # Neutral base map color
-        tm_borders(col = "black", alpha = 0.6)  # Add borders
       
       # Conditional plotting based on input$result_type
-      if (input$result_type == "statistically significant") {
-        # Show base map with statistically significant overlay
+      if (lisa_data()$result_type == "statistically significant") {
+        base_map <- tm_shape(lisa_data()$all) +
+          tm_polygons(id = "", col = "lightgray") +  # Neutral base map color
+          tm_borders(col = "black", alpha = 0.6)  # Add borders
+        lisa_significant <- lisa_data()$significant
         base_map + tm_shape(lisa_significant) + 
           tm_polygons("mean", 
                       palette = c("lightblue1", "#ec9a64", "green3", "#d21b1c"),
                       title = "Significant LISA Classification",
                       id = "label")  # Show labels for significant areas
       } else {
-        # Show only all results (without filtering for significance)
+        base_map <- tm_shape(lisa_data()$all) +
+          tm_polygons(id = "", col = "lightgray") +  # Neutral base map color
+          tm_borders(col = "black", alpha = 0.6)  # Add borders
+        lisa_all <- lisa_data()$all
         tm_shape(lisa_all) + 
           tm_polygons("mean", 
                       palette = c("lightblue1", "#ec9a64", "green3", "#d21b1c"),
@@ -561,33 +528,12 @@ lisa_analysis_server <- function(id, datasets) {
       }
     })
     
-    # Process the LISA categories to count and calculate the mean of each category
-    lisa_summary <- reactive({
-      req(lisa_data()) 
-      if (input$result_type == "statistically significant") {
-        lisa_data()$significant %>%
-          group_by(mean) %>%
-          summarise(total_count = n()) %>%
-          st_drop_geometry()
-      } else {
-        lisa_data()$all %>%
-          group_by(mean) %>%
-          summarise(total_count = n()) %>%
-          st_drop_geometry()
-      }
-    })
-    
-    # Render the summary table
-    output$summary_kable <-  renderDT({
-      datatable(lisa_summary())
-    })
-    
     # New: Generate bar chart for LISA results
     output$lisa_bar_chart <- renderPlotly({
       req(lisa_data()) 
       
       # Check if the result_type is "statistically significant"
-      if (input$result_type == "statistically significant") {
+      if (lisa_data()$result_type == "statistically significant") {
         bar_data <- lisa_data()$significant %>%
           group_by(mean) %>%
           summarise(total_count = n(), .groups = "drop") %>%
@@ -615,4 +561,3 @@ lisa_analysis_server <- function(id, datasets) {
     })
   })
 }
-
