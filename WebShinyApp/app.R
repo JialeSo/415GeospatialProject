@@ -87,7 +87,7 @@ server <- function(input, output, session) {
   kernel_density_server("kernel_density", datasets)
   lisa_analysis_server("lisa_analysis", datasets)
   od_analysis_server("od_analysis", datasets)
-  datasets_server("datasets", input, output, session)
+  datasets_server("datasets", datasets)
 }
 
 # Run the application
