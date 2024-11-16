@@ -255,7 +255,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = origin_village,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         print(trips_village_origin %>% filter(is.na(location)))
         return(trips_village_origin)
       }
@@ -272,7 +272,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = destination_village,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_village_dest)
       }
       
@@ -288,7 +288,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = origin_district,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_origin)
       }
       
@@ -304,7 +304,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = destination_district,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_dest)
       }
       
@@ -357,14 +357,14 @@ lisa_analysis_server <- function(id, datasets) {
             group_by(village) %>%
             summarise(population = sum(total_population), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = village, population) 
+            dplyr::select(location = village, population) 
         } else{
           pop_data <- jakarta_village_population() %>%
             filter(district != "outside of jakarta") %>% 
             group_by(district) %>%
             summarise(population = sum(total_population), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = district, population)
+            dplyr::select(location = district, population)
         }
         
         lisa_data <- filtered_data() %>%
@@ -389,14 +389,14 @@ lisa_analysis_server <- function(id, datasets) {
             group_by(village) %>%
             summarise(num_of_poi = n(), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = village, num_of_poi) 
+            dplyr::select(location = village, num_of_poi) 
         } else{
           poi_data <- jakarta_poi_final() %>%
             filter(district != "outside of jakarta") %>% 
             group_by(district) %>%
             summarise(num_of_poi = n(), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = district, num_of_poi)
+            dplyr::select(location = district, num_of_poi)
         }
         
         lisa_data <- filtered_data() %>%
