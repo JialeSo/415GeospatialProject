@@ -7,7 +7,9 @@ library(dplyr)
 library(ggplot2)
 library(shinyWidgets)
 library(sf)
-
+library(spatstat)
+library(raster)
+library(shinyBS)
 # UI
 kernel_density_ui <- function(id) {
   ns <- NS(id)
@@ -38,98 +40,149 @@ kernel_density_ui <- function(id) {
       ")),
       # JavaScript to trigger resize of interactive plots on maximize
       tags$script(HTML("
-        $(document).on('shown.bs.collapse', function(e) {
-          if ($(e.target).hasClass('box')) {
-            // Check if the box has been maximized
-            var plotId = $(e.target).find('div[aria-labelledby]').attr('id').replace('box-', '');
-            // Trigger a resize on the plot when maximized
-            setTimeout(function() {
-              var plotElement = $('#' + plotId).find('div.plotly');
-              if (plotElement.length > 0) {
-                Plotly.Plots.resize(plotElement[0]);
-              }
-            }, 100);
-          }
+        $(document).ready(function() {
+          $('[data-toggle=\"tooltip\"]').tooltip(); 
         });
       "))
     ),
     
+  fluidRow(
+  box(
+    title = "Filters and Parameters",
+    width = 12,  # Full width of the tab
+    collapsible = TRUE,
+    collapsed = FALSE,
+    
+    # Nested fluidRow to create two columns of equal width (50% each)
     fluidRow(
-      # Left Tab: Filter Trip Data
-      box(
-        title = "Filter Trip Data",
-        width = 6,
-        collapsible = TRUE, collapsed = TRUE,
-        pickerInput(ns("district"), "District", 
-                    choices = NULL, 
-                    selected = NULL,  # Select all districts by default in the server
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3",
-                      liveSearch = TRUE
-                    ),
-                    width = "100%"),
-        pickerInput(ns("village"), "Village", 
-                    choices = NULL, 
-                    selected = NULL,  # Select all villages by default in the server
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3",
-                      liveSearch = TRUE
-                    ),
-                    width = "100%"),
-        selectInput(ns("trip_type"), "Trip Type", 
-                    choices = c("Origin", "Destination"), 
-                    selected = "Origin"),
-        selectInput(ns("driving_mode"), "Driving Mode", 
-                    choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
-                    selected = "Car and Motorcycle"),
-        pickerInput(ns("day_of_week"), "Day of Week", 
-                    choices = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                "Friday", "Saturday", "Sunday"), 
-                    selected = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                 "Friday", "Saturday", "Sunday"),  # Select everything by default
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3"
-                    )),
-        pickerInput(ns("time_cluster"), "Time Cluster", 
-                    choices = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
-                                "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"), 
-                    selected = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
-                                 "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"),  # Select everything by default
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3"
-                    )),
-        actionButton(ns("apply_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
+      column(
+        width = 6,  # 50% width
+        # Level of Analysis
+        h4("Filter Trip Dataset"),
+        radioButtons(
+          inputId = ns("level_of_analysis"),
+          label = "Select Level of Analysis:",
+          choices = c("District" = "district", "Village" = "village"),
+          selected = "district",  # Default selection
+          inline = TRUE  # Display options inline
+        ),
+        
+        # Conditional UI based on Level of Analysis
+        uiOutput(ns("conditional_input")),
+        
+        # Other Inputs
+        selectInput(
+          ns("trip_type"), "Trip Type", 
+          choices = c("Origin", "Destination"), 
+          selected = "Origin"
+        ),
+        selectInput(
+          ns("driving_mode"), "Driving Mode", 
+          choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
+          selected = "Car and Motorcycle"
+        ),
+        pickerInput(
+          ns("day_of_week"), "Day of Week", 
+          choices = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                      "Friday", "Saturday", "Sunday"), 
+          selected = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                      "Friday", "Saturday", "Sunday"),  # Select everything by default
+          multiple = TRUE,
+          options = pickerOptions(
+            actionsBox = TRUE, 
+            size = 10,
+            selectedTextFormat = "count > 3"
+          )
+        ),
+        pickerInput(
+          ns("time_cluster"), "Time Cluster", 
+          choices = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
+                      "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"), 
+          selected = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
+                      "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"),  # Select everything by default
+          multiple = TRUE,
+          options = pickerOptions(
+            actionsBox = TRUE, 
+            size = 10,
+            selectedTextFormat = "count > 3"
+          )
+        )
       ),
       
-      # Right Tab: Filter KDE Parameters
-      box(
-        title = "Filter KDE Parameters",
-        width = 6,
-        collapsible = TRUE, collapsed = TRUE,
-        selectInput(ns("mapping_feature"), "Mapping Feature", 
-                    choices = c("Overall Number of Trips", "Number of Trips per Capita", "Number of Trips per POI"), 
-                    selected = "Overall Number of Trips"),
-        selectInput(ns("contiguity_method"), "Contiguity Method", 
-                    choices = c("Queen", "Rook"), selected = "Queen"),
-        radioButtons(ns("result_type"), "Statistical Significance",
-                     choices = c("All Results" = "all", "Statistically Significant Only" = "significant"),
-                     selected = "all"),
-        sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10),
-        actionButton(ns("apply_kde_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
+      column(
+  width = 6,  # 50% width column
+  
+  # Header for KDE Parameters
+  h4("KDE Parameters"),
+  
+  # Bandwidth (Sigma) Selection
+  tags$div(
+    tags$label("Bandwidth Estimation Method (Sigma)"),
+    selectInput(ns("bandwidth_method"), NULL,
+                choices = c("Diggle's Method" = "bw.diggle",
+                            "Pilot Density Method" = "bw.ppl",
+                            "Scott's Rule" = "bw.scott",
+                            "Cosslett and Van Loon's Rule" = "bw.CvL"),
+                selected = "bw.diggle")
+  ),
+  
+  # Edge Correction Toggle using switchInput
+  tags$div(
+    tags$label("Apply Edge Correction"),
+    switchInput(inputId = ns("edge_correction"), 
+                value = TRUE, 
+                onLabel = "On", 
+                offLabel = "Off",
+                size = "small")
+  ),
+  
+  # Kernel Type Selection
+  tags$div(
+    tags$label("Kernel Type"),
+    selectInput(ns("kernel_type"), NULL,
+                choices = c("Gaussian" = "gaussian", "Epanechnikov" = "epanechnikov", "Disc" = "disc", "Quartic" = "quartic"),
+                selected = "Gaussian")
+  ),
+  
+  # Header for Clark-Evans Test Parameters
+  h4("Clark-Evans Test Parameters"),  
+  # Correction Method
+  tags$div(
+    tags$label("Correction Method"),
+    selectInput(ns("correction_method"), NULL,
+                choices = c("None" = "none", "Guard Region" = "guard", "Cumulative Distribution Function" = "cdf"),
+                selected = "none")
+  ),
+  
+  # Alternative Hypothesis
+  tags$div(
+    tags$label("Alternative Hypothesis", 
+      tags$i(class = "fas fa-info-circle", title = "This is a native HTML tooltip explaining the alternative hypothesis.", 
+             style = "margin-left: 5px; cursor: pointer;")),
+    selectInput("alternative_hypothesis", NULL,
+                choices = c("Clustered" = "clustered", "Regular" = "regular", "Two-Sided" = "two-sided"),
+                selected = "regular")
+  ),
+  # Number of Simulations
+  tags$div(
+    tags$label("Number of Simulations"),
+    selectInput(ns("num_simulations"), NULL,
+                choices = c("30 Simulations" = 30, "100 Simulations" = 100, 
+                            "200 Simulations" = 200, "500 Simulations" = 500),
+                selected = 99)  # Set 99 as per your previous code if desired
+  )
+),
+
+      column(
+        width = 12,
+        div(
+          style = "display: flex; justify-content: flex-end;",
+          actionButton(ns("apply_kde_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 20%")
+        )
       )
-    ),
+    )
+  )
+),
     
     # Value Boxes with reduced size (without the class argument)
     fluidRow(
@@ -137,6 +190,23 @@ kernel_density_ui <- function(id) {
       valueBoxOutput(ns("tripsWithinJakartaBox"), width = 4),
       valueBoxOutput(ns("tripsOutsideJakartaBox"), width = 4)
     ),
+
+    fluidRow(
+      box(
+        title = "Destination Count Chart",
+        width = 8,
+        collapsible = TRUE,
+        tmapOutput(ns("kdeMAP"))  # This will display your chart
+      ),
+      box(
+        title = "Destination Count Chart",
+        width = 4,
+        collapsible = TRUE,
+        tableOutput(ns("clarkEvanTable"))  # This will display your chart
+      )
+      
+
+    )
     
     ####################################
     #### Continue adding plots here ####
@@ -147,6 +217,8 @@ kernel_density_ui <- function(id) {
 
 # Server
 kernel_density_server <- function(id, datasets) {
+  ns <- NS(id)
+  reactive_data <- reactiveValues()
   moduleServer(id, function(input, output, session) {
     trip_data <- datasets$trip_data
     jakarta_village <- datasets$jakarta_village
@@ -154,207 +226,271 @@ kernel_density_server <- function(id, datasets) {
     jakarta_poi_final <- datasets$jakarta_poi_final
     jakarta_district_population <- datasets$jakarta_district_population
     jakarta_village_population <- datasets$jakarta_village_population
-    
-    # Populate "District" dropdown with unique values from the 'origin_district' column in trips_data()
+
     observe({
-      district_choices <- trip_data() %>%
-        distinct(origin_district) %>%
-        pull(origin_district)
-      
-      updatePickerInput(session, "district", 
-                        choices = district_choices, 
-                        selected = district_choices)  # Select all districts by default
-    })
-    
-    # Populate "Village" dropdown based on selected "District" values
-    observeEvent(input$district, {
-      # If specific districts are selected, filter villages accordingly
-      selected_districts <- if ("Select All" %in% input$district || length(input$district) == 0) {
-        trip_data() %>%
-          pull(origin_district)
+      reactive_data$district_choices <- trip_data() %>% distinct(origin_district) %>% pull(origin_district) %>% unique()
+      reactive_data$village_choices <- trip_data() %>% distinct(origin_village) %>% pull(origin_village) %>% unique()
+      if (input$level_of_analysis == "district") {
+        reactive_data$map <- jakarta_district()  # Set to jakarta_district data
+      } else if (input$level_of_analysis == "village") {
+        reactive_data$map <- jakarta_village()  # Set to jakarta_village data
       } else {
-        input$district
+        reactive_data$map <- NULL  # Set to NULL if no valid level of analysis is selected
       }
-      
-      village_choices <- trip_data() %>%
-        filter(origin_district %in% selected_districts) %>%
-        distinct(origin_village) %>%
-        pull(origin_village)
-      
-      updatePickerInput(session, "village", 
-                        choices = village_choices, 
-                        selected = village_choices)  # Select all villages by default
     })
-    
-    # Filter data by user's input
-    filtered_data <- eventReactive(input$apply_filter, {
+
+    output$conditional_input <- renderUI({
+      if (input$level_of_analysis == "district") {
+        pickerInput(ns("district"), "District", 
+                    choices = reactive_data$district_choices, 
+                    selected = reactive_data$district_choices,  # Select all districts by default in the server
+                    multiple = TRUE,
+                    options = pickerOptions(
+                      actionsBox = TRUE, 
+                      size = 10,
+                      selectedTextFormat = "count > 3",
+                      liveSearch = TRUE
+                    ),
+                    width = "100%")
+      } else {
+        pickerInput(ns("village"), "Village", 
+                    choices = reactive_data$village_choices, 
+                    selected = reactive_data$village_choices,  # Select all villages by default in the server
+                    multiple = TRUE,
+                    options = pickerOptions(
+                      actionsBox = TRUE, 
+                      size = 10,
+                      selectedTextFormat = "count > 3",
+                      liveSearch = TRUE
+                    ),
+                    width = "100%")
+      }
+    })
+
+    # Filter data reactively based on input
+    filtered_data <- reactive({
+      # Fetch the trip data
       data <- trip_data()
       
-      # Combine the checks for required inputs and show corresponding error modal
-      # Initialize an empty vector to hold error messages
-      error_messages <- character()
-      
-      # Check if required inputs are selected and add the respective error message
-      if (length(input$district) == 0 && length(input$village) == 0) {
-        error_messages <- c(error_messages, "Please select at least one district and village.")
-      }
-      
-      if (length(input$day_of_week) == 0) {
-        error_messages <- c(error_messages, "Please select at least one day of the week.")
-      }
-      
-      if (length(input$time_cluster) == 0) {
-        error_messages <- c(error_messages, "Please select at least one time cluster.")
-      }
-      
-      # If there are any error messages, show a modal with all errors
-      if (length(error_messages) > 0) {
-        showModal(modalDialog(
-          title = "Error",
-          HTML(paste(error_messages, collapse = "<br/>")),  # Combine error messages with line breaks
-          easyClose = TRUE,
-          footer = NULL
-        ))
+      # Return NULL if any key inputs are missing
+      if (is.null(data) || length(input$day_of_week) == 0 || length(input$time_cluster) == 0) {
         return(NULL)
       }
       
       # Filter by driving mode
-      if (input$driving_mode == "Car and Motorcycle") {
+      if (input$driving_mode != "Car and Motorcycle") {
+        data <- data %>%
+          filter(driving_mode == tolower(input$driving_mode))  # Ensure matching lowercase driving modes
+      } else {
         data <- data %>%
           filter(driving_mode %in% c("car", "motorcycle"))
       }
-      if (input$driving_mode == "Car") {
-        data <- data %>%
-          filter(driving_mode == "car")
-      }
-      if (input$driving_mode == "Motorcycle") {
-        data <- data %>%
-          filter(driving_mode == "motorcycle")
-      }
       
-      # Case 1: Filter based on selected "Origin" and selected Villages
-      if (input$trip_type == "Origin" && length(input$village) > 0) {
-        trips_village_origin <- data %>%
-          filter(origin_village %in% input$village,
-                 origin_day %in% input$day_of_week,
-                 origin_time_cluster %in% input$time_cluster) %>%
-          group_by(origin_village, origin_day, origin_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_village(), by = c("origin_village" = "village")) %>%
-          rename(location = origin_village,
-                 day_of_week = origin_day,
-                 time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        print(trips_village_origin %>% filter(is.na(location)))
-        return(trips_village_origin)
+      # Conditional filtering based on trip type and level of analysis
+
+      if (input$trip_type == "Origin") {
+        if (input$level_of_analysis == "village" && length(input$village) > 0) {
+          data <- data %>%
+            filter(origin_village %in% input$village) %>%
+            filter(origin_day %in% input$day_of_week,
+                  origin_time_cluster %in% input$time_cluster) %>%
+            rename(day_of_week = origin_day, time_cluster = origin_time_cluster, location = origin_village, new_lat = origin_lat, new_lng = origin_lng)
+        
+        } else if (input$level_of_analysis == "district" && length(input$district) > 0) {
+          data <- data %>%
+            filter(origin_district %in% input$district) %>%
+            filter(origin_day %in% input$day_of_week,
+                  origin_time_cluster %in% input$time_cluster)  %>%
+            rename(day_of_week = origin_day, time_cluster = origin_time_cluster, location = origin_district, new_lat = origin_lat, new_lng = origin_lng)
+        } else {
+          # If no valid input is provided, return NULL or empty data
+          return(NULL)
+        }
+        
+      } else {  # Handling for 'Destination' trip type
+        if (input$level_of_analysis == "village" && length(input$village) > 0) {
+          data <- data %>%
+            filter(destination_village %in% input$village) %>%
+            filter(destination_day %in% input$day_of_week,
+                  destination_time_cluster %in% input$time_cluster) %>%
+            rename(day_of_week = destination_day, time_cluster = destination_time_cluster, location = destination_village, new_lat = destination_lat, new_lng = destination_lng )
+
+        } else if (input$level_of_analysis == "district" && length(input$district) > 0) {
+          data <- data %>%
+            filter(destination_district %in% input$district) %>%
+            filter(destination_day %in% input$day_of_week,
+                  destination_time_cluster %in% input$time_cluster)  %>%
+            rename(day_of_week = destination_day, time_cluster = destination_time_cluster, location = destination_village, new_lat = destination_lat, new_lng = destination_lng)
+        } else {
+          # If no valid input is provided, return NULL or empty data
+          return(NULL)
+        }
       }
-      
-      # Case 2: Filter based on selected "Destination" and selected Villages
-      if (input$trip_type == "Destination" && length(input$village) > 0) {
-        trips_village_dest <- data %>%
-          filter(destination_village %in% input$village,
-                 destination_day %in% input$day_of_week,
-                 destination_time_cluster %in% input$time_cluster) %>%
-          group_by(destination_village, destination_day, destination_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_village(), by = c("destination_village" = "village")) %>%
-          rename(location = destination_village,
-                 day_of_week = destination_day,
-                 time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        return(trips_village_dest)
-      }
-      
-      # Case 3: If "Origin" is selected and no Village selected (only District level)
-      if (input$trip_type == "Origin" && length(input$village) == 0) {
-        trips_district_origin <- data %>%
-          filter(origin_district %in% input$district,
-                 origin_day %in% input$day_of_week,
-                 origin_time_cluster %in% input$time_cluster) %>%
-          group_by(origin_district, origin_day, origin_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_district(), by = c("origin_district" = "district")) %>%
-          rename(location = origin_district,
-                 day_of_week = origin_day,
-                 time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        return(trips_district_origin)
-      }
-      
-      # Case 4: If "Destination" is selected and no Village selected (only District level)
-      if (input$trip_type == "Destination" && length(input$village) == 0) {
-        trips_district_dest <- data %>%
-          filter(destination_district %in% input$district,
-                 destination_day %in% input$day_of_week,
-                 destination_time_cluster %in% input$time_cluster) %>%
-          group_by(destination_district, destination_day, destination_time_cluster, driving_mode) %>%
-          summarise(num_of_trips = n(), .groups = "drop") %>%
-          left_join(jakarta_district(), by = c("destination_district" = "district")) %>%
-          rename(location = destination_district,
-                 day_of_week = destination_day,
-                 time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
-        return(trips_district_dest)
-      }
-      
-      return(data)  # If no other conditions, return the data as is
-    }, ignoreNULL = FALSE)  # This allows the default data to be used when the button is not clicked
-    
-    # Update the value boxes with correct filtered data
+      return(data)
+    })
+
+    # Value boxes
     output$totalTripsBox <- renderValueBox({
       data <- filtered_data()
-      
-      # Sum the num_of_trips column if it exists and data has rows; otherwise, set to 0
       total_trips <- if (!is.null(data) && nrow(data) > 0) {
         sum(data$num_of_trips, na.rm = TRUE)
       } else 0
-      
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", total_trips, "</b>")),
-        subtitle = "Total Trips",
-        color = "lightblue",
-        icon = icon("car"),
-        width = 4
-      )
+      valueBox(value = HTML(paste("<b style='font-size: 24px;'>", total_trips, "</b>")),
+               subtitle = "Total Trips", color = "lightblue", icon = icon("car"), width = 4)
     })
     
-    output$tripsWithinJakartaBox <- renderValueBox({
-      data <- filtered_data()
+    # output$tripsWithinJakartaBox <- renderValueBox({
+    #   data <- filtered_data()
+    #   trips_within_jakarta <- if (!is.null(data) && nrow(data) > 0) {
+    #     data %>%
+    #       filter(location != "outside of jakarta") %>%
+    #       summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
+    #       pull(total_trips)
+    #   } else 0
       
-      trips_within_jakarta <- if (!is.null(data) && nrow(data) > 0) {
-        data %>%
-          filter(location != "outside of jakarta") %>%
-          summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
-          pull(total_trips)
-      } else 0
-      
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", trips_within_jakarta, "</b>")),
-        subtitle = "Trips within Jakarta",
-        color = "primary",
-        icon = icon("city"),
-        width = 4
-      )
-    })
+    #   valueBox(
+    #     value = HTML(paste("<b style='font-size: 24px;'>", trips_within_jakarta, "</b>")),
+    #     subtitle = "Trips within Jakarta",
+    #     color = "primary",
+    #     icon = icon("city"),
+    #     width = 4
+    #   )
+    # })
     
-    output$tripsOutsideJakartaBox <- renderValueBox({
-      data <- filtered_data()
+    # output$tripsOutsideJakartaBox <- renderValueBox({
+    #   data <- filtered_data()
+    #   trips_outside_jakarta <- if (!is.null(data) && nrow(data) > 0) {
+    #     data %>%
+    #       filter(location == "outside of jakarta") %>%
+    #       summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
+    #       pull(total_trips)
+    #   } else 0
       
-      trips_outside_jakarta <- if (!is.null(data) && nrow(data) > 0) {
-        data %>%
-          filter(location == "outside of jakarta") %>%
-          summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
-          pull(total_trips)
-      } else 0
+    #   valueBox(
+    #     value = HTML(paste("<b style='font-size: 24px;'>", trips_outside_jakarta, "</b>")),
+    #     subtitle = "Trips Outside Jakarta",
+    #     color = "warning",
+    #     icon = icon("road"),
+    #     width = 4
+    #   )
+    # })
+
+    tmap_mode("view")
+    output$kdeMAP <- renderTmap({
+      bandwidth_method <- input$bandwidth_method  # Bandwidth estimation method (e.g., bw.diggle)
+      edge_correction <- input$edge_correction  # Edge correction toggle (TRUE or FALSE)
+      kernel_type <- input$kernel_type  # Kernel type (e.g., Gaussian, Epanechnikov, etc.)
+
+      # Convert the string to a function call for bandwidth selection dynamically
+      bandwidth_func <- match.fun(bandwidth_method)
+      kde_trip_data <- filtered_data() %>%
+        st_as_sf(coords = c("new_lng", "new_lat"), crs = 6384)
+      kde_map <- reactive_data$map 
+
+      kde_map_owin <- as.owin(kde_map)
+      trip_data_ppp <- as.ppp(kde_trip_data)
+      trip_data_ppp <- trip_data_ppp[kde_map_owin]
+
+      reactive_data$trip_data_ppp <- trip_data_ppp
+      reactive_data$kde_map_owin <- kde_map_owin
       
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", trips_outside_jakarta, "</b>")),
-        subtitle = "Trips Outside Jakarta",
-        color = "warning",
-        icon = icon("road"),
-        width = 4
+      # Apply dynamic parameters to the density calculation
+      trip_data_ppp_bw <- density(
+        trip_data_ppp,
+        sigma = bandwidth_func(trip_data_ppp),  # Dynamically select the bandwidth function
+        edge = edge_correction,                 # Use dynamic edge correction
+        kernel = tolower(kernel_type)           # Convert kernel type to lowercase as used in spatstat
       )
+
+      trip_data_raster <- raster(trip_data_ppp_bw)
+      projection(trip_data_raster) <- CRS("+init=EPSG:6384")
+
+      map <- tm_shape(kde_map) +
+        tm_polygons(
+          col = NA,                               # No fill color for polygons
+          border.col = "black",                   # Border color for district boundaries
+          lwd = 1,                                # Line width for borders
+          id = "district",
+          alpha = 0.01
+        ) +
+        # Add the KDE raster layer with transparency
+        tm_shape(trip_data_raster) +
+        tm_raster(
+          palette = "YlOrRd",                     # Color palette for density
+          title = "Trip Origin Density",
+          alpha = 0.5                             # Transparency for raster layer
+        ) +
+        tm_layout(
+          title = "Kernel Density Estimation of Trip Origins",
+          legend.outside = TRUE
+        )
+      map
     })
+
+    output$clarkEvanTable <- renderTable({
+      # Extract relevant values from clark_evans_result
+      correction_method <- input$correction_method
+      alternative_hypothesis <- input$alternative_hypothesis
+      num_simulations <- input$num_simulations
+      if (is.null(reactive_data$trip_data_ppp)) {
+        return(data.frame(Message = "No data available for Clark-Evans test"))
+      }
+
+      # Perform the Clark-Evans test with dynamic inputs
+      clark_evans_result <- clarkevans.test(
+        reactive_data$trip_data_ppp,
+        clipregion = reactive_data$kde_map_owin,
+        correction = correction_method,
+        alternative = alternative_hypothesis,
+        nsim = num_simulations
+      )
+      print(reactive_data$trip_data_ppp)
+      print(num_simulations)
+      print(clark_evans_result)
+
+      observed_statistic <- if (length(clark_evans_result$statistic) > 1) {
+        paste(round(clark_evans_result$statistic, 3), collapse = ", ")
+      } else {
+        round(clark_evans_result$statistic, 3)
+      }
+      
+      p_value <- clark_evans_result$p.value
+     
+
+      alternative_hypothesis <- clark_evans_result$alternative
+      edge_correction <- if ("No edge correction" %in% clark_evans_result$method) {
+        "False"
+      } else {
+        "True"
+      }
+      method_description <- paste(clark_evans_result$method, collapse = ", ")
+      
+      # Create a formatted data frame
+      result_df <- data.frame(
+        Metric = c("Observed Clark-Evans Ratio (R)", 
+                  "P-Value", 
+                  "Alternative Hypothesis",
+                  "Edge Correction", 
+                  "Method"),
+        Value = c(
+          observed_statistic,
+          p_value,
+          alternative_hypothesis,
+          edge_correction,
+          method_description
+        ),
+        stringsAsFactors = FALSE
+      )
+
+      # Add a header row for display purposes
+      result_with_header <- rbind(
+        c("Clark-Evans Test", ""),  # Header row (spanning columns for display)
+        colnames(result_df),        # Column names
+        result_df                   # Data values
+      )
+
+      result_with_header
+    }, rownames = FALSE, colnames = FALSE)
     
     # Display filter criteria when applied
     observeEvent(input$apply_filter, {

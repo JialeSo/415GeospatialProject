@@ -1,11 +1,14 @@
 
+logo_path <- "logo.png"
+
+
 appHeader <- function() {
   dashboardHeader(
     title = dashboardBrand(
-      title = "JezJiayiJiaLe",
+      title = "STREET SURFERS",
       color = "primary",
       href = "#",
-      image = "https://adminlte.io/themes/v3/dist/img/user2-160x160.jpg",
+      image = logo_path,
       opacity = 0.8
     ),
     fixed = TRUE

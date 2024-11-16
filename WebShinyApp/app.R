@@ -8,6 +8,7 @@ library(tidyr)
 library(DT)
 library(plotly)
 library(tmap)
+library(shinyBS)
 thematic_shiny()
 
 # Source all component files and tab modules
