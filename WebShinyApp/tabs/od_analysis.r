@@ -7,6 +7,13 @@ library(dplyr)
 library(ggplot2)
 library(shinyWidgets)
 library(sf)
+library(leaflet)
+library(tmap)
+
+library(forcats)
+library(gridExtra)
+library(stplanr)
+library(plotly)
 
 # UI
 od_analysis_ui <- function(id) {
@@ -55,92 +62,128 @@ od_analysis_ui <- function(id) {
     ),
     
     fluidRow(
-      # Left Tab: Filter Trip Data
+      # Combined Filter Box
       box(
-        title = "Filter Trip Data",
-        width = 6,
+        title = "Filters",
+        width = 12,
         collapsible = TRUE, collapsed = TRUE,
-        pickerInput(ns("district"), "District", 
-                    choices = NULL, 
-                    selected = NULL,  # Select all districts by default in the server
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3",
-                      liveSearch = TRUE
-                    ),
-                    width = "100%"),
-        pickerInput(ns("village"), "Village", 
-                    choices = NULL, 
-                    selected = NULL,  # Select all villages by default in the server
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3",
-                      liveSearch = TRUE
-                    ),
-                    width = "100%"),
-        selectInput(ns("trip_type"), "Trip Type", 
-                    choices = c("Origin", "Destination"), 
-                    selected = "Origin"),
-        selectInput(ns("driving_mode"), "Driving Mode", 
-                    choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
-                    selected = "Car and Motorcycle"),
-        pickerInput(ns("day_of_week"), "Day of Week", 
-                    choices = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                "Friday", "Saturday", "Sunday"), 
-                    selected = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                 "Friday", "Saturday", "Sunday"),  # Select everything by default
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3"
-                    )),
-        pickerInput(ns("time_cluster"), "Time Cluster", 
-                    choices = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
-                                "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"), 
-                    selected = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
-                                 "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"),  # Select everything by default
-                    multiple = TRUE,
-                    options = pickerOptions(
-                      actionsBox = TRUE, 
-                      size = 10,
-                      selectedTextFormat = "count > 3"
-                    )),
-        actionButton(ns("apply_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
-      ),
-      
-      # Right Tab: Filter OD Parameters
-      box(
-        title = "Filter OD Parameters",
-        width = 6,
-        collapsible = TRUE, collapsed = TRUE,
-        selectInput(ns("mapping_feature"), "Mapping Feature", 
-                    choices = c("Overall Number of Trips", "Number of Trips per Capita", "Number of Trips per POI"), 
-                    selected = "Overall Number of Trips"),
-        selectInput(ns("contiguity_method"), "Contiguity Method", 
-                    choices = c("Queen", "Rook"), selected = "Queen"),
-        radioButtons(ns("result_type"), "Statistical Significance",
-                     choices = c("All Results" = "all", "Statistically Significant Only" = "significant"),
-                     selected = "all"),
-        sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10),
-        actionButton(ns("apply_od_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
+        fluidRow(
+          # Left Column: Filter Trip Data
+          column(
+            width = 6,
+            pickerInput(ns("district"), "District", 
+                        choices = NULL, 
+                        selected = NULL,  
+                        multiple = TRUE,
+                        options = pickerOptions(
+                          actionsBox = TRUE, 
+                          size = 10,
+                          selectedTextFormat = "count > 3",
+                          liveSearch = TRUE
+                        ),
+                        width = "100%"),
+            pickerInput(ns("village"), "Village", 
+                        choices = NULL, 
+                        selected = NULL,  
+                        multiple = TRUE,
+                        options = pickerOptions(
+                          actionsBox = TRUE, 
+                          size = 10,
+                          selectedTextFormat = "count > 3",
+                          liveSearch = TRUE
+                        ),
+                        width = "100%"),
+            selectInput(ns("trip_type"), "Trip Type", 
+                        choices = c("Origin", "Destination"), 
+                        selected = "Origin"),
+            selectInput(ns("driving_mode"), "Driving Mode", 
+                        choices = c("Car and Motorcycle", "Car", "Motorcycle"), 
+                        selected = "Car and Motorcycle"),
+            pickerInput(ns("day_of_week"), "Day of Week", 
+                        choices = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                    "Friday", "Saturday", "Sunday"), 
+                        selected = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                     "Friday", "Saturday", "Sunday"),  # Select everything by default
+                        multiple = TRUE,
+                        options = pickerOptions(
+                          actionsBox = TRUE, 
+                          size = 10,
+                          selectedTextFormat = "count > 3"
+                        )),
+            pickerInput(ns("time_cluster"), "Time Cluster", 
+                        choices = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
+                                    "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"), 
+                        selected = c("Morning Peak", "Morning Lull", "Afternoon Peak", "Afternoon Lull", 
+                                     "Evening Peak", "Evening Lull", "Midnight Peak", "Midnight Lull"),  # Select everything by default
+                        multiple = TRUE,
+                        options = pickerOptions(
+                          actionsBox = TRUE, 
+                          size = 10,
+                          selectedTextFormat = "count > 3"
+                        ))
+          ),
+          
+          # Right Column: Filter OD Parameters
+          column(
+            width = 6,
+            selectInput(ns("spatial_model"), "Type of Spatial Interaction Model",
+                        choices = c("Origin-Constrained", "Destination-Constrained", "Doubly-Constrained"),
+                        selected = "Origin-Constrained"),
+            checkboxGroupInput(ns("push_pull"), "Push-Pull Factor Influence",
+                               choices = c("Push Factors Only", "Pull Factors Only"),
+                               selected = "Push Factors Only"),
+            actionButton(ns("apply_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 100%")
+          )
+        )
       )
     ),
     
+    
     # Value Boxes with reduced size (without the class argument)
     fluidRow(
-      valueBoxOutput(ns("totalTripsBox"), width = 4),
-      valueBoxOutput(ns("tripsWithinJakartaBox"), width = 4),
-      valueBoxOutput(ns("tripsOutsideJakartaBox"), width = 4)
+      infoBoxOutput(ns("leastPopularPushFactorBox"), width = 4),  # Push factor with lowest coefficient
+      infoBoxOutput(ns("mostPopularPullFactorBox"), width = 4),  # Pull factor with highest coefficient
+      infoBoxOutput(ns("highestTripsLocationBox"), width = 4) # Location with highest trips
     ),
+    
     
     ####################################
     #### Continue adding plots here ####
     ####################################
+    
+    # OD Map
+    fluidRow(
+      box(
+        title = "Origin-Destination Desire Line Map",
+        width = 12, 
+        collapsible = FALSE, 
+        status = "primary",
+        solidHeader = TRUE,
+        leafletOutput(ns("odMap"), height = "400px")
+      )
+    ),
+    
+    fluidRow(
+      # Push-Pull Factor Analysis Box
+      box(
+        title = "Push-Pull Factor Analysis",
+        width = 6,
+        collapsible = TRUE,
+        status = "primary",
+        solidHeader = TRUE,
+        plotOutput(ns("coefficientPlots"), height = "400px")
+      ),
+      # Heatmap of Time Cluster Box
+      box(
+        title = "Heatmap of Time Cluster",
+        width = 6,
+        collapsible = TRUE,
+        status = "primary",
+        solidHeader = TRUE,
+        plotOutput(ns("heatmapTimeCluster"), height = "400px")
+      )
+    )
+    ###
     
   )
 }
@@ -148,12 +191,33 @@ od_analysis_ui <- function(id) {
 # Server
 od_analysis_server <- function(id, datasets) {
   moduleServer(id, function(input, output, session) {
-    trip_data <- datasets$trip_data
-    jakarta_village <- datasets$jakarta_village
-    jakarta_district <- datasets$jakarta_district
-    jakarta_poi_final <- datasets$jakarta_poi_final
-    jakarta_district_population <- datasets$jakarta_district_population
-    jakarta_village_population <- datasets$jakarta_village_population
+    
+    trip_data <- reactive({readRDS("datasource/trip_data.rds")})
+    jakarta_poi_final <- reactive({readRDS("datasource/jakarta_poi_final.rds")})
+    jakarta_district_population <- reactive({readRDS("datasource/jakarta_district_population.rds")})
+    jakarta_village_population <- reactive({readRDS("datasource/jakarta_village_population.rds")})
+    
+    jakarta_district <- reactive({st_transform(datasets$jakarta_district(), crs = 4326)})
+    jakarta_village <- reactive({st_transform(datasets$jakarta_village(), crs = 4326)})
+    desire_line_district <- reactive({st_transform(datasets$desire_line_district(), crs = 4326)})
+    desire_line_village <- reactive({st_transform(datasets$desire_line_village(), crs = 4326)})
+    coefficients_long_district <- reactive({ readRDS("datasource/coefficients_long_district.rds")})
+    coefficients_long_village <- reactive({ readRDS("datasource/coefficients_long_village.rds")})
+    tripsDistrict <- reactive({ readRDS("datasource/tripsDistrict.rds")})
+    tripsVillage <- reactive({ readRDS("datasource/tripsVillage.rds")})
+    
+    observe({
+      data <- tripsDistrict()  # Use tripsVillage() for villages if needed
+      
+      if (is.null(data)) {
+        print("Data is NULL")
+      } else {
+        print(head(data))  # Print the first few rows
+        print(summary(data))  # Print a summary of the dataset
+        print("Unique values in origin_time_cluster:")
+        print(unique(data$origin_time_cluster))
+      }
+    })
     
     # Populate "District" dropdown with unique values from the 'origin_district' column in trips_data()
     observe({
@@ -163,7 +227,7 @@ od_analysis_server <- function(id, datasets) {
       
       updatePickerInput(session, "district", 
                         choices = district_choices, 
-                        selected = district_choices)  # Select all districts by default
+                        selected = district_choices)
     })
     
     # Populate "Village" dropdown based on selected "District" values
@@ -183,12 +247,17 @@ od_analysis_server <- function(id, datasets) {
       
       updatePickerInput(session, "village", 
                         choices = village_choices, 
-                        selected = village_choices)  # Select all villages by default
+                        selected = village_choices)  
     })
     
     # Filter data by user's input
     filtered_data <- eventReactive(input$apply_filter, {
       data <- trip_data()
+      
+      # If no filters are applied, return the entire dataset
+      if (is.null(input$district) && is.null(input$village)) {
+        return(data)
+      }
       
       # Combine the checks for required inputs and show corresponding error modal
       # Initialize an empty vector to hold error messages
@@ -244,7 +313,7 @@ od_analysis_server <- function(id, datasets) {
           rename(location = origin_village,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         print(trips_village_origin %>% filter(is.na(location)))
         return(trips_village_origin)
       }
@@ -261,7 +330,7 @@ od_analysis_server <- function(id, datasets) {
           rename(location = destination_village,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_village_dest)
       }
       
@@ -277,7 +346,7 @@ od_analysis_server <- function(id, datasets) {
           rename(location = origin_district,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_origin)
       }
       
@@ -293,68 +362,125 @@ od_analysis_server <- function(id, datasets) {
           rename(location = destination_district,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_dest)
       }
       
       return(data)  # If no other conditions, return the data as is
     }, ignoreNULL = FALSE)  # This allows the default data to be used when the button is not clicked
     
-    # Update the value boxes with correct filtered data
-    output$totalTripsBox <- renderValueBox({
-      data <- filtered_data()
+    ############################################
+    #### LEAST POPULAR PUSH FACTOR INFOBOX #####
+    ############################################
+    output$leastPopularPushFactorBox <- renderInfoBox({
+      # Check whether user selected district or village level
+      if (!is.null(input$district) && length(input$district) > 0) {
+        data <- coefficients_long_district()  # District-level data
+      } else if (!is.null(input$village) && length(input$village) > 0) {
+        data <- coefficients_long_village()  # Village-level data
+      } else {
+        return(infoBox(
+          title = "Least Popular Push Factor",
+          value = "No Data Available",
+          color = "danger",
+          icon = icon("times-circle")
+        ))
+      }
       
-      # Sum the num_of_trips column if it exists and data has rows; otherwise, set to 0
-      total_trips <- if (!is.null(data) && nrow(data) > 0) {
-        sum(data$num_of_trips, na.rm = TRUE)
-      } else 0
+      # Filter data based on the selected spatial model
+      filtered_data <- data %>%
+        filter(Model == input$spatial_model)  # Match the current spatial model
       
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", total_trips, "</b>")),
-        subtitle = "Total Trips",
-        color = "lightblue",
-        icon = icon("car"),
-        width = 4
+      # Find the least popular push factor
+      least_popular <- filtered_data %>%
+        arrange(Coefficient) %>%
+        slice(1)  # Get the row with the lowest coefficient
+      
+      # Check if the least_popular entry exists
+      if (nrow(least_popular) == 0 || is.null(least_popular$Category)) {
+        return(infoBox(
+          title = "Least Popular Push Factor",
+          value = "No Data Available",
+          color = "danger",
+          icon = icon("times-circle")
+        ))
+      }
+      
+      # Render the infoBox
+      infoBox(
+        title = "Least Popular Push Factor",
+        value = paste(least_popular$Category, ":", round(least_popular$Coefficient, 2)),
+        color = "danger",
+        icon = icon("arrow-down")
       )
     })
     
-    output$tripsWithinJakartaBox <- renderValueBox({
-      data <- filtered_data()
+    ############################################
+    #### MOST POPULAR PULL FACTOR INFOBOX ######
+    ############################################
+    output$mostPopularPullFactorBox <- renderInfoBox({
+      # Check whether user selected district or village level
+      if (!is.null(input$district) && length(input$district) > 0) {
+        data <- coefficients_long_district()  # District-level data
+      } else if (!is.null(input$village) && length(input$village) > 0) {
+        data <- coefficients_long_village()  # Village-level data
+      } else {
+        return(infoBox(
+          title = "Most Popular Pull Factor",
+          value = "No Data Available",
+          color = "warning",
+          icon = icon("exclamation-circle")
+        ))
+      }
       
-      trips_within_jakarta <- if (!is.null(data) && nrow(data) > 0) {
-        data %>%
-          filter(location != "outside of jakarta") %>%
-          summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
-          pull(total_trips)
-      } else 0
+      # Filter data based on the selected spatial model
+      filtered_data <- data %>%
+        filter(Model == input$spatial_model)  # Match the current spatial model
       
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", trips_within_jakarta, "</b>")),
-        subtitle = "Trips within Jakarta",
-        color = "primary",
-        icon = icon("city"),
-        width = 4
+      # Find the most popular pull factor
+      most_popular <- filtered_data %>%
+        arrange(desc(Coefficient)) %>%
+        slice(1)  # Get the row with the highest coefficient
+      
+      # Check if the most_popular entry exists
+      if (nrow(most_popular) == 0 || is.null(most_popular$Category)) {
+        return(infoBox(
+          title = "Most Popular Pull Factor",
+          value = "No Data Available",
+          color = "warning",
+          icon = icon("exclamation-circle")
+        ))
+      }
+      
+      # Render the infoBox
+      infoBox(
+        title = "Most Popular Pull Factor",
+        value = paste(most_popular$Category, ":", round(most_popular$Coefficient, 2)),
+        color = "success",
+        icon = icon("arrow-up")
       )
     })
     
-    output$tripsOutsideJakartaBox <- renderValueBox({
-      data <- filtered_data()
+    
+    output$highestTripsLocationBox <- renderInfoBox({
+      data <- filtered_data()  # Use filtered data for current user selections
       
-      trips_outside_jakarta <- if (!is.null(data) && nrow(data) > 0) {
-        data %>%
-          filter(location == "outside of jakarta") %>%
-          summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
-          pull(total_trips)
-      } else 0
+      # Find the location with the highest number of trips
+      highest_trips <- data %>%
+        group_by(location) %>%
+        summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
+        arrange(desc(total_trips)) %>%
+        slice(1)
       
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", trips_outside_jakarta, "</b>")),
-        subtitle = "Trips Outside Jakarta",
-        color = "warning",
-        icon = icon("road"),
-        width = 4
+      infoBox(
+        title = "Location with Most Trips",
+        value = paste(highest_trips$location, ":", highest_trips$total_trips),
+        color="gray",
+        icon = icon("map-marker-alt")
       )
     })
+    
+    ##############################
     
     # Display filter criteria when applied
     observeEvent(input$apply_filter, {
@@ -377,6 +503,303 @@ od_analysis_server <- function(id, datasets) {
     ####################################
     #### Continue adding plots here ####
     ####################################
+    
+    
+    ############################################
+    ########## RENDER OD MAP####################
+    ############################################
+    output$odMap <- renderLeaflet({
+      # Initial rendering of the map
+      leaflet() %>%
+        addProviderTiles("Esri.WorldGrayCanvas") %>% # Esri black-and-white basemap
+        setView(lng = 106.8456, lat = -6.2088, zoom = 10) # Set initial view to Jakarta
+    })
+    
+    observe({
+      district_choices <- trip_data() %>%
+        distinct(origin_district) %>%
+        pull(origin_district)
+      
+      updatePickerInput(session, "district", 
+                        choices = district_choices, 
+                        selected = district_choices)
+      
+      # Populate and select all villages by default
+      village_choices <- trip_data() %>%
+        distinct(origin_village) %>%
+        pull(origin_village)
+      
+      updatePickerInput(session, "village", 
+                        choices = village_choices, 
+                        selected = village_choices)
+    })
+    
+    
+    observeEvent(input$apply_filter, {
+    
+        # Check column names of the reactive dataset
+        print("Column names in desire_lines:")
+        print(colnames(desire_line_district()))  # Or desire_line_village()
+        
+        # Check a sample of the dataset
+        print("Sample rows of desire_lines:")
+        print(head(desire_line_district()))
+ 
+      # Determine the selected level (district or village)
+      selected_level <- if (length(input$district) > 0) "district" else if (length(input$village) > 0) "village" else NULL
+      
+      # Validate input
+      if (is.null(selected_level)) {
+        leafletProxy("odMap") %>%
+          clearShapes() %>%
+          addPopups(0, 0, "Please select a district or village to filter the data.")
+        return()
+      }
+      
+      # Select the appropriate dataset
+      desire_lines <- if (selected_level == "district") desire_line_district() else desire_line_village()
+      
+      # Validate dataset
+      if (is.null(desire_lines) || nrow(desire_lines) == 0) {
+        leafletProxy("odMap") %>%
+          clearShapes() %>%
+          addPopups(0, 0, "No data available for the selected filters.")
+        return()
+      }
+      
+      # Apply the earlier logic for filtering
+      filtered_lines <- NULL
+      if (selected_level == "district") {
+        if (input$trip_type == "Origin" && length(input$district) > 0) {
+          filtered_lines <- desire_lines %>%
+            filter(origin_district %in% input$district)
+        } else if (input$trip_type == "Destination" && length(input$district) > 0) {
+          filtered_lines <- desire_lines %>%
+            filter(destination_district %in% input$district)
+        }
+      } else if (selected_level == "village") {
+        if (input$trip_type == "Origin" && length(input$village) > 0) {
+          filtered_lines <- desire_lines %>%
+            filter(origin_village %in% input$village)
+        } else if (input$trip_type == "Destination" && length(input$village) > 0) {
+          filtered_lines <- desire_lines %>%
+            filter(destination_village %in% input$village)
+        }
+      }
+      
+      # Add additional filters (driving_mode, day_of_week, time_cluster)
+      if (!is.null(filtered_lines)) {
+        # Driving Mode Filter
+        if (input$driving_mode == "Car and Motorcycle") {
+          filtered_lines <- filtered_lines %>%
+            filter(driving_mode %in% c("car", "motorcycle"))
+        } else if (!is.null(input$driving_mode)) {
+          filtered_lines <- filtered_lines %>%
+            filter(driving_mode == tolower(input$driving_mode))
+        }
+        
+        # Day of Week Filter
+        if (!is.null(input$day_of_week)) {
+          filtered_lines <- filtered_lines %>%
+            filter(origin_day %in% input$day_of_week)
+        }
+        
+        # Time Cluster Filter
+        if (!is.null(input$time_cluster)) {
+          filtered_lines <- filtered_lines %>%
+            filter(origin_time_cluster %in% input$time_cluster)
+        }
+      }
+      
+      # Ensure the filtered_lines is valid and not empty
+      if (is.null(filtered_lines) || nrow(filtered_lines) == 0) {
+        leafletProxy("odMap") %>%
+          clearShapes() %>%
+          addPopups(0, 0, "No trips match the selected filters.")
+        return()
+      }
+      
+      # Update the map with the filtered data
+      spatial_layer <- if (selected_level == "district") jakarta_district() else jakarta_village()
+      bounds <- st_bbox(spatial_layer) %>% as.numeric()
+      trip_palette <- colorNumeric("viridis", domain = filtered_lines$num_of_trips)
+      
+      leafletProxy("odMap") %>%
+        clearShapes() %>%
+        addPolygons(
+          data = spatial_layer,
+          fillOpacity = 0.3,
+          color = "black",
+          popup = ~paste(
+            if (selected_level == "district") "District:" else "Village:",
+            if (selected_level == "district") district else village
+          )
+        ) %>%
+        addPolylines(
+          data = filtered_lines,
+          color = ~trip_palette(num_of_trips),
+          weight = ~log1p(num_of_trips),
+          popup = ~paste(
+            "Origin:", if (selected_level == "village") origin_village else origin_district, "<br>",
+            "Destination:", if (selected_level == "village") destination_village else destination_district, "<br>",
+            "Trips:", num_of_trips
+          )
+        ) %>%
+        addLegend(
+          position = "bottomright",
+          pal = trip_palette,
+          values = filtered_lines$num_of_trips,
+          title = "Trip Count",
+          opacity = 1
+        ) %>%
+        fitBounds(lng1 = bounds[1], lat1 = bounds[2], lng2 = bounds[3], lat2 = bounds[4])
+    })
+    
+    
+    
+    
+    ############################################
+    ########## RENDER PUSH-PULL BARPLOT ########
+    ############################################
+    
+    output$coefficientPlots <- renderPlot({
+      # Check whether user selected district or village level
+      if (!is.null(input$district) && length(input$district) > 0) {
+        data <- coefficients_long_district()
+        plot_title <- "District-Level Coefficients"
+      } else if (!is.null(input$village) && length(input$village) > 0) {
+        data <- coefficients_long_village()
+        plot_title <- "Village-Level Coefficients"
+      } else {
+        return(NULL)  # If neither is selected, return no plot
+      }
+      
+      # Step 1: Generate plots for all models
+      # Origin-Constrained Model
+      ori_const_data <- data %>%
+        filter(Model == "Origin_Constrained") %>%
+        mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
+      
+      plot_origin <- ggplot(ori_const_data, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+        geom_bar(stat = "identity", fill = "#007BFF") +
+        theme_minimal() +
+        labs(
+          title = "Origin-Constrained Model",
+          x = "Coefficient",
+          y = "POI Category"
+        ) +
+        theme(
+          axis.text.y = element_text(angle = 0, hjust = 1),
+          legend.position = "none"
+        ) +
+        scale_x_continuous(position = "top", limits = c(-max(abs(ori_const_data$Coefficient)), max(abs(ori_const_data$Coefficient))))
+      
+      # Destination-Constrained Model
+      dest_const_data <- data %>%
+        filter(Model == "Destination_Constrained") %>%
+        mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
+      
+      plot_destination <- ggplot(dest_const_data, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+        geom_bar(stat = "identity", fill = "#007BFF") +
+        theme_minimal() +
+        labs(
+          title = "Destination-Constrained Model",
+          x = "Coefficient",
+          y = "POI Category"
+        ) +
+        theme(
+          axis.text.y = element_text(angle = 0, hjust = 1),
+          legend.position = "none"
+        ) +
+        scale_x_continuous(position = "top", limits = c(-max(abs(dest_const_data$Coefficient)), max(abs(dest_const_data$Coefficient))))
+      
+      # Doubly-Constrained Model
+      dbc_const_data <- data %>%
+        filter(Model == "Doubly_Constrained") %>%
+        mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
+      
+      plot_doubly <- ggplot(dbc_const_data, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+        geom_bar(stat = "identity", fill = "#007BFF", alpha = 0.7) +
+        theme_minimal() +
+        labs(
+          title = "Doubly-Constrained Model",
+          x = "Coefficient",
+          y = "POI Category"
+        ) +
+        theme(
+          axis.text.y = element_text(angle = 0, hjust = 1),
+          legend.position = "none"
+        ) +
+        scale_x_continuous(position = "top", limits = c(-max(abs(dbc_const_data$Coefficient)), max(abs(dbc_const_data$Coefficient))))
+      
+      # Step 2: Render the plot based on user selection
+      if (is.null(input$spatial_model) || input$spatial_model == "Origin-Constrained") {
+        return(plot_origin)
+      } else if (input$spatial_model == "Destination-Constrained") {
+        return(plot_destination)
+      } else if (input$spatial_model == "Doubly-Constrained") {
+        return(plot_doubly)
+      } else {
+        # Default to Origin-Constrained if input is invalid
+        return(plot_origin)
+      }
+    })
+    
+    ############################################
+    ########## RENDER HEATMAP TIME CLUSTER######
+    ############################################
+    output$heatmapTimeCluster <- renderPlot({
+      # Check whether user selected district or village level
+      if (!is.null(input$district) && length(input$district) > 0) {
+        data <- tripsDistrict()  # Use () for reactive objects
+        level <- "district"
+      } else if (!is.null(input$village) && length(input$village) > 0) {
+        data <- tripsVillage()  # Use () for reactive objects
+        level <- "village"
+      } else {
+        return(NULL)  # If neither is selected, return no plot
+      }
+      
+      # Ensure origin_time_cluster is a factor with correct levels and labels
+      data$origin_time_cluster <- factor(
+        data$origin_time_cluster,
+        levels = c("Midnight Peak", "Midnight Lull", 
+                   "Morning Peak", "Morning Lull", 
+                   "Afternoon Peak", "Afternoon Lull", 
+                   "Evening Peak", "Evening Lull"),
+        labels = c("Midnight Peak", "Midnight Lull", 
+                   "Morning Peak", "Morning Lull", 
+                   "Afternoon Peak", "Afternoon Lull", 
+                   "Evening Peak", "Evening Lull")
+      )
+      
+      # Customize plot titles and y-axis labels based on the level
+      if (level == "district") {
+        y_label <- "Destination District"
+        plot_title <- "Heatmap of Trips Throughout the Time of Day (District Level)"
+      } else {
+        y_label <- "Origin Village"
+        plot_title <- "Heatmap of Trips Throughout the Time of Day (Village Level)"
+      }
+      
+      # Create the heatmap
+      ggplot(data, aes(x = origin_time_cluster, y = origin_, fill = trips_count)) +
+        geom_tile(color = "white") +  # Add white gridlines between tiles
+        scale_fill_gradient(low = "white", high = "navy", name = "Trip Count") +  # Customize fill gradient
+        scale_x_discrete(position = "top") +  # Place x-axis labels at the top
+        labs(
+          title = plot_title,
+          x = "Time Cluster",
+          y = y_label
+        ) +
+        theme_minimal() +  # Use a minimal theme for clarity
+        theme(
+          axis.text.x = element_text(hjust = 1),  # Rotate x-axis labels
+          axis.text.y = element_text(size = 8),  # Adjust y-axis label size
+          plot.title = element_text(hjust = 0.5, size = 14, face = "bold")  # Center and format title
+        )
+    })
+    
+    #################################
   })
 }
-

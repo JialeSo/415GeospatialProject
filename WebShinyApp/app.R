@@ -48,27 +48,20 @@ ui <- dashboardPage(
 # Define the main server function
 server <- function(input, output, session) {
   # Load datasets reactively
-  trip_data <- reactive({
-    readRDS("datasource/trip_data.rds")  # Adjust the file path as needed
-  })
+  trip_data <- reactive({readRDS("datasource/trip_data.rds")})
+  jakarta_village <- reactive({readRDS("datasource/jakarta_village.rds")})
+  jakarta_poi_final <- reactive({readRDS("datasource/jakarta_poi_final.rds")})
+  jakarta_district <- reactive({readRDS("datasource/jakarta_district.rds")})
+  jakarta_district_population <- reactive({readRDS("datasource/jakarta_district_population.rds")})
+  jakarta_village_population <- reactive({readRDS("datasource/jakarta_village_population.rds")})
   
-  jakarta_village <- reactive({
-    readRDS("datasource/jakarta_village.rds")  # Adjust the file path as needed
-  })
-  
-  jakarta_poi_final <- reactive({
-    readRDS("datasource/jakarta_poi_final.rds")  # Adjust the file path as needed
-  })
-  
-  jakarta_district <- reactive({
-    readRDS("datasource/jakarta_district.rds")  # Adjust the file path as needed
-  })
-  jakarta_district_population <- reactive({
-    readRDS("datasource/jakarta_district_population.rds")  # Adjust the file path as needed
-  })
-  jakarta_village_population <- reactive({
-    readRDS("datasource/jakarta_village_population.rds")  # Adjust the file path as needed
-  })
+  desire_line_district <- reactive({readRDS("datasource/desire_line_district.rds")})
+  desire_line_village<- reactive({readRDS("datasource/desire_line_village.rds")})
+  coefficients_long_district <- reactive({readRDS("datasource/coefficients_long_district.rds")})
+  coefficients_long_village <- reactive({readRDS("datasource/coefficients_long_village.rds")})
+  tripsDistrict <- reactive({readRDS("datasource/tripsDistrict.rds")})
+  tripsVillage <- reactive({readRDS("datasource/tripsVillage.rds")})
+
   
   # Create a list to hold all datasets for easier passing
   datasets <- list(
@@ -77,7 +70,14 @@ server <- function(input, output, session) {
     jakarta_poi_final = jakarta_poi_final,
     jakarta_district = jakarta_district,
     jakarta_district_population = jakarta_district_population,
-    jakarta_village_population = jakarta_village_population
+    jakarta_village_population = jakarta_village_population,
+    
+    desire_line_district = desire_line_district,
+    desire_line_village = desire_line_village,
+    coefficients_long_district = coefficients_long_district,
+    coefficients_long_village = coefficients_long_village,
+    tripsDistrict = tripsDistrict,
+    tripsVillage = tripsVillage
   )
   
   # Call each tab module's server function with the datasets as needed
@@ -87,7 +87,7 @@ server <- function(input, output, session) {
   kernel_density_server("kernel_density", datasets)
   lisa_analysis_server("lisa_analysis", datasets)
   od_analysis_server("od_analysis", datasets)
-  datasets_server("datasets", input, output, session)
+  datasets_server("datasets", datasets)
 }
 
 # Run the application

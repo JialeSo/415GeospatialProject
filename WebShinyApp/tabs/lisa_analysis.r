@@ -17,6 +17,13 @@ lisa_analysis_ui <- function(id) {
   # UI structure
   tabItem(
     tabName = id,
+    jumbotron(
+      title = "Local Spatial Autocorrelation",
+      lead = "Uncover patterns of clustering and outliers in ride-hailing trips with Local Moran’s I. This page reveals areas of significant clustering (low-low and high-high) or unusual outliers (low-high and high-low), 
+      helping you explore how ride-hailing trips are distributed across Jakarta. 
+      Use the 'feature mapping' filters to analyse trips by per capita rates or in relation to the number of Points of Interest (POIs) for deeper insights.",
+      btnName = NULL
+    ),
     tags$head(
       # Custom CSS and JavaScript
       tags$style(HTML("
@@ -115,10 +122,12 @@ lisa_analysis_ui <- function(id) {
     ),
     
     fluidRow(
-      valueBoxOutput(ns("totalTripsBox"), width = 4),
-      valueBoxOutput(ns("tripsWithinJakartaBox"), width = 4),
-      valueBoxOutput(ns("tripsOutsideJakartaBox"), width = 4)
+      infoBoxOutput(ns("low_low_box"), width = 3),
+      infoBoxOutput(ns("high_low_box"), width = 3),
+      infoBoxOutput(ns("low_high_box"), width = 3),
+      infoBoxOutput(ns("high_high_box"), width = 3)
     ),
+    
     
     fluidRow(
       column(
@@ -246,7 +255,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = origin_village,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         print(trips_village_origin %>% filter(is.na(location)))
         return(trips_village_origin)
       }
@@ -263,7 +272,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = destination_village,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_village_dest)
       }
       
@@ -279,7 +288,7 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = origin_district,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_origin)
       }
       
@@ -295,68 +304,12 @@ lisa_analysis_server <- function(id, datasets) {
           rename(location = destination_district,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_dest)
       }
       
       return(data)  # If no other conditions, return the data as is
     }, ignoreNULL = FALSE)  # This allows the default data to be used when the button is not clicked
-    
-    # Update the value boxes with correct filtered data
-    output$totalTripsBox <- renderValueBox({
-      data <- filtered_data()
-      
-      # Sum the num_of_trips column if it exists and data has rows; otherwise, set to 0
-      total_trips <- if (!is.null(data) && nrow(data) > 0) {
-        sum(data$num_of_trips, na.rm = TRUE)
-      } else 0
-      
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", total_trips, "</b>")),
-        subtitle = "Total Trips",
-        color = "lightblue",
-        icon = icon("car"),
-        width = 4
-      )
-    })
-    
-    output$tripsWithinJakartaBox <- renderValueBox({
-      data <- filtered_data()
-      
-      trips_within_jakarta <- if (!is.null(data) && nrow(data) > 0) {
-        data %>%
-          filter(location != "outside of jakarta") %>%
-          summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
-          pull(total_trips)
-      } else 0
-      
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", trips_within_jakarta, "</b>")),
-        subtitle = "Trips within Jakarta",
-        color = "primary",
-        icon = icon("city"),
-        width = 4
-      )
-    })
-    
-    output$tripsOutsideJakartaBox <- renderValueBox({
-      data <- filtered_data()
-      
-      trips_outside_jakarta <- if (!is.null(data) && nrow(data) > 0) {
-        data %>%
-          filter(location == "outside of jakarta") %>%
-          summarise(total_trips = sum(num_of_trips, na.rm = TRUE)) %>%
-          pull(total_trips)
-      } else 0
-      
-      valueBox(
-        value = HTML(paste("<b style='font-size: 24px;'>", trips_outside_jakarta, "</b>")),
-        subtitle = "Trips Outside Jakarta",
-        color = "warning",
-        icon = icon("road"),
-        width = 4
-      )
-    })
     
     # Display filter criteria when applied
     observeEvent(input$apply_filters, {
@@ -404,14 +357,14 @@ lisa_analysis_server <- function(id, datasets) {
             group_by(village) %>%
             summarise(population = sum(total_population), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = village, population) 
+            dplyr::select(location = village, population) 
         } else{
           pop_data <- jakarta_village_population() %>%
             filter(district != "outside of jakarta") %>% 
             group_by(district) %>%
             summarise(population = sum(total_population), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = district, population)
+            dplyr::select(location = district, population)
         }
         
         lisa_data <- filtered_data() %>%
@@ -436,14 +389,14 @@ lisa_analysis_server <- function(id, datasets) {
             group_by(village) %>%
             summarise(num_of_poi = n(), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = village, num_of_poi) 
+            dplyr::select(location = village, num_of_poi) 
         } else{
           poi_data <- jakarta_poi_final() %>%
             filter(district != "outside of jakarta") %>% 
             group_by(district) %>%
             summarise(num_of_poi = n(), .groups = "drop") %>%
             st_drop_geometry() %>%
-            select(location = district, num_of_poi)
+            dplyr::select(location = district, num_of_poi)
         }
         
         lisa_data <- filtered_data() %>%
@@ -558,6 +511,119 @@ lisa_analysis_server <- function(id, datasets) {
       
       # Convert to interactive plot using ggplotly
       ggplotly(p, tooltip = "text")
+    })
+    
+    # Update the value boxes with correct filtered data
+    output$low_low_box <- renderInfoBox({
+      req(lisa_data()) 
+      if (lisa_data()$result_type == "statistically significant") {
+        data <- lisa_data()$significant %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      } else {
+        data <- lisa_data()$all %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      }
+      
+      low_low <- data %>%
+        filter(mean == 'Low-Low') %>%
+        summarise(sum_total_count = sum(total_count, na.rm = TRUE)) %>%
+        pull(sum_total_count)
+      
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>", low_low, "</h4>")),
+        value = HTML(paste0("<p style='font-size: 16px; font-weight: normal; margin: 0;'>", "Low-Low", "</p>")),
+        color = "lightblue",
+        icon = icon("thumbs-up"),
+        width = 3
+      )
+    })
+    
+    output$high_low_box <- renderInfoBox({
+      req(lisa_data()) 
+      if (lisa_data()$result_type == "statistically significant") {
+        data <- lisa_data()$significant %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      } else {
+        data <- lisa_data()$all %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      }
+      
+      high_low <- data %>%
+        filter(mean == 'High-Low') %>%
+        summarise(sum_total_count = sum(total_count, na.rm = TRUE)) %>%
+        pull(sum_total_count)
+      
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>", high_low, "</h4>")),
+        value = HTML(paste0("<p style='font-size: 16px; font-weight: normal; margin: 0;'>", "High-Low", "</p>")),
+        color = "warning",
+        icon = icon("times-circle"),
+        width = 3
+      )
+    })
+    
+    output$low_high_box <- renderInfoBox({
+      req(lisa_data()) 
+      if (lisa_data()$result_type == "statistically significant") {
+        data <- lisa_data()$significant %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      } else {
+        data <- lisa_data()$all %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      }
+      
+      low_high <- data %>%
+        filter(mean == 'High-High') %>%
+        summarise(sum_total_count = sum(total_count, na.rm = TRUE)) %>%
+        pull(sum_total_count)
+      
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>", low_high, "</h4>")),
+        value = HTML(paste0("<p style='font-size: 16px; font-weight: normal; margin: 0;'>", "Low-High", "</p>")),
+        color = "success",
+        icon = icon("check-circle"),
+        width = 3
+      )
+    })
+    
+    output$high_high_box <- renderInfoBox({
+      req(lisa_data()) 
+      if (lisa_data()$result_type == "statistically significant") {
+        data <- lisa_data()$significant %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      } else {
+        data <- lisa_data()$all %>%
+          group_by(mean) %>%
+          summarise(total_count = n(), .groups = "drop") %>%
+          st_drop_geometry()
+      }
+      
+      high_high <- data %>%
+        filter(mean == 'High-High') %>%
+        summarise(sum_total_count = sum(total_count, na.rm = TRUE)) %>%
+        pull(sum_total_count)
+      
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>", high_high, "</h4>")),
+        value = HTML(paste0("<p style='font-size: 16px; font-weight: normal; margin: 0;'>", "High-High", "</p>")),
+        color = "danger",
+        icon = icon("exclamation-triangle"),
+        width = 3
+      )
     })
   })
 }
