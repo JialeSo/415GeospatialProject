@@ -293,7 +293,7 @@ exploratory_data_server <- function(id, datasets) {
           rename(location = origin_village,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         print(trips_village_origin %>% filter(is.na(location)))
         return(trips_village_origin)
       }
@@ -310,7 +310,7 @@ exploratory_data_server <- function(id, datasets) {
           rename(location = destination_village,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_village_dest)
       }
 
@@ -326,7 +326,7 @@ exploratory_data_server <- function(id, datasets) {
           rename(location = origin_district,
                  day_of_week = origin_day,
                  time_cluster = origin_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_origin)
       }
       
@@ -342,7 +342,7 @@ exploratory_data_server <- function(id, datasets) {
           rename(location = destination_district,
                  day_of_week = destination_day,
                  time_cluster = destination_time_cluster) %>%
-          select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
+          dplyr::select(location, day_of_week, time_cluster, driving_mode, num_of_trips, geometry)
         return(trips_district_dest)
       }
       
