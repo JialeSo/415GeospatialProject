@@ -535,66 +535,99 @@ od_analysis_server <- function(id, datasets) {
     })
     
     
-    observe({
+    observeEvent(input$apply_filter, {
+    
+        # Check column names of the reactive dataset
+        print("Column names in desire_lines:")
+        print(colnames(desire_line_district()))  # Or desire_line_village()
+        
+        # Check a sample of the dataset
+        print("Sample rows of desire_lines:")
+        print(head(desire_line_district()))
+ 
       # Determine the selected level (district or village)
-      selected_level <- if (length(input$district) > 0) "district" else "village"
-      desire_lines <- if (selected_level == "district") desire_line_district() else desire_line_village()
-      spatial_layer <- if (selected_level == "district") jakarta_district() else jakarta_village()
+      selected_level <- if (length(input$district) > 0) "district" else if (length(input$village) > 0) "village" else NULL
       
-      # Validate datasets
-      if (is.null(spatial_layer) || nrow(spatial_layer) == 0 || 
-          is.null(desire_lines) || nrow(desire_lines) == 0) {
+      # Validate input
+      if (is.null(selected_level)) {
         leafletProxy("odMap") %>%
           clearShapes() %>%
-          addPopups(0, 0, "No data available for the selected filters")
+          addPopups(0, 0, "Please select a district or village to filter the data.")
         return()
       }
       
-      # Filter OD lines to include only those involving selected districts or villages
-      filtered_lines <- desire_lines
+      # Select the appropriate dataset
+      desire_lines <- if (selected_level == "district") desire_line_district() else desire_line_village()
       
-      if (selected_level == "district" && length(input$district) > 0) {
-        if (input$trip_type == "Origin") {
-          # Filter trips that originate from the selected district
+      # Validate dataset
+      if (is.null(desire_lines) || nrow(desire_lines) == 0) {
+        leafletProxy("odMap") %>%
+          clearShapes() %>%
+          addPopups(0, 0, "No data available for the selected filters.")
+        return()
+      }
+      
+      # Apply the earlier logic for filtering
+      filtered_lines <- NULL
+      if (selected_level == "district") {
+        if (input$trip_type == "Origin" && length(input$district) > 0) {
           filtered_lines <- desire_lines %>%
             filter(origin_district %in% input$district)
-        } else if (input$trip_type == "Destination") {
-          # Filter trips that end in the selected district
+        } else if (input$trip_type == "Destination" && length(input$district) > 0) {
           filtered_lines <- desire_lines %>%
             filter(destination_district %in% input$district)
         }
-      } else if (selected_level == "village" && length(input$village) > 0) {
-        if (input$trip_type == "Origin") {
-          # Filter trips that originate from the selected village
+      } else if (selected_level == "village") {
+        if (input$trip_type == "Origin" && length(input$village) > 0) {
           filtered_lines <- desire_lines %>%
             filter(origin_village %in% input$village)
-        } else if (input$trip_type == "Destination") {
-          # Filter trips that end in the selected village
+        } else if (input$trip_type == "Destination" && length(input$village) > 0) {
           filtered_lines <- desire_lines %>%
             filter(destination_village %in% input$village)
         }
       }
       
-      # Filter spatial layer to match the selected districts or villages
-      filtered_layer <- spatial_layer
-      if (selected_level == "village" && length(input$village) > 0) {
-        filtered_layer <- spatial_layer %>% filter(village %in% input$village)
-      } else if (selected_level == "district" && length(input$district) > 0) {
-        filtered_layer <- spatial_layer %>% filter(district %in% input$district)
+      # Add additional filters (driving_mode, day_of_week, time_cluster)
+      if (!is.null(filtered_lines)) {
+        # Driving Mode Filter
+        if (input$driving_mode == "Car and Motorcycle") {
+          filtered_lines <- filtered_lines %>%
+            filter(driving_mode %in% c("car", "motorcycle"))
+        } else if (!is.null(input$driving_mode)) {
+          filtered_lines <- filtered_lines %>%
+            filter(driving_mode == tolower(input$driving_mode))
+        }
+        
+        # Day of Week Filter
+        if (!is.null(input$day_of_week)) {
+          filtered_lines <- filtered_lines %>%
+            filter(origin_day %in% input$day_of_week)
+        }
+        
+        # Time Cluster Filter
+        if (!is.null(input$time_cluster)) {
+          filtered_lines <- filtered_lines %>%
+            filter(origin_time_cluster %in% input$time_cluster)
+        }
       }
       
-      # Calculate bounding box for zooming
-      bounds <- st_bbox(filtered_layer) %>%
-        as.numeric()
+      # Ensure the filtered_lines is valid and not empty
+      if (is.null(filtered_lines) || nrow(filtered_lines) == 0) {
+        leafletProxy("odMap") %>%
+          clearShapes() %>%
+          addPopups(0, 0, "No trips match the selected filters.")
+        return()
+      }
       
-      # Define color palette for the trips
+      # Update the map with the filtered data
+      spatial_layer <- if (selected_level == "district") jakarta_district() else jakarta_village()
+      bounds <- st_bbox(spatial_layer) %>% as.numeric()
       trip_palette <- colorNumeric("viridis", domain = filtered_lines$num_of_trips)
       
-      # Update the Leaflet map
       leafletProxy("odMap") %>%
-        clearShapes() %>% # Clear existing shapes
+        clearShapes() %>%
         addPolygons(
-          data = filtered_layer,
+          data = spatial_layer,
           fillOpacity = 0.3,
           color = "black",
           popup = ~paste(
@@ -619,8 +652,10 @@ od_analysis_server <- function(id, datasets) {
           title = "Trip Count",
           opacity = 1
         ) %>%
-        fitBounds(lng1 = bounds[1], lat1 = bounds[2], lng2 = bounds[3], lat2 = bounds[4]) # Zoom to bounds
+        fitBounds(lng1 = bounds[1], lat1 = bounds[2], lng2 = bounds[3], lat2 = bounds[4])
     })
+    
+    
     
     
     ############################################
