@@ -132,14 +132,14 @@ kernel_density_ui <- function(id) {
                          tags$i(class = "fas fa-info-circle", title = "This is a native HTML tooltip explaining the alternative hypothesis.", 
                                 style = "margin-left: 5px; cursor: pointer;")),
               selectInput(ns("alternative_hypothesis"), NULL,
-                          choices = c("Clustered" = "clustered", "Regular" = "regular", "Two-Sided" = "two.sided", "Less" = "less", "Greater" = "greater"),
+                          choices = c("Clustered" = "clustered", "Regular" = "regular", "Two-Sided" = "two-sided"),
                           selected = "regular")
             ),
             tags$div(
               tags$label("Number of Simulations"),
               selectInput(ns("num_simulations"), NULL,
-                          choices = c("30 Simulations" = 30, "100 Simulations" = 99, 
-                                      "200 Simulations" = 199, "500 Simulations" = 499),
+                          choices = c("30 Simulations" = 30, "100 Simulations" = 100, 
+                                      "200 Simulations" = 200, "500 Simulations" = 500),
                           selected = 99)
             )
           ),
@@ -171,32 +171,6 @@ kernel_density_ui <- function(id) {
         collapsible = TRUE,
         tableOutput(ns("clarkEvanTable"))
       )
-    ),
-    fluidRow(
-      box(
-        title = "Spatial Function Analysis",
-        width = 2,
-        collapsible = TRUE,
-        selectInput(ns("selected_spatial_function"), "Select Spatial Function",
-                    choices = c("F", "G"), selected = "G"),
-        selectInput(ns("spatial_function_correction"), "Select Correction Method",
-                    choices = c("none", "border", "rs", "km", "han", "best"), selected = "best"),
-        selectInput(ns("spatial_function_nsim"), "Number of Simulations (nsim)",
-                    choices = c(30, 100, 200, 500), selected = 99),
-        actionButton(ns("apply_spatial_function"), "Apply Spatial Function Analysis")
-      ),
-      box(
-        title = "Spatial Function Plot",
-        width = 5,
-        collapsible = TRUE,
-        plotOutput(ns("spatialFunctionPlot"))
-      ),
-      box(
-        title = "Spatial Function Envelope Plot",
-        width = 5,
-        collapsible = TRUE,
-        plotOutput(ns("spatialFunctionEnvelopePlot"))
-      )
     )
   )
 }
@@ -212,10 +186,8 @@ kernel_density_server <- function(id, datasets) {
     jakarta_district <- datasets$jakarta_district
 
     observe({
-      reactive_data$district_choices <- jakarta_district() %>% distinct(district)
-    })
-
-    observeEvent(input$apply_kde_filter, {      
+      reactive_data$district_choices <- trip_data() %>% distinct(origin_district) %>% pull(origin_district) %>% unique()
+      reactive_data$village_choices <- trip_data() %>% distinct(origin_village) %>% pull(origin_village) %>% unique()
       if (input$level_of_analysis == "all") {
         reactive_data$map <- jakarta_district()
       } else if (input$level_of_analysis == "district") {
@@ -316,7 +288,7 @@ kernel_density_server <- function(id, datasets) {
       return(data)
     })
 
-    kde_map_data <- eventReactive(input$apply_kde_filter, {
+    output$kdeMAP <- renderTmap({
       bandwidth_method <- input$bandwidth_method  # Bandwidth estimation method (e.g., bw.diggle)
       edge_correction <- input$edge_correction  # Edge correction toggle (TRUE or FALSE)
       kernel_type <- input$kernel_type  # Kernel type (e.g., Gaussian, Epanechnikov, etc.)
@@ -339,25 +311,13 @@ kernel_density_server <- function(id, datasets) {
         trip_data_ppp,
         sigma = bandwidth_func(trip_data_ppp),  # Dynamically select the bandwidth function
         edge = edge_correction,                 # Use dynamic edge correction
-        kernel = kernel_type        # Convert kernel type to lowercase as used in spatstat
+        kernel = tolower(kernel_type)           # Convert kernel type to lowercase as used in spatstat
       )
 
       trip_data_raster <- raster(trip_data_ppp_bw)
-      projection(trip_data_raster) <- CRS("+init=EPSG:6384")
+      projection(trip_data_raster) <- CRS("+init=EPSG:6348")
 
-      # Return all necessary elements to render the map
-      list(kde_map = kde_map, trip_data_raster = trip_data_raster)
-    })
-
-    output$kdeMAP <- renderTmap({
-      map_data <- kde_map_data()  # Triggered only when apply_kde_filter is pressed
-
-      # Extract the map and raster data from the reactive result
-      kde_map <- map_data$kde_map
-      trip_data_raster <- map_data$trip_data_raster
-
-      # Generate the tmap object
-      tm_shape(kde_map) +
+      map <- tm_shape(kde_map) +
         tm_polygons(
           col = NA,                               # No fill color for polygons
           border.col = "black",                   # Border color for district boundaries
@@ -376,153 +336,71 @@ kernel_density_server <- function(id, datasets) {
           title = "Kernel Density Estimation of Trip Origins",
           legend.outside = TRUE
         )
+      map
     })
 
-    clark_evans_result_reactive <- eventReactive(input$apply_kde_filter, {
+    output$clarkEvanTable <- renderTable({
+      # Extract relevant values from clark_evans_result
       correction_method <- input$correction_method
       alternative_hypothesis <- input$alternative_hypothesis
       num_simulations <- input$num_simulations
-      
       if (is.null(reactive_data$trip_data_ppp)) {
-        return(NULL)  # Return NULL if no data is available
+        return(data.frame(Message = "No data available for Clark-Evans test"))
       }
-      
-      # Perform the Clark-Evans test
-      clarkevans.test(
+
+      # Perform the Clark-Evans test with dynamic inputs
+      clark_evans_result <- clarkevans.test(
         reactive_data$trip_data_ppp,
         clipregion = reactive_data$kde_map_owin,
         correction = correction_method,
         alternative = alternative_hypothesis,
         nsim = num_simulations
       )
-    })
 
-    output$clarkEvanTable <- renderTable({
-    clark_evans_result <- clark_evans_result_reactive()
-    if (is.null(clark_evans_result)) {
-      return(data.frame(Message = "No data available for Clark-Evans test"))
-    }
-    
-    observed_statistic <- if (length(clark_evans_result$statistic) > 1) {
-      paste(round(clark_evans_result$statistic, 3), collapse = ", ")
-    } else {
-      round(clark_evans_result$statistic, 3)
-    }
-    
-    p_value <- clark_evans_result$p.value
-    alternative_hypothesis <- clark_evans_result$alternative
-    edge_correction <- if ("No edge correction" %in% clark_evans_result$method) {
-      "False"
-    } else {
-      "True"
-    }
-    method_description <- paste(clark_evans_result$method, collapse = ", ")
-    
-    # Create a formatted data frame
-    result_df <- data.frame(
-      Metric = c("Observed Clark-Evans Ratio (R)", 
-                "P-Value", 
-                "Alternative Hypothesis",
-                "Edge Correction", 
-                "Method"),
-      Value = c(
-        observed_statistic,
-        p_value,
-        alternative_hypothesis,
-        edge_correction,
-        method_description
-      ),
-      stringsAsFactors = FALSE
-    )
-    
-    # Add a header row for display purposes
-    result_with_header <- rbind(
-      c("Clark-Evans Test", ""),  # Header row (spanning columns for display)
-      colnames(result_df),        # Column names
-      result_df                   # Data values
-    )
-    
-    result_with_header
-    }, rownames = FALSE, colnames = FALSE)
-
-    # Compute the G function when analysis is triggered
-    spatial_function_result <- eventReactive(input$apply_spatial_function, {
-      if (is.null(reactive_data$trip_data_ppp)) {
-        return(NULL)
+      observed_statistic <- if (length(clark_evans_result$statistic) > 1) {
+        paste(round(clark_evans_result$statistic, 3), collapse = ", ")
+      } else {
+        round(clark_evans_result$statistic, 3)
       }
+      
+      p_value <- clark_evans_result$p.value
+     
 
-      # Determine which function to compute based on user input
-      selected_function <- switch(input$selected_spatial_function,
-                                  "F" = Fest,
-                                  "G" = Gest,
-                                  )
-
-      # Compute the selected spatial function with the chosen correction method
-      function_result <- selected_function(reactive_data$trip_data_ppp, 
-                                          correction = input$spatial_function_correction)
-      return(function_result)
-    })
-
-    # Reactive function to compute the envelope for the selected spatial function
-    spatial_function_envelope <- eventReactive(input$apply_spatial_function, {
-      if (is.null(reactive_data$trip_data_ppp)) {
-        return(NULL)
+      alternative_hypothesis <- clark_evans_result$alternative
+      edge_correction <- if ("No edge correction" %in% clark_evans_result$method) {
+        "False"
+      } else {
+        "True"
       }
-
-      # Determine which function to use for the envelope based on user input
-      selected_function <- switch(input$selected_spatial_function,
-                                  "F" = Fest,
-                                  "G" = Gest,
-                                )
-
-      # Generate an envelope for the selected function
-      envelope_result <- envelope(
-        reactive_data$trip_data_ppp,
-        fun = selected_function,         # Selected function (F, G, K, or L)
-        nsim = as.numeric(input$spatial_function_nsim),  # Number of simulations
-        correction = input$spatial_function_correction,
-        rank = 1,
-        glocal = TRUE  # Edge correction method
+      method_description <- paste(clark_evans_result$method, collapse = ", ")
+      
+      # Create a formatted data frame
+      result_df <- data.frame(
+        Metric = c("Observed Clark-Evans Ratio (R)", 
+                  "P-Value", 
+                  "Alternative Hypothesis",
+                  "Edge Correction", 
+                  "Method"),
+        Value = c(
+          observed_statistic,
+          p_value,
+          alternative_hypothesis,
+          edge_correction,
+          method_description
+        ),
+        stringsAsFactors = FALSE
       )
-      return(envelope_result)
-    })
 
-    # Output for the selected spatial function plot
-    output$spatialFunctionPlot <- renderPlot({
-      function_result <- spatial_function_result()
-      if (is.null(function_result)) {
-        plot(NA, xlab = "", ylab = "", main = "No data available for the selected function")
-        return()
-      }
-      
-      # Plotting the result for the selected function
-      plot(function_result, main = paste(input$selected_spatial_function, "Function Analysis"), 
-          xlab = "Distance", ylab = paste(input$selected_spatial_function, "(d)"))
-    })
+      # Add a header row for display purposes
+      result_with_header <- rbind(
+        c("Clark-Evans Test", ""),  # Header row (spanning columns for display)
+        colnames(result_df),        # Column names
+        result_df                   # Data values
+      )
 
-    # Output for the envelope plot of the selected spatial function
-    output$spatialFunctionEnvelopePlot <- renderPlot({
-      envelope_result <- spatial_function_envelope()
-      if (is.null(envelope_result)) {
-        plot(NA, xlab = "", ylab = "", main = "No data available for the selected function envelope")
-        return()
-      }
-      
-      # Plotting the envelope for the selected function
-      plot(envelope_result, main = paste(input$selected_spatial_function, "Function Envelope"), 
-          xlab = "Distance", ylab = paste(input$selected_spatial_function, "(d)"))
-    })
-
-
-
-
-
-
-
-
-
-
-
-    })
+      result_with_header
+    }, rownames = FALSE, colnames = FALSE)
+        
+  })
 }
 
