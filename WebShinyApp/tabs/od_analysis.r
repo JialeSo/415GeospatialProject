@@ -206,19 +206,9 @@ od_analysis_server <- function(id, datasets) {
     tripsDistrict <- reactive({ readRDS("datasource/tripsDistrict.rds")})
     tripsVillage <- reactive({ readRDS("datasource/tripsVillage.rds")})
     
-    observe({
-      data <- tripsDistrict()  # Use tripsVillage() for villages if needed
-      
-      if (is.null(data)) {
-        print("Data is NULL")
-      } else {
-        print(head(data))  # Print the first few rows
-        print(summary(data))  # Print a summary of the dataset
-        print("Unique values in origin_time_cluster:")
-        print(unique(data$origin_time_cluster))
-      }
-    })
     
+    
+    ################# POPULATE FILTERS ##########################
     # Populate "District" dropdown with unique values from the 'origin_district' column in trips_data()
     observe({
       district_choices <- trip_data() %>%
@@ -516,6 +506,10 @@ od_analysis_server <- function(id, datasets) {
     })
     
     observe({
+      # Ensure trip data is loaded
+      req(trip_data())
+      
+      # Populate district choices
       district_choices <- trip_data() %>%
         distinct(origin_district) %>%
         pull(origin_district)
@@ -524,7 +518,7 @@ od_analysis_server <- function(id, datasets) {
                         choices = district_choices, 
                         selected = district_choices)
       
-      # Populate and select all villages by default
+      # Populate village choices
       village_choices <- trip_data() %>%
         distinct(origin_village) %>%
         pull(origin_village)
@@ -532,32 +526,51 @@ od_analysis_server <- function(id, datasets) {
       updatePickerInput(session, "village", 
                         choices = village_choices, 
                         selected = village_choices)
+      
+      # Populate origin_day choices
+      day_choices <- trip_data() %>%
+        distinct(origin_day) %>%
+        pull(origin_day)
+      
+      updatePickerInput(session, "day_of_week", 
+                        choices = day_choices, 
+                        selected = day_choices)
+      
+      # Populate origin_time_cluster choices
+      time_cluster_choices <- trip_data() %>%
+        distinct(origin_time_cluster) %>%
+        pull(origin_time_cluster)
+      
+      updatePickerInput(session, "time_cluster", 
+                        choices = time_cluster_choices, 
+                        selected = time_cluster_choices)
+      
+      # Populate driving_mode choices (car, motorcycle, etc.)
+      driving_mode_choices <- trip_data() %>%
+        distinct(driving_mode) %>%
+        pull(driving_mode) %>%
+        tolower()  # Ensure all modes are lowercase
+      
+      updateSelectInput(session, "driving_mode", 
+                        choices = c("Car and Motorcycle", driving_mode_choices),
+                        selected = "Car and Motorcycle")
     })
     
     
-    observeEvent(input$apply_filter, {
     
-        # Check column names of the reactive dataset
-        print("Column names in desire_lines:")
-        print(colnames(desire_line_district()))  # Or desire_line_village()
-        
-        # Check a sample of the dataset
-        print("Sample rows of desire_lines:")
-        print(head(desire_line_district()))
- 
-      # Determine the selected level (district or village)
-      selected_level <- if (length(input$district) > 0) "district" else if (length(input$village) > 0) "village" else NULL
+    observeEvent(input$apply_filter, {
+      # Ensure trip data is available
+      req(desire_line_district, desire_line_village)
       
-      # Validate input
-      if (is.null(selected_level)) {
-        leafletProxy("odMap") %>%
-          clearShapes() %>%
-          addPopups(0, 0, "Please select a district or village to filter the data.")
-        return()
+      # Determine whether to use district or village level
+      selected_level <- if (length(input$district) == 1) "village" else "district"
+      
+      # Select the dataset based on the selected level
+      desire_lines <- if (selected_level == "district") {
+        desire_line_district()
+      } else {
+        desire_line_village()
       }
-      
-      # Select the appropriate dataset
-      desire_lines <- if (selected_level == "district") desire_line_district() else desire_line_village()
       
       # Validate dataset
       if (is.null(desire_lines) || nrow(desire_lines) == 0) {
@@ -567,60 +580,73 @@ od_analysis_server <- function(id, datasets) {
         return()
       }
       
-      # Apply the earlier logic for filtering
-      filtered_lines <- NULL
-      if (selected_level == "district") {
-        if (input$trip_type == "Origin" && length(input$district) > 0) {
-          filtered_lines <- desire_lines %>%
-            filter(origin_district %in% input$district)
-        } else if (input$trip_type == "Destination" && length(input$district) > 0) {
-          filtered_lines <- desire_lines %>%
-            filter(destination_district %in% input$district)
-        }
-      } else if (selected_level == "village") {
-        if (input$trip_type == "Origin" && length(input$village) > 0) {
-          filtered_lines <- desire_lines %>%
-            filter(origin_village %in% input$village)
-        } else if (input$trip_type == "Destination" && length(input$village) > 0) {
-          filtered_lines <- desire_lines %>%
-            filter(destination_village %in% input$village)
-        }
-      }
+      # Apply filters and dynamically create the `location` column
+      filtered_lines <- desire_lines %>%
+        filter(
+          # District or village filtering based on trip type and level
+          if (selected_level == "district") {
+            if (input$trip_type == "Origin") {
+              origin_district %in% input$district
+            } else {
+              destination_district %in% input$district
+            }
+          } else {
+            if (input$trip_type == "Origin") {
+              origin_village %in% input$village
+            } else {
+              destination_village %in% input$village
+            }
+          },
+          
+          # Day of the week filtering (select all if no input)
+          if (length(input$day_of_week) > 0) {
+            origin_day %in% input$day_of_week
+          } else {
+            TRUE  # Select all rows
+          },
+          
+          # Time cluster filtering (select all if no input)
+          if (length(input$time_cluster) > 0) {
+            origin_time_cluster %in% input$time_cluster
+          } else {
+            TRUE  # Select all rows
+          },
+          
+          # Driving mode filtering (select all if no input)
+          if (input$driving_mode == "Car and Motorcycle") {
+            driving_mode %in% c("car", "motorcycle")
+          } else if (!is.null(input$driving_mode)) {
+            driving_mode == tolower(input$driving_mode)
+          } else {
+            TRUE  # Select all rows
+          }
+        ) %>%
+        mutate(
+          location = if (selected_level == "district") {
+            if (input$trip_type == "Origin") origin_district else destination_district
+          } else {
+            if (input$trip_type == "Origin") origin_village else destination_village
+          }
+        )
       
-      # Add additional filters (driving_mode, day_of_week, time_cluster)
-      if (!is.null(filtered_lines)) {
-        # Driving Mode Filter
-        if (input$driving_mode == "Car and Motorcycle") {
-          filtered_lines <- filtered_lines %>%
-            filter(driving_mode %in% c("car", "motorcycle"))
-        } else if (!is.null(input$driving_mode)) {
-          filtered_lines <- filtered_lines %>%
-            filter(driving_mode == tolower(input$driving_mode))
-        }
-        
-        # Day of Week Filter
-        if (!is.null(input$day_of_week)) {
-          filtered_lines <- filtered_lines %>%
-            filter(origin_day %in% input$day_of_week)
-        }
-        
-        # Time Cluster Filter
-        if (!is.null(input$time_cluster)) {
-          filtered_lines <- filtered_lines %>%
-            filter(origin_time_cluster %in% input$time_cluster)
-        }
-      }
-      
-      # Ensure the filtered_lines is valid and not empty
-      if (is.null(filtered_lines) || nrow(filtered_lines) == 0) {
+      # Ensure filtered_lines is valid and not empty
+      if (nrow(filtered_lines) == 0) {
         leafletProxy("odMap") %>%
           clearShapes() %>%
           addPopups(0, 0, "No trips match the selected filters.")
         return()
       }
       
-      # Update the map with the filtered data
-      spatial_layer <- if (selected_level == "district") jakarta_district() else jakarta_village()
+      # Proceed with the map rendering
+      spatial_layer <- if (selected_level == "district") {
+        jakarta_district() %>%
+          filter(district %in% input$district)
+      } else {
+        jakarta_village() %>%
+          filter(village %in% input$village)
+      }
+      
+      # Map rendering logic
       bounds <- st_bbox(spatial_layer) %>% as.numeric()
       trip_palette <- colorNumeric("viridis", domain = filtered_lines$num_of_trips)
       
@@ -630,10 +656,8 @@ od_analysis_server <- function(id, datasets) {
           data = spatial_layer,
           fillOpacity = 0.3,
           color = "black",
-          popup = ~paste(
-            if (selected_level == "district") "District:" else "Village:",
-            if (selected_level == "district") district else village
-          )
+          popup = ~paste(if (selected_level == "district") "District:" else "Village:", 
+                         if (selected_level == "district") district else village)
         ) %>%
         addPolylines(
           data = filtered_lines,
@@ -654,6 +678,10 @@ od_analysis_server <- function(id, datasets) {
         ) %>%
         fitBounds(lng1 = bounds[1], lat1 = bounds[2], lng2 = bounds[3], lat2 = bounds[4])
     })
+    
+    
+    
+    
     
     
     
