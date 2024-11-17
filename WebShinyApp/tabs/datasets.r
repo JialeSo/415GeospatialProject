@@ -7,7 +7,7 @@ datasets_ui <- function(id) {
     jumbotron(
       title = "Explore the Datasets Used",
       lead = "Explore the datasets driving our geospatial analysis of ride-hailing demands in Jakarta!
-      Our datasets include data on ride-hailing trips, point of interests, Jakarta district and township maps, as well as Jakarta's population census data. 
+      Our datasets include data on ride-hailing trips, point of interests, Jakarta district and village maps, as well as Jakarta's population census data. 
       These include CSV and .shp formatted files.",
       btnName = NULL
     ),
