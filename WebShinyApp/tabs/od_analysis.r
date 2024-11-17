@@ -22,6 +22,11 @@ od_analysis_ui <- function(id) {
   # UI structure
   tabItem(
     tabName = id,
+    jumbotron(
+      title = "Origin Destination Analysis",
+      lead = "Discover the key push-pull factors influencing travel patterns across Jakarta. Uncover the most popular times of day for trips, explore transportation trends by districts and villages, and gain insights into how these factors shape mobility dynamics in the region.",
+      btnName = NULL
+    ),
     tags$head(
       # Custom CSS and JavaScript to ensure interactive plots resize on maximize
       tags$style(HTML("
