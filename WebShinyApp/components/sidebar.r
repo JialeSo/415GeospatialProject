@@ -27,7 +27,7 @@ appSidebar <- function() {
       # Analysis Section with Margin
       div(style = "margin-top: 15px;", sidebarHeader("Analysis")),
       menuItem("Exploratory Data Analysis", tabName = "exploratory_data", icon = icon("chart-line")),
-      menuItem("Not in Use", tabName = "exploratory_spatial", icon = icon("globe")),
+      menuItem("KNDE Analysis", tabName = "kernel_network_density", icon = icon("globe")),
       menuItem("KDE Analysis", tabName = "kernel_density", icon = icon("chart-area")),
       menuItem("LISA Analysis", tabName = "lisa_analysis", icon = icon("map-marked-alt")),
       menuItem("OD Analysis", tabName = "od_analysis", icon = icon("route")),
