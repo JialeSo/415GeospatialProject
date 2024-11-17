@@ -178,8 +178,8 @@ lisa_analysis_server <- function(id, datasets) {
     })
     
     # Populate "Village" dropdown based on selected "District" values
-    observeEvent(input$district, {
-      # If specific districts are selected, filter villages accordingly
+    # Define village_choices as a reactive expression
+    village_choices <- reactive({
       selected_districts <- if ("Select All" %in% input$district || length(input$district) == 0) {
         trip_data() %>%
           pull(origin_district)
@@ -187,29 +187,32 @@ lisa_analysis_server <- function(id, datasets) {
         input$district
       }
       
-      village_choices <- trip_data() %>%
+      trip_data() %>%
         filter(origin_district %in% selected_districts) %>%
         distinct(origin_village) %>%
         pull(origin_village)
-      
-      updatePickerInput(session, "village", 
-                        choices = village_choices, 
-                        selected = village_choices)  # Select all villages by default
     })
+    observeEvent(input$district, {
+      updatePickerInput(
+        session, 
+        "village", 
+        choices = village_choices(), 
+        selected = village_choices()  # Select all villages by default
+      )
+    })
+    
     
     # Filter data by user's input
     filtered_data <- eventReactive(input$apply_filters, {
       data <- trip_data()
-      print(paste("TRIP DATA: ", input$result_type))
       # Combine the checks for required inputs and show corresponding error modal
-      # Initialize an empty vector to hold error messages
       error_messages <- character()
       
       # Check if required inputs are selected and add the respective error message
-      if (length(input$district) == 0 && length(input$village) == 0) {
-        error_messages <- c(error_messages, "Please select at least one district and village.")
+      if (length(village_choices()) != length(input$village) && length(input$district > 1)){
+        error_messages <- c(error_messages, "Please select all villages in the district(s). If analysing by district-level, please
+                            ensure all districts are selected.")
       }
-      
       if (length(input$day_of_week) == 0) {
         error_messages <- c(error_messages, "Please select at least one day of the week.")
       }
