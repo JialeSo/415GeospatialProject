@@ -51,14 +51,7 @@ kernel_network_density_ui <- function(id) {
           column(
             width = 6,
             h4("Filter Trip Dataset Network"),
-            radioButtons(
-              inputId = ns("level_of_analysis"),
-              label = "Select Level of Analysis:",
-              choices = c("All of Jakarta" = "all", "Single District" = "district"),
-              selected = "all",
-              inline = TRUE
-            ),
-            uiOutput(ns("conditional_input")),
+            uiOutput(ns("selectdistrict")),
             selectInput(
               ns("trip_type"), "Trip Type", 
               choices = c("Origin", "Destination"), 
@@ -99,57 +92,55 @@ kernel_network_density_ui <- function(id) {
           column(
             width = 6,
             h4("KDE Parameters"),
+             # Lixel Size
             tags$div(
-              tags$label("Bandwidth Estimation Method (Sigma)"),
-              selectInput(ns("bandwidth_method"), NULL,
-                          choices = c("Diggle's Method" = "bw.diggle",
-                                      "Pilot Density Method" = "bw.ppl",
-                                      "Scott's Rule" = "bw.scott",
-                                      "Cosslett and Van Loon's Rule" = "bw.CvL"),
-                          selected = "bw.diggle")
+              tags$label("Lixel Size"),
+              sliderInput(ns("lixel_size"), NULL, min = 500, max = 1000, value = 700, step = 50)
             ),
+
+            # Minimum Distance for Lixels
             tags$div(
-              tags$label("Apply Edge Correction"),
-              switchInput(inputId = ns("edge_correction"), 
-                          value = TRUE, 
-                          onLabel = "On", 
-                          offLabel = "Off",
-                          size = "small")
+              tags$label("Minimum Distance for Lixels"),
+              sliderInput(ns("mindist"), NULL, min = 250, max = 500, value = 375, step = 25)
             ),
+
+            # Bandwidth
+            tags$div(
+              tags$label("Bandwidth (bw)"),
+              sliderInput(ns("bandwidth"), NULL, min = 100, max = 1000, value = 200, step = 50)
+            ),
+
+            # Kernel Type
             tags$div(
               tags$label("Kernel Type"),
-              selectInput(ns("kernel_type"), NULL,
-                          choices = c("Gaussian" = "gaussian", "Epanechnikov" = "epanechnikov", "Disc" = "disc", "Quartic" = "quartic"),
-                          selected = "Gaussian")
+              selectInput(ns("kernel_type"), NULL, choices = c("quartic", "triangle", "epanechnikov", "gaussian", "tricube", "uniform"), selected = "quartic")
             ),
-            h4("Clark-Evans Test Parameters"),
+
+            # Method Type
             tags$div(
-              tags$label("Correction Method"),
-              selectInput(ns("correction_method"), NULL,
-                          choices = c("None" = "none", "Guard Region" = "guard", "Cumulative Distribution Function" = "cdf"),
-                          selected = "none")
+              tags$label("Method"),
+              selectInput(ns("method_type"), NULL, choices = c("simple", "discrete", "continuous"), selected = "simple")
             ),
+
+          h4("Network Constraint Analysis"),
+            # Method Type
             tags$div(
-              tags$label("Alternative Hypothesis", 
-                         tags$i(class = "fas fa-info-circle", title = "This is a native HTML tooltip explaining the alternative hypothesis.", 
-                                style = "margin-left: 5px; cursor: pointer;")),
-              selectInput(ns("alternative_hypothesis"), NULL,
-                          choices = c("Clustered" = "clustered", "Regular" = "regular", "Two-Sided" = "two.sided", "Less" = "less", "Greater" = "greater"),
-                          selected = "regular")
+              tags$label("Confidence Level"),
+              selectInput(ns("confidence_level"), NULL,  choices = c("99%" = 0.01, "95%" = 0.05, "90%" = 0.10), selected = 0.05)
             ),
+
             tags$div(
-              tags$label("Number of Simulations"),
-              selectInput(ns("num_simulations"), NULL,
-                          choices = c("30 Simulations" = 30, "100 Simulations" = 99, 
-                                      "200 Simulations" = 199, "500 Simulations" = 499),
-                          selected = 99)
-            )
+              tags$label("Simulation"),
+              sliderInput(ns("nsim"),  NULL, min = 40, max = 100, value = 50, step = 10),
+            ),
+
+
           ),
           column(
             width = 12,
             div(
               style = "display: flex; justify-content: flex-end;",
-              actionButton(ns("apply_kde_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 20%")
+              actionButton(ns("apply_nkde_filter"), "Apply Filter", style = "background-color: #8BD3E6; width: 20%")
             )
           )
         )
@@ -168,36 +159,10 @@ kernel_network_density_ui <- function(id) {
         tmapOutput(ns("kdeMAP"))
       ),
       box(
-        title = "Clark-Evans Test Table",
+        title = "Test",
         width = 4,
         collapsible = TRUE,
-        tableOutput(ns("clarkEvanTable"))
-      )
-    ),
-    fluidRow(
-      box(
-        title = "Spatial Function Analysis",
-        width = 2,
-        collapsible = TRUE,
-        selectInput(ns("selected_spatial_function"), "Select Spatial Function",
-                    choices = c("F", "G"), selected = "G"),
-        selectInput(ns("spatial_function_correction"), "Select Correction Method",
-                    choices = c("none", "border", "rs", "km", "han", "best"), selected = "best"),
-        selectInput(ns("spatial_function_nsim"), "Number of Simulations (nsim)",
-                    choices = c(30, 100, 200, 500), selected = 99),
-        actionButton(ns("apply_spatial_function"), "Apply Spatial Function Analysis")
-      ),
-      box(
-        title = "Spatial Function Plot",
-        width = 5,
-        collapsible = TRUE,
-        plotOutput(ns("spatialFunctionPlot"))
-      ),
-      box(
-        title = "Spatial Function Envelope Plot",
-        width = 5,
-        collapsible = TRUE,
-        plotOutput(ns("spatialFunctionEnvelopePlot"))
+        plotOutput(ns("kdePlot"))
       )
     )
   )
@@ -218,20 +183,11 @@ kernel_network_density_server <- function(id, datasets) {
       reactive_data$district_choices <- jakarta_district() %>% distinct(district)
     })
 
-    observeEvent(input$apply_kde_filter, {      
-      if (input$level_of_analysis == "all") {
-        reactive_data$map <- jakarta_district()
-        reactive_data$roads <- jakarta_roads()
-      } else if (input$level_of_analysis == "district") {
-        reactive_data$map <- jakarta_village() %>% filter(district %in% input$district)
-        reactive_data$roads <- jakarta_roads() %>% filter(district %in% input$district)
-      } else {
-        reactive_data$map <- NULL
-      }
+    observeEvent(input$apply_nkde_filter, {      
+      reactive_data$roads <-  jakarta_roads() %>% filter(district %in% input$district)
     })
 
-    output$conditional_input <- renderUI({
-      if (input$level_of_analysis == "district") {
+    output$selectdistrict <- renderUI({
         selectizeInput(ns("district"), 
                       "Select District:", 
                       choices = reactive_data$district_choices, 
@@ -241,17 +197,17 @@ kernel_network_density_server <- function(id, datasets) {
                         placeholder = 'Please select a district'
                       ),
                       width = "100%")
-      }
     })
 
-    filtered_data <- eventReactive(input$apply_kde_filter, {
+    
+    filtered_data <- eventReactive(input$apply_nkde_filter, {
       data <- trip_data()
       
       # Validate required inputs
       if (is.null(data) || length(input$day_of_week) == 0 || length(input$time_cluster) == 0) {
         return(NULL)
       }
-
+      
       # Filter by driving mode
       if (input$driving_mode != "Car and Motorcycle") {
         data <- data %>%
@@ -261,254 +217,137 @@ kernel_network_density_server <- function(id, datasets) {
           filter(driving_mode %in% c("car", "motorcycle"))
       }
 
-      # Handle level_of_analysis
-      if (input$level_of_analysis == "all") {
-        # No filtering by district or village when level_of_analysis is "all"
-        if (input$trip_type == "Origin") {
-          data <- data %>%
-            filter(origin_day %in% input$day_of_week,
-                  origin_time_cluster %in% input$time_cluster) %>%
-            rename(day_of_week = origin_day, 
-                  time_cluster = origin_time_cluster, 
-                  location = origin_district, 
-                  new_lat = origin_lat, 
-                  new_lng = origin_lng)
-        } else {  # Destination handling for "all"
-          data <- data %>%
-            filter(destination_day %in% input$day_of_week,
-                  destination_time_cluster %in% input$time_cluster) %>%
-            rename(day_of_week = destination_day, 
-                  time_cluster = destination_time_cluster, 
-                  location = destination_district, 
-                  new_lat = destination_lat, 
-                  new_lng = destination_lng)
-        }
-      } else if (input$level_of_analysis == "district") {
-        # Handle filtering for "district"
-        if (input$trip_type == "Origin") {
-          if (length(input$district) > 0) {
-            data <- data %>%
-              filter(origin_district %in% input$district,
-                    origin_day %in% input$day_of_week,
-                    origin_time_cluster %in% input$time_cluster) %>%
-              rename(day_of_week = origin_day, 
-                    time_cluster = origin_time_cluster, 
-                    location = origin_district, 
-                    new_lat = origin_lat, 
-                    new_lng = origin_lng)
-          } else {
-            return(NULL)  # No valid input for district
-          }
-        } else {  # Destination handling for "district"
-          if (length(input$district) > 0) {
-            data <- data %>%
-              filter(destination_district %in% input$district,
-                    destination_day %in% input$day_of_week,
-                    destination_time_cluster %in% input$time_cluster) %>%
-              rename(day_of_week = destination_day, 
-                    time_cluster = destination_time_cluster, 
-                    location = destination_district, 
-                    new_lat = destination_lat, 
-                    new_lng = destination_lng)
-          } else {
-            return(NULL)  # No valid input for district
-          }
-        }
-      } else {
-        return(NULL)  # Invalid level_of_analysis
+      # Handle trip type filtering and renaming based on trip type
+      if (input$trip_type == "Origin") {
+        data <- data %>%
+          filter(origin_day %in% input$day_of_week,
+                origin_time_cluster %in% input$time_cluster,
+                origin_district %in% input$district) %>%
+          rename(day_of_week = origin_day, 
+                time_cluster = origin_time_cluster, 
+                location = origin_district, 
+                new_lat = origin_lat, 
+                new_lng = origin_lng)
+      } else if (input$trip_type == "Destination") {
+        data <- data %>%
+          filter(destination_day %in% input$day_of_week,
+                destination_time_cluster %in% input$time_cluster,
+                destination_district %in% input$district) %>%
+          rename(day_of_week = destination_day, 
+                time_cluster = destination_time_cluster, 
+                location = destination_district, 
+                new_lat = destination_lat, 
+                new_lng = destination_lng)
       }
-
       return(data)
     })
 
-    kde_map_data <- eventReactive(input$apply_kde_filter, {
-      bandwidth_method <- input$bandwidth_method  # Bandwidth estimation method (e.g., bw.diggle)
-      edge_correction <- input$edge_correction  # Edge correction toggle (TRUE or FALSE)
-      kernel_type <- input$kernel_type  # Kernel type (e.g., Gaussian, Epanechnikov, etc.)      
-      # Convert the string to a function call for bandwidth selection dynamically
-      bandwidth_func <- match.fun(bandwidth_method)
-      print("this is occuring")
-      kde_trip_data <- filtered_data() %>%
+
+    # Reactive computation for densities and lixelization, triggered by the Apply Filter button
+    density_computation <- eventReactive(input$apply_nkde_filter, {
+      kde_trip_data <- filtered_data()
+      kde_trip_data <- kde_trip_data %>%
         st_as_sf(coords = c("new_lng", "new_lat"), crs = 6384)
-      kde_roads <- reactive_data$roads
-      print("this occured")
 
-      list(kde_trip_data = kde_trip_data, kde_roads = kde_roads)
+      kde_roads <-  jakarta_roads() %>% filter(district %in% input$district)
 
+      # Check if data is valid
+      if (is.null(kde_trip_data) || nrow(kde_trip_data) == 0 || 
+          is.null(kde_roads) || nrow(kde_roads) == 0) {
+        print("kde_trip_data or kde_roads is NULL or empty")
+        return(NULL)
+      }
 
+      # Lixelization and density calculation using dynamic parameters
+      print("Processing lixels...")
+      lixels <- lixelize_lines(kde_roads, input$lixel_size, mindist = input$mindist)
+      samples <- lines_center(lixels)
+
+      densities <- nkde(
+        kde_roads, 
+        events = kde_trip_data,
+        w = rep(1, nrow(kde_trip_data)),
+        samples = samples,
+        kernel_name = input$kernel_type,  # Using dynamic kernel type
+        bw = input$bandwidth,             # Using dynamic bandwidth
+        div = "bw", 
+        method = input$method_type,       # Using dynamic method type
+        digits = 1, 
+        tol = 1,
+        grid_shape = c(1,1), 
+        max_depth = 8,
+        agg = 3,
+        sparse = TRUE,
+        verbose = FALSE
+      )
+      print("Density calculation complete")
+
+      # Scale and assign densities
+      scaled_densities <- densities * nrow(kde_trip_data) * 1000
+      samples$densities <- scaled_densities
+      lixels$densities <- scaled_densities
+
+      list(lixels = lixels, samples = samples, kde_trip_data = kde_trip_data)
     })
 
+    # Render the map, triggered by density computation
     output$kdeMAP <- renderTmap({
-      map_data <- kde_map_data()
-      kde_trip_data <- map_data$kde_trip_data
-      kde_roads <- map_data$kde_roads
-      
-      # Debugging prints to check the data
-      print(kde_trip_data)
-      print(kde_roads)
-      
-      if (is.null(kde_trip_data) || nrow(kde_trip_data) == 0) {
-        print("kde_trip_data is NULL or empty")
-        return(NULL)
-      }
-      
-      if (is.null(kde_roads) || nrow(kde_roads) == 0) {
-        print("kde_roads is NULL or empty")
-        return(NULL)
-      }
-      print("this should work then no?")
-      # Generate the tmap object if data is valid
+      result <- density_computation()
+
+      if (is.null(result)) return(NULL)  # Exit if data is not valid
+      kde_trip_data <- result$kde_trip_data
+      lixels <- result$lixels
+      # Render the map with pop-ups and tooltips
       tmap_mode('view')
-      tm_shape(kde_trip_data) + 
-        tm_dots() + 
-        tm_shape(kde_roads) +
-        tm_lines()
+      tm_shape(lixels) +
+        tm_lines(
+          col = "densities", 
+          lwd = 3,
+          palette = "YlOrRd", 
+          popup.vars = c("Road Name" = "name", "Density" = "densities"),
+          tooltip.vars = c("Road Name" = "name")  # Display road name on hover
+        ) +
+        tm_shape(kde_trip_data) +
+        tm_dots(size = 0.01)
     })
-
-    clark_evans_result_reactive <- eventReactive(input$apply_kde_filter, {
-      correction_method <- input$correction_method
-      alternative_hypothesis <- input$alternative_hypothesis
-      num_simulations <- input$num_simulations
       
-      if (is.null(reactive_data$trip_data_ppp)) {
-        return(NULL)  # Return NULL if no data is available
-      }
-      
-      # Perform the Clark-Evans test
-      clarkevans.test(
-        reactive_data$trip_data_ppp,
-        clipregion = reactive_data$kde_map_owin,
-        correction = correction_method,
-        alternative = alternative_hypothesis,
-        nsim = num_simulations
-      )
-    })
+      kfun_result <- eventReactive(input$apply_nkde_filter, {
+        kde_trip_data <- filtered_data()  # Assuming filtered_data() is defined elsewhere
+        kde_trip_data <- kde_trip_data %>%
+          st_as_sf(coords = c("new_lng", "new_lat"), crs = 6384)
+        kde_roads <- jakarta_roads() %>% filter(district %in% input$district)  # Assuming jakarta_roads() is defined elsewhere
+        nsim_value <- as.numeric(input$nsim)
+        conf_int_value <- as.numeric(input$confidence_level)
 
-    output$clarkEvanTable <- renderTable({
-    clark_evans_result <- clark_evans_result_reactive()
-    if (is.null(clark_evans_result)) {
-      return(data.frame(Message = "No data available for Clark-Evans test"))
-    }
+        # Compute the chosen function
+         kfun_trip_data <- kfunctions(
+          kde_roads, 
+          kde_trip_data,
+          start = 0, 
+          end = 1000, 
+          step = 50, 
+          width = 50, 
+          nsim = nsim_value,  # Dynamic nsim value from the slider
+          resolution = 50,
+          verbose = FALSE, 
+          conf_int = conf_int_value  # Dynamic confidence interval
+        )
+        kfun_trip_data  # Return the result
+      })
+
+      # Render the plot when kfun_result is computed
+      output$kdePlot <- renderPlot({
+        kfun_res <- kfun_result()
+
+        # Check if plotk exists in the result
+        if (!is.null(kfun_res$plotk)) {
+          print(kfun_res$plotk)  # Display the plot
+        } else {
+          plot.new()
+          text(0.5, 0.5, "Plot object not found in kfun_result output", cex = 1.2)
+        }
+      })
     
-    observed_statistic <- if (length(clark_evans_result$statistic) > 1) {
-      paste(round(clark_evans_result$statistic, 3), collapse = ", ")
-    } else {
-      round(clark_evans_result$statistic, 3)
-    }
-    
-    p_value <- clark_evans_result$p.value
-    alternative_hypothesis <- clark_evans_result$alternative
-    edge_correction <- if ("No edge correction" %in% clark_evans_result$method) {
-      "False"
-    } else {
-      "True"
-    }
-    method_description <- paste(clark_evans_result$method, collapse = ", ")
-    
-    # Create a formatted data frame
-    result_df <- data.frame(
-      Metric = c("Observed Clark-Evans Ratio (R)", 
-                "P-Value", 
-                "Alternative Hypothesis",
-                "Edge Correction", 
-                "Method"),
-      Value = c(
-        observed_statistic,
-        p_value,
-        alternative_hypothesis,
-        edge_correction,
-        method_description
-      ),
-      stringsAsFactors = FALSE
-    )
-    
-    # Add a header row for display purposes
-    result_with_header <- rbind(
-      c("Clark-Evans Test", ""),  # Header row (spanning columns for display)
-      colnames(result_df),        # Column names
-      result_df                   # Data values
-    )
-    
-    result_with_header
-    }, rownames = FALSE, colnames = FALSE)
-
-    # Compute the G function when analysis is triggered
-    spatial_function_result <- eventReactive(input$apply_spatial_function, {
-      if (is.null(reactive_data$trip_data_ppp)) {
-        return(NULL)
-      }
-
-      # Determine which function to compute based on user input
-      selected_function <- switch(input$selected_spatial_function,
-                                  "F" = Fest,
-                                  "G" = Gest,
-                                  )
-
-      # Compute the selected spatial function with the chosen correction method
-      function_result <- selected_function(reactive_data$trip_data_ppp, 
-                                          correction = input$spatial_function_correction)
-      return(function_result)
-    })
-
-    # Reactive function to compute the envelope for the selected spatial function
-    spatial_function_envelope <- eventReactive(input$apply_spatial_function, {
-      if (is.null(reactive_data$trip_data_ppp)) {
-        return(NULL)
-      }
-
-      # Determine which function to use for the envelope based on user input
-      selected_function <- switch(input$selected_spatial_function,
-                                  "F" = Fest,
-                                  "G" = Gest,
-                                )
-
-      # Generate an envelope for the selected function
-      envelope_result <- envelope(
-        reactive_data$trip_data_ppp,
-        fun = selected_function,         # Selected function (F, G, K, or L)
-        nsim = as.numeric(input$spatial_function_nsim),  # Number of simulations
-        correction = input$spatial_function_correction,
-        rank = 1,
-        glocal = TRUE  # Edge correction method
-      )
-      return(envelope_result)
-    })
-
-    # Output for the selected spatial function plot
-    output$spatialFunctionPlot <- renderPlot({
-      function_result <- spatial_function_result()
-      if (is.null(function_result)) {
-        plot(NA, xlab = "", ylab = "", main = "No data available for the selected function")
-        return()
-      }
-      
-      # Plotting the result for the selected function
-      plot(function_result, main = paste(input$selected_spatial_function, "Function Analysis"), 
-          xlab = "Distance", ylab = paste(input$selected_spatial_function, "(d)"))
-    })
-
-    # Output for the envelope plot of the selected spatial function
-    output$spatialFunctionEnvelopePlot <- renderPlot({
-      envelope_result <- spatial_function_envelope()
-      if (is.null(envelope_result)) {
-        plot(NA, xlab = "", ylab = "", main = "No data available for the selected function envelope")
-        return()
-      }
-      
-      # Plotting the envelope for the selected function
-      plot(envelope_result, main = paste(input$selected_spatial_function, "Function Envelope"), 
-          xlab = "Distance", ylab = paste(input$selected_spatial_function, "(d)"))
-    })
-
-
-
-
-
-
-
-
-
-
 
     })
 }

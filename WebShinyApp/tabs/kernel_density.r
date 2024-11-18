@@ -288,7 +288,7 @@ kernel_density_server <- function(id, datasets) {
                     origin_time_cluster %in% input$time_cluster) %>%
               rename(day_of_week = origin_day, 
                     time_cluster = origin_time_cluster, 
-                    location = origin_district, 
+                    location = origin_village, 
                     new_lat = origin_lat, 
                     new_lng = origin_lng)
           } else {
@@ -302,7 +302,7 @@ kernel_density_server <- function(id, datasets) {
                     destination_time_cluster %in% input$time_cluster) %>%
               rename(day_of_week = destination_day, 
                     time_cluster = destination_time_cluster, 
-                    location = destination_district, 
+                    location = destination_village, 
                     new_lat = destination_lat, 
                     new_lng = destination_lng)
           } else {
@@ -345,6 +345,27 @@ kernel_density_server <- function(id, datasets) {
       trip_data_raster <- raster(trip_data_ppp_bw)
       projection(trip_data_raster) <- CRS("+init=EPSG:6384")
 
+    if(input$level_of_analysis == "district") {
+      trip_counts <- kde_trip_data %>%
+        group_by(location) %>%
+        summarise(trip_count = n()) %>%
+        st_drop_geometry()
+      
+      kde_map <- kde_map %>%
+        left_join(trip_counts, by = c("village" = "location"))
+    } else if (input$level_of_analysis == "all") {
+       trip_counts <- kde_trip_data %>%
+        group_by(location) %>%
+        summarise(trip_count = n()) %>%
+        st_drop_geometry()
+      
+      kde_map <- kde_map %>%
+        left_join(trip_counts, by = c("district" = "location"))
+    }
+      
+      
+  
+
       # Return all necessary elements to render the map
       list(kde_map = kde_map, trip_data_raster = trip_data_raster)
     })
@@ -357,7 +378,31 @@ kernel_density_server <- function(id, datasets) {
       trip_data_raster <- map_data$trip_data_raster
 
       # Generate the tmap object
-      tm_shape(kde_map) +
+
+      if (input$level_of_analysis == "district") {
+         tm_shape(kde_map) +
+        tm_polygons(
+          col = NA,                               # No fill color for polygons
+          border.col = "black",                   # Border color for district boundaries
+          lwd = 1,                                # Line width for borders
+          id = "village",
+          alpha = 0.01
+        ) +
+        # Add the KDE raster layer with transparency
+        tm_shape(trip_data_raster) +
+        tm_raster(
+          palette = "YlOrRd",                     # Color palette for density
+          title = "Trip Origin Density",
+          alpha = 0.8                             # Transparency for raster layer
+        ) +
+        tm_layout(
+          title = "Kernel Density Estimation of Trip Origins",
+          legend.outside = TRUE
+        )
+      } else {
+        
+
+        tm_shape(kde_map) +
         tm_polygons(
           col = NA,                               # No fill color for polygons
           border.col = "black",                   # Border color for district boundaries
@@ -376,6 +421,8 @@ kernel_density_server <- function(id, datasets) {
           title = "Kernel Density Estimation of Trip Origins",
           legend.outside = TRUE
         )
+      }
+     
     })
 
     clark_evans_result_reactive <- eventReactive(input$apply_kde_filter, {

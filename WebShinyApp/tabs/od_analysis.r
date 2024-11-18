@@ -8,6 +8,12 @@ library(sf)
 library(spatstat)
 library(raster)
 library(shinyBS)
+library(stplanr)
+library(sp)
+library(reshape2)
+library(tidyverse)
+library(RColorBrewer)
+library(viridis)
 
 # UI
 od_analysis_ui <- function(id) {
@@ -97,6 +103,12 @@ od_analysis_ui <- function(id) {
           column(
             width = 6,
             h4("OD Parameters"),
+            selectInput(
+              ns("spatial_model"), 
+              "Type of Spatial Interaction Model",
+              choices = c("Origin-Constrained", "Destination-Constrained", "Doubly-Constrained"),
+              selected = "Origin-Constrained"
+            ),
           ),
           column(
             width = 12,
@@ -116,6 +128,12 @@ od_analysis_ui <- function(id) {
         collapsible = TRUE,
         tmapOutput(ns("odMAP"))
       ),
+      box(
+        title = "Destination Count Chart",
+        width = 4,
+        collapsible = TRUE,
+        plotOutput(ns("coeff_summary"))
+      ),
     ),
   )
 }
@@ -129,12 +147,79 @@ od_analysis_server <- function(id, datasets) {
     trip_data <- datasets$trip_data
     jakarta_village <- datasets$jakarta_village
     jakarta_district <- datasets$jakarta_district
+    jakarta_poi_final <- datasets$jakarta_poi_final
 
+
+    # jakarta_village_sp <- as(jakarta_village, "Spatial")
+    # village_dist <- spDists(jakarta_village_sp, longlat = FALSE)
+    # village_dist_df <- as.data.frame(village_dist)
+    # rownames(village_dist) <- jakarta_village$village
+    # colnames(village_dist) <- jakarta_village$village
+    # village_rounded_distances <- village_dist_df[1:263, 1:263] %>%
+    # mutate(across(everything(), round))
+    observe({
+      jakarta_poi_final_data <- jakarta_poi_final() %>% st_drop_geometry
+      jakarta_district_data <- jakarta_district()
+      jakarta_trip_data <- trip_data()
+
+      jakarta_district_sp <- as(jakarta_district_data, "Spatial")
+      district_dist <- spDists(jakarta_district_sp, longlat = FALSE)
+      district_dist_df <- as.data.frame(district_dist)
+      rownames(district_dist) <- jakarta_district_data$district
+      colnames(district_dist) <- jakarta_district_data$district
+      district_rounded_distances <- district_dist_df[1:44, 1:44] %>%
+      mutate(across(everything(), round))
+      
+      DistrictDistPair <- melt(district_dist) %>%
+      rename(dist = value)
+
+      DistrictDistPair$dist <- ifelse (DistrictDistPair$dist == 0, 
+                              2000, DistrictDistPair$dist) 
+      DistrictDistPair <- DistrictDistPair %>% 
+        rename(origin=Var1, 
+              destination =Var2) %>% 
+        mutate(across(c(origin, destination), as.factor))
+      categories <- unique(jakarta_poi_final_data$category)
+      for (cat in categories) {
+        # Count occurrences at origin for the current category
+        origin_counts <- jakarta_poi_final_data %>%
+          filter(category == cat) %>%
+          group_by(district) %>%
+          summarise(count = n()) %>%
+          rename(!!paste0("origin_", cat) := count)
+        
+        # Count occurrences at destination for the current category
+        destination_counts <- jakarta_poi_final_data %>%
+          filter(category == cat) %>%
+          group_by(district) %>%
+          summarise(count = n()) %>%
+          rename(!!paste0("destination_", cat) := count)
+        
+        # Join counts to DistrictDistPair
+        DistrictDistPair <- DistrictDistPair %>%
+          left_join(origin_counts, by = c("origin" = "district")) %>%
+          left_join(destination_counts, by = c("destination" = "district"))
+      }
+
+      # Replace NA values with 0 (optional, if you want counts to be 0 instead of NA)
+      DistrictDistPair <- DistrictDistPair %>%
+        mutate(across(starts_with("origin_"), ~ coalesce(., 0))) %>%
+        mutate(across(starts_with("destination_"), ~ coalesce(., 0))
+        )
+        
+      DistrictDistPairColNames <- colnames(DistrictDistPair)[4:19]
+      DistrictDistPair[DistrictDistPairColNames] <- lapply(
+        DistrictDistPair [DistrictDistPairColNames],
+        function(x) log(as.numeric(as.character(x)) + 1)
+      )
+
+      reactive_data$DistrictDistPair <- DistrictDistPair
+      print(reactive_data$DistrictDistPair)
+    })
 
     observe({
       reactive_data$district_choices <- jakarta_district() %>% distinct(district)
     })
-
 
     observeEvent(input$apply_od_filter, {      
       if (input$level_of_analysis == "all") {
@@ -161,12 +246,6 @@ od_analysis_server <- function(id, datasets) {
     })
 
   filtered_data <- eventReactive(input$apply_od_filter, {
-      data <- trip_data()
-      print("trip data")
-      if (is.null(trip_data())) {
-        print("trip_data is null")  # Check for null data
-        return(NULL)
-      }
       data <- trip_data()
       # Validate required inputs
       if (is.null(data) || length(input$day_of_week) == 0 || length(input$time_cluster) == 0) {
@@ -292,7 +371,6 @@ od_analysis_server <- function(id, datasets) {
 
     output$odMAP <- renderTmap({
       map_data <- od_map_data()  # Triggered only when apply_od_filter is pressed
-
       # Extract the map and raster data from the reactive result
       flow_lines <- map_data$flow_lines
       final_map <- map_data$final_map
@@ -324,6 +402,149 @@ od_analysis_server <- function(id, datasets) {
         )
     }) 
 
+    coeffencient_data <- eventReactive(input$apply_od_filter, {
+      # Load necessary data
+      DistrictDistPair_Data <- reactive_data$DistrictDistPair
+      jakarta_trip_data <- filtered_data()
+
+      # Add trips_count column
+      DistrictDistPair_Data$trips_count <- apply(DistrictDistPair_Data, 1, function(row) {
+        sum(jakarta_trip_data$origin_district == row[['origin']] & 
+            jakarta_trip_data$destination_district == row[['destination']])
+      })
+
+      # Fit models
+      origSIM_district <- glm(
+        trips_count ~ origin + destination_Cultural_Attractions + destination_Essentials + 
+                      destination_Facilities_Services + destination_Offices_Business + 
+                      destination_Others + destination_Restaurants_Food + 
+                      destination_Shops + destination_Recreation_Entertainment + 
+                      dist - 1,  
+        family = poisson(link = "log"),
+        data = DistrictDistPair_Data,
+        na.action = na.exclude
+      )
+
+      destSIM_district <- glm(
+        trips_count ~ destination + origin_Cultural_Attractions + origin_Essentials + 
+                      origin_Facilities_Services + origin_Offices_Business + 
+                      origin_Others + origin_Restaurants_Food + 
+                      origin_Shops + origin_Recreation_Entertainment + 
+                      dist - 1,  
+        family = poisson(link = "log"),
+        data = DistrictDistPair_Data,
+        na.action = na.exclude
+      )
+
+      dbcSIM_district <- glm(
+        trips_count ~ origin_Cultural_Attractions + origin_Essentials + 
+                      origin_Facilities_Services + origin_Offices_Business + 
+                      origin_Others + origin_Restaurants_Food + 
+                      origin_Shops + origin_Recreation_Entertainment + destination_Cultural_Attractions + 
+                      destination_Essentials + destination_Facilities_Services + 
+                      destination_Offices_Business + destination_Others + 
+                      destination_Restaurants_Food + destination_Shops + 
+                      destination_Recreation_Entertainment + dist - 1, 
+        family = poisson(link = "log"),
+        data = DistrictDistPair_Data,
+        na.action = na.exclude
+      )
+
+      # Return models for further use
+      list(origSIM_district = origSIM_district, destSIM_district = destSIM_district, dbcSIM_district = dbcSIM_district)
+    })
+
+    output$coeff_summary <- renderPlot({
+      results <- coeffencient_data()
+
+      if (input$spatial_model == "Origin-Constrained") {
+        # Extract coefficients for origin-constrained model
+        origin_constrained_coef_district <- coef(results$origSIM_district)[c(
+          "destination_Cultural_Attractions", "destination_Essentials",
+          "destination_Facilities_Services", "destination_Offices_Business",
+          "destination_Others", "destination_Restaurants_Food",
+          "destination_Shops", "destination_Recreation_Entertainment"
+        )]
+
+        # Create data frame
+        coefficients_district_df <- data.frame(
+          Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
+                      "Offices_Business", "Others", "Restaurants_Food",
+                      "Shops", "Recreation_Entertainment"),
+          Origin_Constrained = origin_constrained_coef_district
+        )
+
+        # Reshape data for plotting
+        coefficients_long_district <- coefficients_district_df %>%
+          pivot_longer(
+            cols = -Category,
+            names_to = "Model",
+            values_to = "Coefficient"
+          ) %>%
+          filter(Model == "Origin_Constrained") %>%
+          mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
+
+        # Plot
+        ggplot(coefficients_long_district, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+          geom_bar(stat = "identity") +
+          theme_minimal() +
+          scale_fill_viridis(option = "D", direction = -1, guide = "none") +
+          labs(
+            title = "Origin-Constrained Model",
+            x = "Coefficient",
+            y = "POI Category"
+          ) +
+          theme(
+            axis.text.y = element_text(angle = 0, hjust = 1),
+            legend.position = "none"
+          ) +
+          scale_x_continuous(position = "top", limits = c(-max(abs(coefficients_long_district$Coefficient)),
+                                                          max(abs(coefficients_long_district$Coefficient))))
+      } else if (input$spatial_model == "Destination-Constrained") {
+        # Extract coefficients for destination-constrained model
+        destination_constrained_coef_district <- coef(results$destSIM_district)[c(
+          "origin_Cultural_Attractions", "origin_Essentials",
+          "origin_Facilities_Services", "origin_Offices_Business",
+          "origin_Others", "origin_Restaurants_Food",
+          "origin_Shops", "origin_Recreation_Entertainment"
+        )]
+
+        # Create data frame
+        coefficients_district_df <- data.frame(
+          Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
+                      "Offices_Business", "Others", "Restaurants_Food",
+                      "Shops", "Recreation_Entertainment"),
+          Destination_Constrained = destination_constrained_coef_district
+        )
+
+        # Reshape data for plotting
+        coefficients_long_district <- coefficients_district_df %>%
+          pivot_longer(
+            cols = -Category,
+            names_to = "Model",
+            values_to = "Coefficient"
+          ) %>%
+          filter(Model == "Destination_Constrained") %>%
+          mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
+
+        # Plot
+        ggplot(coefficients_long_district, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+          geom_bar(stat = "identity") +
+          theme_minimal() +
+          scale_fill_viridis(option = "D", direction = -1, guide = "none") +
+          labs(
+            title = "Destination-Constrained Model",
+            x = "Coefficient",
+            y = "POI Category"
+          ) +
+          theme(
+            axis.text.y = element_text(angle = 0, hjust = 1),
+            legend.position = "none"
+          ) +
+          scale_x_continuous(position = "top", limits = c(-max(abs(coefficients_long_district$Coefficient)),
+                                                          max(abs(coefficients_long_district$Coefficient))))
+      }
+    })
 
   })
 }
