@@ -22,29 +22,8 @@ Before you begin, ensure the following are installed on your system:
 ---
 
 ## **Getting Started**
-### **Setup and Start the Application**
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/JialeSo/415GeospatialProject
-   ```
-
-2. Navigate to the project directory and install dependencies:
-   ```bash
-   npm i
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open your browser and visit:
-   ```
-   http://localhost:3000
-   ```
-
-Your geospatial application is now running locally, ready to showcase Jakarta's traffic and mobility insights.
+Click here to view our Shiny Application: 
 
 ---
 

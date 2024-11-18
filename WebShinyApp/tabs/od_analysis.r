@@ -22,6 +22,11 @@ od_analysis_ui <- function(id) {
   # UI structure
   tabItem(
     tabName = id,
+    jumbotron(
+      title = "Origin Destination Analysis",
+      lead = "Discover why people travel between different areas of Jakarta using origin-destination analysis. Utilize push-pull factor analysis and spatial interaction models to understand the motivations and connections behind travel demand.",
+      btnName = NULL
+    ),
     tags$head(
       tags$style(HTML("
         .small-value-box .small-box {
@@ -109,6 +114,25 @@ od_analysis_ui <- function(id) {
               choices = c("Origin-Constrained", "Destination-Constrained", "Doubly-Constrained"),
               selected = "Origin-Constrained"
             ),
+            radioButtons(
+              inputId = ns("factors"), 
+              label = "Factors to Include:",
+              choices = c(
+                "Push & Pull Factors" = "push_pull", 
+                "Push Factors Only" = "push_only", 
+                "Pull Factors Only" = "pull_only"
+              ),
+              selected = "push_pull",
+              inline = TRUE
+            ),
+            sliderInput(
+              inputId = ns("trip_volume"), 
+              label = "Filter by Trip Volume:", 
+              min = 1, 
+              max = 400, 
+              value = c(25, 400), 
+            )
+    
           ),
           column(
             width = 12,
@@ -122,15 +146,21 @@ od_analysis_ui <- function(id) {
     ),
 
     fluidRow(
+      infoBoxOutput(ns("highest_push_box"), width = 4),
+      infoBoxOutput(ns("highest_pull_box"), width = 4),
+      infoBoxOutput(ns("highest_trips_box"), width = 4)
+    ),
+
+    fluidRow(
       box(
-        title = "Destination Count Chart",
-        width = 8,
+        title = "Origin-Destination Ride-hailing Flow",
+        width = 7,
         collapsible = TRUE,
         tmapOutput(ns("odMAP"))
       ),
       box(
-        title = "Destination Count Chart",
-        width = 4,
+        title = "Push Pull Factor Analysis",
+        width = 5,
         collapsible = TRUE,
         plotOutput(ns("coeff_summary"))
       ),
@@ -157,6 +187,7 @@ od_analysis_server <- function(id, datasets) {
     # colnames(village_dist) <- jakarta_village$village
     # village_rounded_distances <- village_dist_df[1:263, 1:263] %>%
     # mutate(across(everything(), round))
+
     observe({
       jakarta_poi_final_data <- jakarta_poi_final() %>% st_drop_geometry
       jakarta_district_data <- jakarta_district()
@@ -214,13 +245,41 @@ od_analysis_server <- function(id, datasets) {
       )
 
       reactive_data$DistrictDistPair <- DistrictDistPair
-      print(reactive_data$DistrictDistPair)
     })
 
     observe({
       reactive_data$district_choices <- jakarta_district() %>% distinct(district)
     })
 
+    # Update the slider range and step based on the OD data
+    observe({
+      # Extract trip volumes dynamically from the dataset
+      trip_volumes <- reactive({
+        req(filtered_data())  # Ensure filtered data is available
+        trip_data <- filtered_data()
+        
+        # Calculate trip counts for each OD pair
+        trip_counts <- trip_data %>%
+          count(origin_district, destination_district, name = "trip_count")
+        
+        # Cap the max trip volume to 400 for consistent filtering
+        max_trip_volume <- min(max(trip_counts$trip_count, na.rm = TRUE), 400)
+        
+        list(min = 0, max = max_trip_volume)
+      })
+      
+      # Dynamically update the slider input
+      updateSliderInput(
+        session = session,
+        inputId = "trip_volume",
+        min = 0,
+        max = 400,
+        value = c(25,400),  # Default to full range
+      )
+    })
+
+
+    # Filter the map data according to Trip Filter Input 
     observeEvent(input$apply_od_filter, {      
       if (input$level_of_analysis == "all") {
         reactive_data$map <- jakarta_district()
@@ -230,6 +289,25 @@ od_analysis_server <- function(id, datasets) {
         reactive_data$map <- NULL
       }
     })
+
+    observeEvent(input$trip_type, {
+      # Update the spatial_model input when trip_type is changed to "Destination"
+      if (input$trip_type == "Destination") {
+        updateSelectInput(
+          session,
+          inputId = "spatial_model",
+          selected = "Destination-Constrained"
+        )
+      } else if (input$trip_type == "Origin") {
+        # Optionally, default to "Origin-Constrained" if the trip type is "Origin"
+        updateSelectInput(
+          session,
+          inputId = "spatial_model",
+          selected = "Origin-Constrained"
+        )
+      }
+    })
+
 
     output$conditional_input <- renderUI({
       if (input$level_of_analysis == "district") {
@@ -245,7 +323,7 @@ od_analysis_server <- function(id, datasets) {
       }
     })
 
-  filtered_data <- eventReactive(input$apply_od_filter, {
+    filtered_data <- eventReactive(input$apply_od_filter, {
       data <- trip_data()
       # Validate required inputs
       if (is.null(data) || length(input$day_of_week) == 0 || length(input$time_cluster) == 0) {
@@ -297,6 +375,18 @@ od_analysis_server <- function(id, datasets) {
       } else {
         return(NULL)  # Invalid level_of_analysis
       }
+
+
+      # filter by trip volume (slider)
+      data <- data %>%
+        group_by(origin_district, destination_district) %>%
+        mutate(trip_count = n()) %>%
+        ungroup() %>%
+        filter(
+          trip_count >= max(input$trip_volume[1], 25),  # Ensure minimum is at least 1
+          trip_count <= input$trip_volume[2]
+        )
+      
 
       return(data)
     })
@@ -457,94 +547,247 @@ od_analysis_server <- function(id, datasets) {
     output$coeff_summary <- renderPlot({
       results <- coeffencient_data()
 
-      if (input$spatial_model == "Origin-Constrained") {
-        # Extract coefficients for origin-constrained model
-        origin_constrained_coef_district <- coef(results$origSIM_district)[c(
-          "destination_Cultural_Attractions", "destination_Essentials",
-          "destination_Facilities_Services", "destination_Offices_Business",
-          "destination_Others", "destination_Restaurants_Food",
-          "destination_Shops", "destination_Recreation_Entertainment"
-        )]
+      # Determine the coefficients based on the selected spatial model
+      coefficients_district_df <- switch(
+        input$spatial_model,
+        "Origin-Constrained" = {
+          coef_data <- coef(results$origSIM_district)[c(
+            "destination_Cultural_Attractions", "destination_Essentials",
+            "destination_Facilities_Services", "destination_Offices_Business",
+            "destination_Others", "destination_Restaurants_Food",
+            "destination_Shops", "destination_Recreation_Entertainment"
+          )]
+          data.frame(
+            Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
+                        "Offices_Business", "Others", "Restaurants_Food",
+                        "Shops", "Recreation_Entertainment"),
+            Coefficient = coef_data
+          )
+        },
+        "Destination-Constrained" = {
+          coef_data <- coef(results$destSIM_district)[c(
+            "origin_Cultural_Attractions", "origin_Essentials",
+            "origin_Facilities_Services", "origin_Offices_Business",
+            "origin_Others", "origin_Restaurants_Food",
+            "origin_Shops", "origin_Recreation_Entertainment"
+          )]
+          data.frame(
+            Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
+                        "Offices_Business", "Others", "Restaurants_Food",
+                        "Shops", "Recreation_Entertainment"),
+            Coefficient = coef_data
+          )
+        },
+        "Doubly-Constrained" = {
+          coef_data <- coef(results$dbcSIM_district)[c(
+            "origin_Cultural_Attractions", "origin_Essentials",
+            "origin_Facilities_Services", "origin_Offices_Business",
+            "origin_Others", "origin_Restaurants_Food",
+            "origin_Shops", "origin_Recreation_Entertainment",
+            "destination_Cultural_Attractions", "destination_Essentials",
+            "destination_Facilities_Services", "destination_Offices_Business",
+            "destination_Others", "destination_Restaurants_Food",
+            "destination_Shops", "destination_Recreation_Entertainment"
+          )]
+          data.frame(
+            Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
+                        "Offices_Business", "Others", "Restaurants_Food",
+                        "Shops", "Recreation_Entertainment",
+                        "Cultural_Attractions (Dest)", "Essentials (Dest)", 
+                        "Facilities_Services (Dest)", "Offices_Business (Dest)",
+                        "Others (Dest)", "Restaurants_Food (Dest)",
+                        "Shops (Dest)", "Recreation_Entertainment (Dest)"),
+            Coefficient = coef_data
+          )
+        }
+      )
 
-        # Create data frame
-        coefficients_district_df <- data.frame(
-          Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
-                      "Offices_Business", "Others", "Restaurants_Food",
-                      "Shops", "Recreation_Entertainment"),
-          Origin_Constrained = origin_constrained_coef_district
+      filtered_data <- switch(
+        input$factors,
+        "push_pull" = coefficients_district_df,  # Show all coefficients
+        "push_only" = coefficients_district_df %>% filter(Coefficient < 0),  # Show only negative coefficients
+        "pull_only" = coefficients_district_df %>% filter(Coefficient > 0)   # Show only positive coefficients
+      )
+
+      # Reorder categories based on coefficients for better visualization
+      filtered_data <- filtered_data %>%
+        mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
+
+      # Generate the plot
+      ggplot(filtered_data, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        scale_fill_viridis(option = "D", direction = -1, guide = "none") +
+        labs(
+          title = paste(input$spatial_model, "Model (", input$factors, ")", sep = " "),
+          x = "Coefficient",
+          y = "POI Category"
+        ) +
+        theme(
+          axis.text.y = element_text(hjust = 1, size = 10),
+          axis.text.x = element_text(size = 10),
+          legend.position = "none"
+        ) +
+        scale_x_continuous(
+          position = "top", 
+          limits = c(-max(abs(coefficients_district_df$Coefficient)),
+                    max(abs(coefficients_district_df$Coefficient)))
         )
-
-        # Reshape data for plotting
-        coefficients_long_district <- coefficients_district_df %>%
-          pivot_longer(
-            cols = -Category,
-            names_to = "Model",
-            values_to = "Coefficient"
-          ) %>%
-          filter(Model == "Origin_Constrained") %>%
-          mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
-
-        # Plot
-        ggplot(coefficients_long_district, aes(y = Category, x = Coefficient, fill = Coefficient)) +
-          geom_bar(stat = "identity") +
-          theme_minimal() +
-          scale_fill_viridis(option = "D", direction = -1, guide = "none") +
-          labs(
-            title = "Origin-Constrained Model",
-            x = "Coefficient",
-            y = "POI Category"
-          ) +
-          theme(
-            axis.text.y = element_text(angle = 0, hjust = 1),
-            legend.position = "none"
-          ) +
-          scale_x_continuous(position = "top", limits = c(-max(abs(coefficients_long_district$Coefficient)),
-                                                          max(abs(coefficients_long_district$Coefficient))))
-      } else if (input$spatial_model == "Destination-Constrained") {
-        # Extract coefficients for destination-constrained model
-        destination_constrained_coef_district <- coef(results$destSIM_district)[c(
-          "origin_Cultural_Attractions", "origin_Essentials",
-          "origin_Facilities_Services", "origin_Offices_Business",
-          "origin_Others", "origin_Restaurants_Food",
-          "origin_Shops", "origin_Recreation_Entertainment"
-        )]
-
-        # Create data frame
-        coefficients_district_df <- data.frame(
-          Category = c("Cultural_Attractions", "Essentials", "Facilities_Services",
-                      "Offices_Business", "Others", "Restaurants_Food",
-                      "Shops", "Recreation_Entertainment"),
-          Destination_Constrained = destination_constrained_coef_district
-        )
-
-        # Reshape data for plotting
-        coefficients_long_district <- coefficients_district_df %>%
-          pivot_longer(
-            cols = -Category,
-            names_to = "Model",
-            values_to = "Coefficient"
-          ) %>%
-          filter(Model == "Destination_Constrained") %>%
-          mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
-
-        # Plot
-        ggplot(coefficients_long_district, aes(y = Category, x = Coefficient, fill = Coefficient)) +
-          geom_bar(stat = "identity") +
-          theme_minimal() +
-          scale_fill_viridis(option = "D", direction = -1, guide = "none") +
-          labs(
-            title = "Destination-Constrained Model",
-            x = "Coefficient",
-            y = "POI Category"
-          ) +
-          theme(
-            axis.text.y = element_text(angle = 0, hjust = 1),
-            legend.position = "none"
-          ) +
-          scale_x_continuous(position = "top", limits = c(-max(abs(coefficients_long_district$Coefficient)),
-                                                          max(abs(coefficients_long_district$Coefficient))))
-      }
     })
+
+    #LOGIC FOR INFO BOXES
+    output$highest_push_box <- renderInfoBox({
+      req(coeffencient_data())  # Ensure coefficients data is available
+      results <- coeffencient_data()
+
+      # Get coefficients for the selected spatial model
+      coefficients_district_df <- switch(
+        input$spatial_model,
+        "Origin-Constrained" = coef(results$origSIM_district),
+        "Destination-Constrained" = coef(results$destSIM_district),
+        "Doubly-Constrained" = coef(results$dbcSIM_district)
+      )
+
+      # Convert coefficients to a data frame
+      coefficients_district_df <- as.data.frame(coefficients_district_df)
+      colnames(coefficients_district_df) <- "Coefficient"
+      coefficients_district_df <- tibble::rownames_to_column(coefficients_district_df, "Category")
+
+      # Filter for push factors (negative coefficients)
+      push_factors <- coefficients_district_df %>%
+        filter(Coefficient < 0) %>%
+        arrange(Coefficient) %>%
+        slice(1)  
+
+      formatted_category <- ifelse(
+        grepl("^origin", push_factors$Category),
+        paste0("(Origin) ", tools::toTitleCase(sub("origin", "", push_factors$Category))),
+        ifelse(
+          grepl("^destination", push_factors$Category),
+          paste0("(Destination) ", tools::toTitleCase(sub("destination", "", push_factors$Category))),
+          push_factors$Category
+        )
+      )
+
+      # If no push factors exist, handle gracefully
+      if (nrow(push_factors) == 0) {
+        return(infoBox(
+          title = "Highest Push Factor",
+          value = "No push factors found",
+          icon = icon("times-circle"),
+          color = "warning",
+          fill = TRUE
+        ))
+      }
+
+      # Render info box
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>Coefficient: ", round(push_factors$Coefficient, 2), "</h4>")),
+        value = HTML(paste0(
+          "<p style='font-size: 16px; font-weight: normal; margin: 0;'>",
+          "Most Propulsive Area:<br>",
+          "<b>", formatted_category, "</b>",
+          "</p>"
+        )),
+        color = "warning",
+        icon = icon("arrow-down"),
+      )
+    })
+
+
+
+
+    output$highest_pull_box <- renderInfoBox({
+      req(coeffencient_data())  # Ensure coefficients data is available
+      results <- coeffencient_data()
+
+      # Get coefficients for the selected spatial model
+      coefficients_district_df <- switch(
+        input$spatial_model,
+        "Origin-Constrained" = coef(results$origSIM_district),
+        "Destination-Constrained" = coef(results$destSIM_district),
+        "Doubly-Constrained" = coef(results$dbcSIM_district)
+      )
+
+      # Convert coefficients to a data frame
+      coefficients_district_df <- as.data.frame(coefficients_district_df)
+      colnames(coefficients_district_df) <- "Coefficient"
+      coefficients_district_df <- tibble::rownames_to_column(coefficients_district_df, "Category")
+
+      # Filter for pull factors (positive coefficients)
+      pull_factors <- coefficients_district_df %>%
+        filter(Coefficient > 0) %>%
+        arrange(desc(Coefficient)) %>%
+        slice(1)  
+
+      formatted_category <- ifelse(
+        grepl("^origin", pull_factors$Category),
+        paste0("(Origin) ", tools::toTitleCase(sub("origin", "", pull_factors$Category))),
+        ifelse(
+          grepl("^destination", pull_factors$Category),
+          paste0("(Destination) ", tools::toTitleCase(sub("destination", "", pull_factors$Category))),
+          pull_factors$Category
+        )
+      )
+
+      # If no pull factors exist, handle gracefully
+      if (nrow(pull_factors) == 0) {
+        return(infoBox(
+          title = "Highest Pull Factor",
+          value = "No pull factors found",
+          icon = icon("times-circle"),
+          color = "success",
+        ))
+      }
+
+      # Render info box
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>Coefficient: ", round(pull_factors$Coefficient, 2), "</h4>")),
+        value = HTML(paste0(
+          "<p style='font-size: 16px; font-weight: normal; margin: 0;'>",
+          "Most Attractive Area:<br>",
+          "<b>", formatted_category, "</b>",
+          "</p>"
+        )),
+        color = "success",
+        icon = icon("arrow-up"),
+      )
+    })
+
+
+    output$highest_trips_box <- renderInfoBox({
+      trip_data <- filtered_data()
+      
+      # Calculate the trip data with the highest trip count
+      highest_trip <- trip_data %>%
+        group_by(origin_district, destination_district) %>%
+        summarise(trip_count = n(), .groups = "drop") %>%
+        arrange(desc(trip_count)) %>%
+        slice(1)  #
+      
+      # Capitalize the first letter of each word for origin and destination
+      origin_district <- tools::toTitleCase(tolower(highest_trip$origin_district))
+      destination_district <- tools::toTitleCase(tolower(highest_trip$destination_district))
+      
+      # Render the info box
+      infoBox(
+        title = HTML(paste0("<h4 style='font-weight: bold; margin: 0;'>", highest_trip$trip_count, " trips</h4>")),
+        value = HTML(paste0(
+          "<p style='font-size: 16px; font-weight: normal; margin: 0;'>",
+          "Origin: ", origin_district, "<br>",
+          "Destination: ", destination_district,
+          "</p>"
+        )), 
+        icon = icon("car"),
+        color = "primary"
+      )
+    })
+
+
+
+
+
+
 
   })
 }

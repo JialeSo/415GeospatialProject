@@ -1,6 +1,6 @@
 # components/sidebar.R
 
-logo_path <- "logo.png"
+logo_path <- "maps.png"
 appSidebar <- function() {
   dashboardSidebar(
     fixed = TRUE,
@@ -12,7 +12,6 @@ appSidebar <- function() {
   
     # Optional Welcome Message
     sidebarUserPanel(
-      image = logo_path,  # Replace with your image URL if desired
       name = "Welcome Onboard!"
     ),
     

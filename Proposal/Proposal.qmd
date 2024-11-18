@@ -1,5 +1,5 @@
 ---
-title: "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data" 
+title: "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data" 
 subtitle: "Theme: Exploratory Spatial Data Analysis"
 author: "Jezelei, Jiale, Samantha"
 date: "October  13, 2024"
@@ -16,9 +16,9 @@ execute:
 
 ![](images/clipboard-2612382224.png)
 
-Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms like **Grab** offer an alternative means of transportation, yet the relationship between **mobility patterns and congestion** is still not fully understood.
+Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms offer an alternative means of transportation, yet the relationship between **mobility patterns and congestion** is still not fully understood.
 
-With the availability of **Grab Posisi data**, which provides real-time movement patterns, we can study the **demand for ride-hailing services** around different **points of interest (POIs)** such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify **bottlenecks and high-demand zones** to optimize urban mobility and support better traffic management strategies.
+With the availability of comprehensivenride-hailing data, which provides real-time movement patterns, we can study the **demand for ride-hailing services** around different **points of interest (POIs)** such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify **bottlenecks and high-demand zones** to optimize urban mobility and support better traffic management strategies.
 
 ------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ With the availability of **Grab Posisi data**, which provides real-time movement
 
 ![](images/clipboard-3096906590.png){width="668"}
 
-Jakarta’s increasing urbanization drives a growing need for **on-demand transportation services** like Grab, particularly in areas with high concentrations of **POIs**. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:
+Jakarta’s increasing urbanization drives a growing need for **on-demand transportation services** like ride-hailing services, particularly in areas with high concentrations of **POIs**. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:
 
 -   Which POIs generate the most ride-hailing traffic?
 
@@ -38,17 +38,17 @@ Answering these questions will provide insights into **Jakarta’s mobility patt
 
 ## **2.1 Motivation**
 
-![](images/clipboard-338652397.png)
+![](images/ride-hailing.jpg)
 
 The increasing availability of **ride-hailing data** presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and **which POIs generate the most demand** can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a **user-centric approach** by identifying **ride-hailing hotspots** around key locations.
 
-Our analysis will focus on the broader mobility landscape of Jakarta, examining how Grab services are utilized across the city. The insights gained will support **policymakers, urban planners, and transportation authorities** in optimizing traffic management and public transport, with the potential to **serve as a model for other urban areas**.
+Our analysis will focus on the broader mobility landscape of Jakarta, examining how ride-hailing services are utilized across the city. The insights gained will support **policymakers, urban planners, and transportation authorities** in optimizing traffic management and public transport, with the potential to **serve as a model for other urban areas**.
 
 ## **2.2 Project Objectives**
 
 1.  **Analyze ride-hailing demand** across Jakarta to identify patterns at key POIs and traffic bottlenecks.
 
-2.  **Investigate spatial and temporal trends** in Grab usage to understand how ride demand fluctuates.
+2.  **Investigate spatial and temporal trends** in usage of Ride-Hailing Vehicles to understand how ride demand fluctuates.
 
 3.  **Optimize mobility services** by understanding possible bottlenecks in district flows.
 
@@ -58,9 +58,9 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
 ------------------------------------------------------------------------
 
-1.  **Grab Posisi Data (**[Grab Posisi Data](https://engineering.grab.com/grab-posisi))
+1.  ** Ride-hailing Data 
 
-    -   Contains GPS pings from Grab vehicles, including **timestamps, route data, and vehicle type** (motorcycle/car).
+    -   Contains GPS pings from ride-hailing vehicles, including **timestamps, route data, and vehicle type** (motorcycle/car).
 
     -   Provides insights into **ride-hailing demand, traffic hotspots, and movement patterns** around key locations in Jakarta.
 
@@ -70,17 +70,15 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
     -   **Indonesia Population Density Data** [**(ArcGIS)**](https://storymaps.arcgis.com/stories/36e38ceefab0455eb6059a734381723c)[:](WorldPop%20Indonesia%20Population%20Density) Adds demographic context for understanding mobility trends.
 
-    -   **Weather API [(Weatherbit)](https://www.weatherbit.io/):** Supplements our analysis with weather categories to allow for analysis of Grab Demand according to the presence or absence of rain.
 
     -   **Jakarta Map [(HDX)](https://data.humdata.org/dataset/cod-ab-idn?): Visualize the** geographical districts of the City-State.
 
-    -   
 
 # **4.0 Expected Outcomes**
 
 ------------------------------------------------------------------------
 
-This project aims to **offer a comprehensive data-driven dashboard** that provides insights into Jakarta’s traffic network based on Grab Posisi data. The dashboard will serve as a **platform for exploration and learning**, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using **interactive visualizations and analysis tools**, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.
+This project aims to **offer a comprehensive data-driven dashboard** that provides insights into Jakarta’s traffic network based on a comprehensive ride-hailing dataset. The dashboard will serve as a **platform for exploration and learning**, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using **interactive visualizations and analysis tools**, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.
 
 The primary objective is to **provide a rich dataset and analytical interface**, allowing users to **conduct their own analyses** and **interpret trends** based on real-time and historical data. The dashboard does not offer prescriptive recommendations but acts as a **data point reference** where users can explore key questions such as:
 
@@ -159,7 +157,7 @@ This section focuses on analyzing movement patterns between POIs using desire li
 ![](images/clipboard-1820776631.png)
 
 **Phase 1 – Data Collection and Preparation:**\
-This phase involves gathering and cleaning the **Grab Posisi data** along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing **background research** on Jakarta’s mobility challenges to contextualize the study.
+This phase involves gathering and cleaning the **Ride-Hailing data** along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing **background research** on Jakarta’s mobility challenges to contextualize the study.
 
 **Phase 2 – Exploratory Data Analysis (EDA) & Exploratory Spatial Data Analysis (ESDA):**\
 In this phase, **aspatial EDA** methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The **spatial component (ESDA)** will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through **Kernel Density Estimation (KDE).**
@@ -247,8 +245,6 @@ Consulting Professor: **KAM Tin Seong \|** tskam\@smu.edu.sg
 # 10.0 References
 
 ------------------------------------------------------------------------
-
-Grab Posisi Data, 2024. *Posisi - Understanding Traffic Flows with Real-Time Data*. Available at: <https://engineering.grab.com/grab-posisi> \[Accessed 13 Oct. 2024\].
 
 WorldPop, 2024. *Indonesia Population Data*. Available at: <https://www.worldpop.org> \[Accessed 13 Oct. 2024\].
 

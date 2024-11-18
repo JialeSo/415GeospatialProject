@@ -1,81 +1,86 @@
-# tabs/project_overview.R
-
 # UI function for "Project Overview"
+image_path <- "maps.png"
+
+
 project_overview_ui <- function(id) {
   tabItem(
     tabName = id,
     fluidRow(
-      box(
-        title = "Project Overview",
-        width = 12,
-        status = "primary",
-        solidHeader = TRUE,
-        collapsible = TRUE,
-        p("The primary objective of this project is to provide stakeholders, including urban planners, policymakers, and ride-hailing companies, with insights into traffic flows and mobility trends."),
-        p("By leveraging geospatial analysis techniques such as Kernel Density Estimation (KDE), Local Indicators of Spatial Association (LISA), and Origin-Destination (OD) analysis, this tool highlights significant patterns that could inform the improvement of urban planning and traffic management.")
-      )
-    ),
-    fluidRow(
-      box(
-        title = "Key Functionalities",
-        width = 12,
-        status = "primary",
-        solidHeader = TRUE,
-        collapsible = TRUE,
-        h4("1. Kernel Density Estimation (KDE)"),
-        tags$ul(
-          tags$li("Purpose: KDE helps visualize hotspots of high ride-hailing activity across Jakarta. This heatmap representation identifies areas with a high concentration of origin and destination points."),
-          tags$li("Features:"),
-          tags$ul(
-            tags$li("Interactive map layer showcasing density variations."),
-            tags$li("Toggle options to filter KDE analysis by time clusters (e.g., morning peak, evening lull)."),
-            tags$li("Layer control for differentiating between origins and destinations.")
+      # Top Section: Jumbotron with Text and Image
+      tags$div(
+        class = "jumbotron",
+        style = "background-color: #f8f9fa; padding: 40px; border-radius: 10px; margin-bottom: 20px;",
+        fluidRow(
+          column(
+            width = 6,
+            style = "padding-right: 20px; align-self: center;, justify-content: start;",
+            h1("Ever wondered where Jakarta's busiest rides start and end?", 
+               style = "font-size: 28px; margin-bottom: 20px;"),
+            p(
+              "Uncover the secrets of travel hotspots and peak times in a few clicks. This tool provides valuable insights for stakeholders such as urban planners, policymakers, and ride-hailing companies.",
+              style = "font-size: 18px; line-height: 1.6;"
+            )
           ),
-          tags$li("Potential Use Cases: Pinpointing high-demand zones to optimize resource allocation during different time periods.")
-        ),
-        h4("2. Local Indicators of Spatial Association (LISA)"),
-        tags$ul(
-          tags$li("Purpose: LISA identifies statistically significant clusters and outliers within the spatial data to reveal how districts relate to one another in terms of trip generation and attraction."),
-          tags$li("Features:"),
-          tags$ul(
-            tags$li("Visualization of clusters (e.g., high-high, low-low) and outliers (e.g., high-low)."),
-            tags$li("Map interaction to drill down into specific districts for detailed insights.")
-          ),
-          tags$li("Potential Use Cases: Detecting areas that act as hubs or bottlenecks and evaluating their spatial influence on surrounding regions.")
-        ),
-        h4("3. Origin-Destination (OD) Analysis"),
-        tags$ul(
-          tags$li("Purpose: The OD analysis tracks flows between origin and destination districts, illustrating key movement patterns and the factors influencing them."),
-          tags$li("Features:"),
-          tags$ul(
-            tags$li("Interactive desire line maps segmented by variables such as time cluster, weather conditions, and vehicle type (car or motorcycle)."),
-            tags$li("Hover functionality to display district-level details, including centroid locations and trip counts."),
-            tags$li("Comparative analysis tools for understanding how POIs and population density affect trip generation.")
-          ),
-          tags$li("Use Cases: Supporting decision-making to improve accessibility and mitigate congestion by adjusting ride-hailing services in response to demand patterns.")
+          column(
+            width = 6,
+            style = "display: flex; justify-content: center; align-items: center;",  # Center the image
+            tags$img(
+              src = image_path,
+              style = "max-width: 300px; border-radius: 10px;"
+            )
+          )
         )
       )
     ),
     fluidRow(
-      box(
-        title = "User Experience",
+      # Middle Section: Functional Areas
+      column(
+        width = 4,
+        box(
+          title = "Kernel Density Estimate",
+          width = 12,
+          solidHeader = FALSE,
+          p(
+            "Analyze areas of spatial concentration by number of ride-hailing trips and availability of POIs in Jakarta. Visualize potential hotspots and overall trip distribution patterns along road networks."
+          )
+        )
+      ),
+      column(
+        width = 4,
+        box(
+          title = "Local Indicators of Spatial Autocorrelation",
+          width = 12,
+          solidHeader = FALSE,
+          p(
+            "Identify specific areas of significant clustering or outliers based on the number of ride-hailing trips using Local Moran’s I. Provide insights into spatial disparities in travel demand."
+          )
+        )
+      ),
+      column(
+        width = 4,
+        box(
+          title = "Origin Destination Analysis",
+          width = 12,
+          solidHeader = FALSE,
+          p(
+            "Understand movement patterns while highlighting the flow intensity, direction, and connectivity between different areas within Jakarta with Spatial Interaction Modelling."
+          )
+        )
+      )
+    ),
+    fluidRow(
+      # Bottom Section: Future Work
+      column(
         width = 12,
-        status = "primary",
-        solidHeader = TRUE,
-        collapsible = TRUE,
-        tags$ul(
-          tags$li("Interactive Filtering: Users can select variables such as time cluster or vehicle type for further analysis."),
-          tags$li("Dynamic Visualizations: EDA and supporting graphs provide comprehensive insights into spatial and temporal trends.")
+        p(
+          tags$strong("Future Work"),
+          style = "font-size: 20px; text-align: left; margin-top: 20px;"
+        ),
+        tags$ol(
+          tags$li("Incorporating NKDE Analysis, with the addition of public transportation commuter data."),
+          tags$li("Modeling Geographical Accessibility to quantify ease of access at popular POIs.")
         )
       )
     )
   )
 }
-
-# Server function for "Project Overview"
-project_overview_server <- function(id, input, output, session) {
-  moduleServer(id, function(input, output, session) {
-    # No specific server logic needed yet
-  })
-}
-
