@@ -63,6 +63,7 @@ lisa_analysis_ui <- function(id) {
         title = "Filter Options",
         width = 12,
         collapsible = TRUE, collapsed = TRUE,
+        status = 'primary',
         fluidRow(
           column(
             width = 6,
@@ -117,7 +118,10 @@ lisa_analysis_ui <- function(id) {
             sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10)
           )
         ),
-        actionButton(ns("apply_filters"), "Apply Filters", style = "background-color: #8BD3E6; width: 100%")
+        div(
+          style = "display: flex; justify-content: flex-end;",
+          actionButton(ns("apply_filters"), "Apply Filter", style = "background-color: #8BD3E6; width: 20%")
+        )
       )
     ),
     
@@ -135,7 +139,6 @@ lisa_analysis_ui <- function(id) {
         box(
           title = "Local Autospatial Correlation of Trips in Jakarta",
           width = 12,
-          status = "primary",
           solidHeader = TRUE,
           collapsible = TRUE,
           height = "500px",
@@ -145,7 +148,6 @@ lisa_analysis_ui <- function(id) {
       box(
         title = "Distribution Count of LISA Categories",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         height = "250px",
@@ -167,14 +169,18 @@ lisa_analysis_server <- function(id, datasets) {
     jakarta_village_population <- datasets$jakarta_village_population
     
     # Populate "District" dropdown with unique values from the 'origin_district' column in trips_data()
-    observe({
-      district_choices <- trip_data() %>%
+    district_choices <- reactive({
+      trip_data() %>%
         distinct(origin_district) %>%
         pull(origin_district)
-      
-      updatePickerInput(session, "district", 
-                        choices = district_choices, 
-                        selected = district_choices)  # Select all districts by default
+    })
+    observe({
+      updatePickerInput(
+        session, 
+        "district", 
+        choices = district_choices(), 
+        selected = district_choices()  # Select all districts by default
+      )
     })
     
     # Populate "Village" dropdown based on selected "District" values
@@ -209,9 +215,13 @@ lisa_analysis_server <- function(id, datasets) {
       error_messages <- character()
       
       # Check if required inputs are selected and add the respective error message
-      if (length(village_choices()) != length(input$village) && length(input$district > 1)){
-        error_messages <- c(error_messages, "Please select all villages in the district(s). If analysing by district-level, please
-                            ensure all districts are selected.")
+      if ((length(district_choices()) != length(input$district)) && (length(input$district) != 0) && length(input$village) == 0){
+        error_messages <- c(error_messages, "Please ensure all districts are selected if analysing at the district-level,
+                            Or select all villages within the district(s).")
+      }
+      
+      if (length(village_choices()) != length(input$village) && length(input$village) != 0){
+        error_messages <- c(error_messages, "Please select all villages in the district(s).")
       }
       if (length(input$day_of_week) == 0) {
         error_messages <- c(error_messages, "Please select at least one day of the week.")
@@ -433,54 +443,66 @@ lisa_analysis_server <- function(id, datasets) {
       # Step 4: Calculate local Moran's I for spatial association
       lisa <- wm %>% 
         mutate(local_moran = local_moran(num_of_trips, nb, wt, 
-                                         zero.policy = TRUE, nsim = input$num_simulation),
+                                         zero.policy = TRUE, nsim = input$num_simulation - 1),
                .before = 1) %>%
         unnest(local_moran)
       
       # Step 5: Prepare data for plotting with labels
       lisa_all <- lisa %>%
-        mutate(label = paste("Location:", location, "| LISA:", mean))  # Add label for all results
+        mutate(label = paste("Location:", location, "|",mean))  # Add label for all results
       
       lisa_significant <- lisa %>%
         filter(p_ii_sim < 0.05) %>%  # Filter for statistically significant results
-        mutate(label = paste("Location:", location, "| LISA:", mean))  # Label for significant results only
+        mutate(label = paste("Location:", location, "|",mean))  # Label for significant results only
       
       # Convert both to sf (Simple Features) format for spatial plotting
       lisa_all_sf <- st_as_sf(lisa_all) %>% st_transform(crs = 6384)
       lisa_significant_sf <- st_as_sf(lisa_significant) %>% st_transform(crs = 6384)
       
+      # if (input$result_type == "statistically significant" && nrow(lisa_significant_sf) == 0){
+      #   showModal(
+      #     modalDialog(
+      #       "No significant local Moran i value found. Try increasing the number of simulations."
+      #     )
+      #   )
+      # }
       # Return the datasets for plotting
       return(list(all = lisa_all_sf, significant = lisa_significant_sf, result_type = input$result_type))
     }, ignoreNULL = FALSE)
     
-    
-    # Render LISA plot using renderTmap for spatial data
+    # Plot lisa choropleth
     output$lisa_plot <- renderTmap({
-      print(paste("LISA PLOT: ", input$result_type))
-      
-
-      
-      # Conditional plotting based on input$result_type
-      if (lisa_data()$result_type == "statistically significant") {
+      # Check if significant data exists before rendering
+      if (lisa_data()$result_type == "statistically significant" && nrow(lisa_data()$significant) > 0) {
         base_map <- tm_shape(lisa_data()$all) +
-          tm_polygons(id = "", col = "lightgray") +  # Neutral base map color
+          tm_polygons(id = "", col = "lightgray", popup.vars = character(0)) +  # Neutral base map color
           tm_borders(col = "black", alpha = 0.6)  # Add borders
         lisa_significant <- lisa_data()$significant
         base_map + tm_shape(lisa_significant) + 
           tm_polygons("mean", 
                       palette = c("lightblue1", "#ec9a64", "green3", "#d21b1c"),
                       title = "Significant LISA Classification",
-                      id = "label")  # Show labels for significant areas
-      } else {
+                      id = "label", # Show labels for significant areas
+                      popup.vars = c("Number of trips" = "num_of_trips", "Local Moran's i" = "ii"))  
+      } 
+      # If there are no significant results, display a neutral map
+      else if (lisa_data()$result_type == "statistically significant" && nrow(lisa_data()$significant) == 0) {
+        tm_shape(lisa_data()$all) +
+          tm_polygons(id = "", col = "lightgray") +  # Neutral base map color
+          tm_borders(col = "black", alpha = 0.6) # Add borders
+      }
+      # If the result type is "all", display all data
+      else if (lisa_data()$result_type == "all") {
         base_map <- tm_shape(lisa_data()$all) +
           tm_polygons(id = "", col = "lightgray") +  # Neutral base map color
-          tm_borders(col = "black", alpha = 0.6)  # Add borders
+          tm_borders(col = "black", alpha = 0.6) # Add borders
         lisa_all <- lisa_data()$all
         tm_shape(lisa_all) + 
           tm_polygons("mean", 
                       palette = c("lightblue1", "#ec9a64", "green3", "#d21b1c"),
                       title = "Overall LISA Classification",
-                      id = "label")  # Show labels for all areas
+                      id = "label",  # Show labels for all areas
+                      popup.vars = c("Number of trips" = "num_of_trips", "Local Moran's i" = "ii"))
       }
     })
     

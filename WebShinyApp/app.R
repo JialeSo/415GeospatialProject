@@ -25,6 +25,7 @@ source("tabs/od_analysis.R")
 
 # Define the main UI
 ui <- dashboardPage(
+  preloader = list(html = tagList(spin_1(), "Loading dashboard..."), color = "#343a40"),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")  # Include your custom CSS
   ),
