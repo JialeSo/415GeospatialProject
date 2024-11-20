@@ -1,9 +1,13 @@
 ---
-title: "" 
-format:    
-  html:     
-    css: styles.css     
-    toc: false 
+title: "User Guide" 
+subtitle: "Find out how to use our ShinyApp here!"
+author: "Group 2: Jezelei, Jiale, Samantha"
+date: "November  23, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
 ---
 
 ::: {style="text-align:center; margin-top: 100px;"}

@@ -1,7 +1,7 @@
 ---
 title: "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data" 
 subtitle: "Theme: Exploratory Spatial Data Analysis"
-author: "Jezelei, Jiale, Samantha"
+author: "Group 2: Jezelei, Jiale, Samantha"
 date: "October  13, 2024"
 date-modified: "last-modified"
 execute: 
