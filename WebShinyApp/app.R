@@ -18,7 +18,6 @@ source("components/footer.R")
 source("tabs/project_overview.R")
 source("tabs/datasets.R")
 source("tabs/exploratory_data.R")
-source("tabs/kernel_density_network.R")
 source("tabs/kernel_density.R")
 source("tabs/lisa_analysis.R")
 source("tabs/od_analysis.R")
@@ -35,7 +34,6 @@ ui <- dashboardPage(
     tabItems(
       project_overview_ui("project_overview"),
       exploratory_data_ui("exploratory_data"),
-      kernel_network_density_ui("kernel_network_density"),
       kernel_density_ui("kernel_density"),
       lisa_analysis_ui("lisa_analysis"),
       od_analysis_ui("od_analysis"),
@@ -55,7 +53,14 @@ server <- function(input, output, session) {
   jakarta_district <- reactive({readRDS("datasource/jakarta_district.rds")})
   jakarta_district_population <- reactive({readRDS("datasource/jakarta_district_population.rds")})
   jakarta_village_population <- reactive({readRDS("datasource/jakarta_village_population.rds")})
-  jakarta_roads <- reactive({readRDS("datasource/jakarta_road.rds")})
+  
+  desire_line_district <- reactive({readRDS("datasource/desire_line_district.rds")})
+  desire_line_village<- reactive({readRDS("datasource/desire_line_village.rds")})
+  coefficients_long_district <- reactive({readRDS("datasource/coefficients_long_district.rds")})
+  coefficients_long_village <- reactive({readRDS("datasource/coefficients_long_village.rds")})
+  tripsDistrict <- reactive({readRDS("datasource/tripsDistrict.rds")})
+  tripsVillage <- reactive({readRDS("datasource/tripsVillage.rds")})
+
   
   # Create a list to hold all datasets for easier passing
   datasets <- list(
@@ -65,13 +70,17 @@ server <- function(input, output, session) {
     jakarta_district = jakarta_district,
     jakarta_district_population = jakarta_district_population,
     jakarta_village_population = jakarta_village_population,
-    jakarta_roads = jakarta_roads
+    
+    desire_line_district = desire_line_district,
+    desire_line_village = desire_line_village,
+    coefficients_long_district = coefficients_long_district,
+    coefficients_long_village = coefficients_long_village,
+    tripsDistrict = tripsDistrict,
+    tripsVillage = tripsVillage
   )
   
   # Call each tab module's server function with the datasets as needed
-  project_overview_server("project_overview", input, output, session)
   exploratory_data_server("exploratory_data", datasets)
-  kernel_network_density_server("kernel_network_density", datasets)
   kernel_density_server("kernel_density", datasets)
   lisa_analysis_server("lisa_analysis", datasets)
   od_analysis_server("od_analysis", datasets)

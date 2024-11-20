@@ -15,7 +15,6 @@ datasets_ui <- function(id) {
       box(
         title = "Trip Dataset",
         width = 12,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         DT::dataTableOutput(NS(id, "trips_data_table"))
@@ -25,7 +24,6 @@ datasets_ui <- function(id) {
       box(
         title = "Point of Interests Dataset",
         width = 12,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         DT::dataTableOutput(NS(id, "poi_data_table"))

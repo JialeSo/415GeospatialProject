@@ -63,6 +63,7 @@ exploratory_data_ui <- function(id) {
         title = "Filter Trip Data",
         width = 12,
         collapsible = TRUE, collapsed = TRUE,
+        status = 'primary',
         pickerInput(ns("district"), "District", 
                     choices = NULL, 
                     selected = NULL,  # Select all districts by default in the server

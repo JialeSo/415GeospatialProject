@@ -18,7 +18,7 @@ lisa_analysis_ui <- function(id) {
   tabItem(
     tabName = id,
     jumbotron(
-      title = "Local Spatial Autocorrelation",
+      title = "Local Indicators of Spatial Autocorrelation",
       lead = "Uncover patterns of clustering and outliers in ride-hailing trips with Local Moran’s I. This page reveals areas of significant clustering (low-low and high-high) or unusual outliers (low-high and high-low), 
       helping you explore how ride-hailing trips are distributed across Jakarta. 
       Use the 'feature mapping' filters to analyse trips by per capita rates or in relation to the number of Points of Interest (POIs) for deeper insights.",
@@ -112,10 +112,38 @@ lisa_analysis_ui <- function(id) {
             h4("Filter LISA Parameters"),
             selectInput(ns("mapping_feature"), "Mapping Feature", 
                         choices = c("Overall Number of Trips", "Number of Trips per Capita", "Number of Trips per POI")),
-            selectInput(ns("contiguity_method"), "Contiguity Method", choices = c("Queen", "Rook")),
-            radioButtons(ns("result_type"), "Statistical Significance", 
-                         choices = c("All Results" = "all", "Statistically Significant Only" = "statistically significant")),
-            sliderInput(ns("num_simulation"), "Number of Simulations", min = 40, max = 100, value = 40, step = 10)
+            tags$div(
+              tags$label("Contiguity Method", 
+                         tags$i(class = "fas fa-info-circle", 
+                                title = "Methods for identifying adjacent neighbours in LISA.",
+                                style = "margin-left: 5px; cursor: pointer;")),
+              selectInput(ns("contiguity_method"), NULL,
+                          choices = c("Queen" = "queen", "Rook" = "rook"),
+                          selected = "queen")
+            ),
+            tags$div(
+              tags$label("Statistical Significance",
+                         tags$i(class = "fas fa-info-circle", 
+                                title = "Statistically significant observations have a p-value below a threshold (i.e. 0.05)",
+                                style = "margin-left: 5px; cursor: pointer;")),
+              radioButtons(ns("result_type"), NULL, 
+                           choices = c("All Results" = "all", "Statistically Significant Only" = "statistically significant"),
+                           selected = "all")
+            ),
+            tags$div(
+              tags$label("Number of Simulations",
+                         tags$i(class = "fas fa-info-circle", 
+                                title = "Specifies the number of random permutations used to calculate statistical significance in LISA analysis. Higher values yield more precise results but may increase computation time.",
+                                style = "margin-left: 5px; cursor: pointer;")),
+              sliderInput(
+                ns("num_simulation"),
+                NULL,
+                min = 40,
+                max = 100,
+                value = 40,
+                step = 10
+              )
+            )
           )
         ),
         div(
@@ -339,9 +367,10 @@ lisa_analysis_server <- function(id, datasets) {
                    "<strong>Mapping Feature:</strong>", input$mapping_feature, "<br>", 
                    "<strong>Contiguity Method:</strong>", input$contiguity_method, "<br>",
                    "<strong>Statistical Significance:</strong>", input$result_type, "<br>",
-                   "<strong>Number of Simulations:</strong>", input$num_simulation, "<br>"))),
-        #easyClose = TRUE,
-        #footer = modalButton("Close")
+                   "<strong>Number of Simulations:</strong>", input$num_simulation, "<br>")),
+        easyClose = TRUE,
+        footer = NULL
+        )
       )
     })
     

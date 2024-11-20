@@ -55,7 +55,8 @@ od_analysis_ui <- function(id) {
         title = "Filters and Parameters",
         width = 12,
         collapsible = TRUE,
-        collapsed = FALSE,
+        collapsed = TRUE,
+        status = 'primary',
         fluidRow(
           column(
             width = 6,
