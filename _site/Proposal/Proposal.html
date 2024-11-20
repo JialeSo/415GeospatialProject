@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Jezelei, Jiale, Samantha">
+<meta name="author" content="Group 2: Jezelei, Jiale, Samantha">
 <meta name="dcterms.date" content="2024-10-13">
 
-<title>IS415-GAA: - Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data</title>
+<title>Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data – IS415-GAA:</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -85,7 +85,7 @@ ul.task-list li input[type="checkbox"] {
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -115,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -165,7 +165,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Grab Posisi Data</h1>
+<h1 class="title">Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data</h1>
 <p class="subtitle lead">Theme: Exploratory Spatial Data Analysis</p>
 </div>
 
@@ -176,7 +176,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Jezelei, Jiale, Samantha </p>
+             <p>Group 2: Jezelei, Jiale, Samantha </p>
           </div>
   </div>
     
@@ -190,7 +190,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">October 20, 2024</p>
+      <p class="date-modified">November 20, 2024</p>
     </div>
   </div>
     
@@ -205,14 +205,14 @@ ul.task-list li input[type="checkbox"] {
 <h1><strong>1.0 Background</strong></h1>
 <hr>
 <p><img src="images/clipboard-2612382224.png" class="img-fluid"></p>
-<p>Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms like <strong>Grab</strong> offer an alternative means of transportation, yet the relationship between <strong>mobility patterns and congestion</strong> is still not fully understood.</p>
-<p>With the availability of <strong>Grab Posisi data</strong>, which provides real-time movement patterns, we can study the <strong>demand for ride-hailing services</strong> around different <strong>points of interest (POIs)</strong> such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify <strong>bottlenecks and high-demand zones</strong> to optimize urban mobility and support better traffic management strategies.</p>
+<p>Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms offer an alternative means of transportation, yet the relationship between <strong>mobility patterns and congestion</strong> is still not fully understood.</p>
+<p>With the availability of comprehensivenride-hailing data, which provides real-time movement patterns, we can study the <strong>demand for ride-hailing services</strong> around different <strong>points of interest (POIs)</strong> such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify <strong>bottlenecks and high-demand zones</strong> to optimize urban mobility and support better traffic management strategies.</p>
 <hr>
 </section>
 <section id="problem-statement" class="level1">
 <h1><strong>2.0 Problem Statement</strong></h1>
 <p><img src="images/clipboard-3096906590.png" class="img-fluid" width="668"></p>
-<p>Jakarta’s increasing urbanization drives a growing need for <strong>on-demand transportation services</strong> like Grab, particularly in areas with high concentrations of <strong>POIs</strong>. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:</p>
+<p>Jakarta’s increasing urbanization drives a growing need for <strong>on-demand transportation services</strong> like ride-hailing services, particularly in areas with high concentrations of <strong>POIs</strong>. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:</p>
 <ul>
 <li><p>Which POIs generate the most ride-hailing traffic?</p></li>
 <li><p>How does demand vary across different times of the day, week, and seasons?</p></li>
@@ -221,17 +221,16 @@ ul.task-list li input[type="checkbox"] {
 <p>Answering these questions will provide insights into <strong>Jakarta’s mobility patterns</strong> and inform strategies to <strong>reduce traffic bottlenecks</strong> while maintaining access to key locations.</p>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation"><strong>2.1 Motivation</strong></h2>
-<p><img src="images/clipboard-338652397.png" class="img-fluid"></p>
+<p><img src="images/ride-hailing.jpg" class="img-fluid"></p>
 <p>The increasing availability of <strong>ride-hailing data</strong> presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and <strong>which POIs generate the most demand</strong> can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a <strong>user-centric approach</strong> by identifying <strong>ride-hailing hotspots</strong> around key locations.</p>
-<p>Our analysis will focus on the broader mobility landscape of Jakarta, examining how Grab services are utilized across the city. The insights gained will support <strong>policymakers, urban planners, and transportation authorities</strong> in optimizing traffic management and public transport, with the potential to <strong>serve as a model for other urban areas</strong>.</p>
+<p>Our analysis will focus on the broader mobility landscape of Jakarta, examining how ride-hailing services are utilized across the city. The insights gained will support <strong>policymakers, urban planners, and transportation authorities</strong> in optimizing traffic management and public transport, with the potential to <strong>serve as a model for other urban areas</strong>.</p>
 </section>
 <section id="project-objectives" class="level2">
 <h2 class="anchored" data-anchor-id="project-objectives"><strong>2.2 Project Objectives</strong></h2>
 <ol type="1">
 <li><p><strong>Analyze ride-hailing demand</strong> across Jakarta to identify patterns at key POIs and traffic bottlenecks.</p></li>
-<li><p><strong>Investigate spatial and temporal trends</strong> in Grab usage to understand how ride demand fluctuates.</p></li>
-<li><p><strong>Provide recommendations</strong> for traffic management based on the analysis of high-demand areas and movement flows.</p></li>
-<li><p><strong>Optimize mobility services</strong> by suggesting improvements to ride-hailing operations.</p></li>
+<li><p><strong>Investigate spatial and temporal trends</strong> in usage of Ride-Hailing Vehicles to understand how ride demand fluctuates.</p></li>
+<li><p><strong>Optimize mobility services</strong> by understanding possible bottlenecks in district flows.</p></li>
 <li><p><strong>Develop a scalable framework</strong> that other cities can use to address similar urban mobility challenges.</p></li>
 </ol>
 </section>
@@ -240,25 +239,23 @@ ul.task-list li input[type="checkbox"] {
 <h1><strong>3.0 Dataset</strong></h1>
 <hr>
 <ol type="1">
-<li><p><strong>Grab Posisi Data (</strong><a href="https://engineering.grab.com/grab-posisi">Grab Posisi Data</a>)</p>
+<li><p><strong>Ride-hailing Data</strong></p>
 <ul>
-<li><p>Contains GPS pings from Grab vehicles, including <strong>timestamps, route data, and vehicle type</strong> (motorcycle/car).</p></li>
+<li><p>Contains GPS pings from ride-hailing vehicles, including <strong>timestamps, route data, and vehicle type</strong> (motorcycle/car).</p></li>
 <li><p>Provides insights into <strong>ride-hailing demand, traffic hotspots, and movement patterns</strong> around key locations in Jakarta.</p></li>
 </ul></li>
 <li><p><strong>Supporting Datasets</strong></p>
 <ul>
 <li><p><strong>Jakarta Points of Interest (POI) <a href="https://data.humdata.org/dataset/hotosm_idn_points_of_interest?">(HumData)</a></strong>: Includes office buildings, shopping malls, parks, and other key locations.</p></li>
-<li><p><strong>Indonesia Population Density Data</strong> <a href="WorldPop Indonesia Population Density"><strong>(WorldPop)</strong>:</a> Adds demographic context for understanding mobility trends.</p></li>
-<li><p><strong>Jarkata Tourism Attraction Dataset</strong>&nbsp; <a href="https://dataportal.asia/en/dataset?tags=tourism&amp;organization=ctlg_data-go-id&amp;vocab_economy_names=Indonesia">(Open Asia Data Portal):</a> Includes Tourist attraction places</p></li>
-<li><p><strong>Traffic Data</strong>: Historical and real-time data to correlate ride-hailing demand with road congestion levels.</p></li>
-<li><p><strong>External Factors</strong>: Weather data, holidays, and local events that may influence demand patterns.</p></li>
+<li><p><strong>Indonesia Population Density Data</strong> <a href="https://storymaps.arcgis.com/stories/36e38ceefab0455eb6059a734381723c"><strong>(ArcGIS)</strong></a><a href="WorldPop Indonesia Population Density">:</a> Adds demographic context for understanding mobility trends.</p></li>
+<li><p><strong>Jakarta Map <a href="https://data.humdata.org/dataset/cod-ab-idn?">(HDX)</a>: Visualize the</strong> geographical districts of the City-State.</p></li>
 </ul></li>
 </ol>
 </section>
 <section id="expected-outcomes" class="level1">
 <h1><strong>4.0 Expected Outcomes</strong></h1>
 <hr>
-<p>This project aims to <strong>offer a comprehensive data-driven dashboard</strong> that provides insights into Jakarta’s traffic network based on Grab Posisi data. The dashboard will serve as a <strong>platform for exploration and learning</strong>, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using <strong>interactive visualizations and analysis tools</strong>, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.</p>
+<p>This project aims to <strong>offer a comprehensive data-driven dashboard</strong> that provides insights into Jakarta’s traffic network based on a comprehensive ride-hailing dataset. The dashboard will serve as a <strong>platform for exploration and learning</strong>, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using <strong>interactive visualizations and analysis tools</strong>, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.</p>
 <p>The primary objective is to <strong>provide a rich dataset and analytical interface</strong>, allowing users to <strong>conduct their own analyses</strong> and <strong>interpret trends</strong> based on real-time and historical data. The dashboard does not offer prescriptive recommendations but acts as a <strong>data point reference</strong> where users can explore key questions such as:</p>
 <ul>
 <li><p>Which points of interest (POIs) generate the highest ride-hailing traffic?</p></li>
@@ -275,8 +272,8 @@ ul.task-list li input[type="checkbox"] {
 <ol type="1">
 <li><p><strong>Exploratory Data Analysis (EDA)</strong> will include both aspatial and temporal insights. Bar charts will reveal the top five points of interest (POIs) generating the highest demand for ride-hailing services. Histograms will compare trip durations across different vehicle types, such as cars and motorcycles, while line graphs will track demand trends throughout the day, segmented into morning, afternoon, evening, and night.</p></li>
 <li><p><strong>Exploratory Spatial Data Analysis (ESDA)</strong>, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.</p></li>
-<li><p><strong>Geographically Weighted Regression (GWR)</strong>, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.</p></li>
-<li><p><strong>Traffic Flow Analysis</strong>, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.</p></li>
+<li><p><em><strong>Traffic Flow Analysis</strong>, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.</em></p></li>
+<li><p><em><strong>Geographically Weighted Regression (GWR)</strong>, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.</em></p></li>
 <li><p><strong>Forecasting and Optimization</strong> will apply advanced time series models such as <strong>ARIMA</strong> and <strong>LSTM</strong> to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.</p></li>
 </ol>
 </section>
@@ -323,10 +320,10 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <p><img src="images/clipboard-1820776631.png" class="img-fluid"></p>
 <p><strong>Phase 1 – Data Collection and Preparation:</strong><br>
-This phase involves gathering and cleaning the <strong>Grab Posisi data</strong> along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing <strong>background research</strong> on Jakarta’s mobility challenges to contextualize the study.</p>
+This phase involves gathering and cleaning the <strong>Ride-Hailing data</strong> along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing <strong>background research</strong> on Jakarta’s mobility challenges to contextualize the study.</p>
 <p><strong>Phase 2 – Exploratory Data Analysis (EDA) &amp; Exploratory Spatial Data Analysis (ESDA):</strong><br>
 In this phase, <strong>aspatial EDA</strong> methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The <strong>spatial component (ESDA)</strong> will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through <strong>Kernel Density Estimation (KDE).</strong></p>
-<p><strong>Phase 3 – Geographically Weighted Regression (GWR) Analysis:</strong><br>
+<p><strong>Phase 3 – Traffic Flow Analysis</strong><br>
 This phase focuses on <strong>GWR analysis</strong> to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The GWR results will reveal <strong>spatial variations</strong> in demand patterns and provide deeper insights into mobility trends at the local level.</p>
 <p><strong>Phase 4 – R Markdown Development for Functionality Checks:</strong><br>
 R Markdown will be used to document the analysis workflow and perform functionality checks on the scripts. This ensures that all analysis components are working as expected and will serve as a foundation for the final dashboard integration.</p>
@@ -382,11 +379,9 @@ The final phase involves <strong>user testing and optimization</strong> of the d
 <section id="references" class="level1">
 <h1>10.0 References</h1>
 <hr>
-<p>Grab Posisi Data, 2024. <em>Posisi - Understanding Traffic Flows with Real-Time Data</em>. Available at: <a href="https://engineering.grab.com/grab-posisi" class="uri">https://engineering.grab.com/grab-posisi</a> [Accessed 13 Oct.&nbsp;2024].</p>
 <p>WorldPop, 2024. <em>Indonesia Population Data</em>. Available at: <a href="https://www.worldpop.org" class="uri">https://www.worldpop.org</a> [Accessed 13 Oct.&nbsp;2024].</p>
 <p>OpenStreetMaps, 2024. <em>Jakarta Mobility and Points of Interest Data</em>. Available at: <a href="https://www.openstreetmap.org" class="uri">https://www.openstreetmap.org</a> [Accessed 13 Oct.&nbsp;2024].</p>
 <p>Data Portal Asia, 2024. <em>Points of Interest in Indonesia</em>. Available at: <a href="https://dataportal.asia/en/dataset" class="uri">https://dataportal.asia/en/dataset</a> [Accessed 13 Oct.&nbsp;2024].</p>
-<p>Grab Indonesia, 2022. <em>Reducing Reckless Driving in Indonesia Using Telematics Data</em>. Grab Press Release. Available at: <a href="https://www.grab.com/id/en/press/tech-product/grab-kurangi-kebut-kebutan-di-indonesia-dengan-data-telematika/" class="uri">https://www.grab.com/id/en/press/tech-product/grab-kurangi-kebut-kebutan-di-indonesia-dengan-data-telematika/</a> [Accessed 13 Oct.&nbsp;2024].</p>
 <p>Jakarta Smart City, 2019. <em>Visualizing Jakarta’s Mobility Trends and Traffic</em>. Available at: <a href="https://medium.com/jakartasmartcity/data-science-trainee-program-visualizing-jakartas-mobility-trends-and-traffic-830bf5a5ba8f" class="uri">https://medium.com/jakartasmartcity/data-science-trainee-program-visualizing-jakartas-mobility-trends-and-traffic-830bf5a5ba8f</a> [Accessed 13 Oct.&nbsp;2024].</p>
 <p>Jakarta Globe, 2023. <em>Jakarta Among Top 10 Most Congested Cities – INRIX Traffic Scorecard</em>. Available at: <a href="https://jakartaglobe.id/lifestyle/jakarta-among-top-10-most-congested-cities-inrix-traffic-scorecard" class="uri">https://jakartaglobe.id/lifestyle/jakarta-among-top-10-most-congested-cities-inrix-traffic-scorecard</a> [Accessed 13 Oct.&nbsp;2024].</p>
 <p>Humdata, 2024. <em>WorldPop Population Counts for Indonesia</em>. Available at: <a href="https://data.humdata.org/dataset/worldpop-population-counts-for-indonesia?force_layout=desktop" class="uri">https://data.humdata.org/dataset/worldpop-population-counts-for-indonesia?force_layout=desktop</a> [Accessed 13 Oct.&nbsp;2024].</p>
@@ -431,18 +426,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -474,7 +458,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -482,7 +488,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
