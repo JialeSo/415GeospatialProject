@@ -5,6 +5,25 @@ image_path <- "maps.png"
 project_overview_ui <- function(id) {
   tabItem(
     tabName = id,
+    # Add CSS for matching box heights
+    tags$head(
+      tags$style(HTML("
+        .equal-height-boxes {
+          display: flex;
+          flex-wrap: wrap;
+        }
+        .equal-height-box {
+          flex: 1;
+          margin: 10px;
+        }
+        .box-content {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+        }
+      "))
+    ),
     fluidRow(
       # Top Section: Jumbotron with Text and Image
       tags$div(
@@ -33,37 +52,50 @@ project_overview_ui <- function(id) {
       )
     ),
     fluidRow(
-      # Middle Section: Functional Areas
+      # Middle Section: Functional Areas with Equal Height Boxes
+      class = "equal-height-boxes",  # Apply flex container class
       column(
         width = 4,
         box(
+          class = "equal-height-box",  # Apply individual box class
           title = "Kernel Density Estimate",
           width = 12,
           solidHeader = FALSE,
-          p(
-            "Analyze areas of spatial concentration by number of ride-hailing trips and availability of POIs in Jakarta. Visualize potential hotspots and overall trip distribution patterns along road networks."
+          div(
+            class = "box-content",  # Ensure full height usage
+            p(
+              "Analyze areas of spatial concentration by number of ride-hailing trips and availability of POIs in Jakarta. Visualize potential hotspots and overall trip distribution patterns along road networks."
+            )
           )
         )
       ),
       column(
         width = 4,
         box(
+          class = "equal-height-box",
           title = "Local Indicators of Spatial Autocorrelation",
           width = 12,
           solidHeader = FALSE,
-          p(
-            "Identify specific areas of significant clustering or outliers based on the number of ride-hailing trips using Local Moran’s I. Provide insights into spatial disparities in travel demand."
+          div(
+            class = "box-content",
+            p(
+              "Identify specific areas of significant clustering or outliers based on the number of ride-hailing trips using Local Moran’s I. Provide insights into spatial disparities in travel demand."
+            )
           )
         )
       ),
       column(
         width = 4,
         box(
+          class = "equal-height-box",
           title = "Origin Destination Analysis",
           width = 12,
           solidHeader = FALSE,
-          p(
-            "Understand movement patterns while highlighting the flow intensity, direction, and connectivity between different areas within Jakarta with Spatial Interaction Modelling."
+          div(
+            class = "box-content",
+            p(
+              "Understand movement patterns while highlighting the flow intensity, direction, and connectivity between different areas within Jakarta with Spatial Interaction Modelling."
+            )
           )
         )
       )
@@ -84,3 +116,4 @@ project_overview_ui <- function(id) {
     )
   )
 }
+
