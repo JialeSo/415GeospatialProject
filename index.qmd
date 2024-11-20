@@ -4,15 +4,15 @@ about:
   template: jolla
   id: about-block
   links:
-    - icon: envelope
-      text: Jezelei Manangan
-      href: "mailto:manangan.2022@scis.smu.edu.sg"
-    - icon: envelope
-      text: Foo Jia Yi Samantha
-      href: "mailto:samanthafoo.2022@scis.smu.edu.sg"
-    - icon: envelope
+    - icon: linkedin
+      text: Samantha Foo
+      href: "https://www.linkedin.com/in/samantha-foo-30bab1148/"
+    - icon: linkedin
       text: So Jia Le
-      href: "mailto:jiale.so.2022@scis.smu.edu.sg"
+      href: "https://www.linkedin.com/in/jialeso/"
+    - icon: linkedin
+      text: Jezelei Manangan
+      href: "https://www.linkedin.com/in/jezelei-m/"
 ---
 
 ::: {#hero-heading}
@@ -21,12 +21,12 @@ Hi there! 👋 We are a trio-team of **Information Systems students** from the S
 We invite you to explore the contents of our project website below!
 :::
 
-+-------------------+-----------------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
-| <p id="contents"> | ## [**Project Proposal**](https://is415-streetsurfers-g2.netlify.app/proposal/proposal)                               | <p id="contents">                                 |
-|                   |                                                                                                                       |                                                   |
-| Oct 13, 2024      | Take a glimpse into our proposed project including our problem statement, dataset, ShinyApp UI and proposed timeline. | ![](images/clipboard-2612382224.png){width="300"} |
-|                   |                                                                                                                       |                                                   |
-| *Phase 0*         |                                                                                                                       | </p>                                              |
-|                   |                                                                                                                       |                                                   |
-| </p>              |                                                                                                                       |                                                   |
-+-------------------+-----------------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
++-------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
+| <p id="contents"> | ## [**Project Proposal**](https://is415-streetsurfers-g2.netlify.app/proposal/proposal)                     | <p id="contents">                                 |
+|                   |                                                                                                             |                                                   |
+| Oct 13, 2024      | Take a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline. | ![](images/clipboard-2612382224.png){width="300"} |
+|                   |                                                                                                             |                                                   |
+| *Phase 0*         |                                                                                                             | </p>                                              |
+|                   |                                                                                                             |                                                   |
+| </p>              |                                                                                                             |                                                   |
++-------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
