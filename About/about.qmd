@@ -1,23 +1,20 @@
 ---
-title: "About"
+title: "Meet the Group!"
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: Samantha Foo
+      href: "https://www.linkedin.com/in/samantha-foo-30bab1148/"
+    - icon: linkedin
+      text: So Jia Le
+      href: "https://www.linkedin.com/in/jialeso/"
+    - icon: linkedin
+      text: Jezelei Manangan
+      href: "https://www.linkedin.com/in/jezelei-m/"
 ---
-
-::: {style="text-align:center; margin-top: 100px;"}
-<h1 style="font-size: 4em; color: #95a5a6;">
-
-🚧 Page Coming Soon 🚧
-
-</h1>
-
-<p style="font-size: 1.5em; color: #7f8c8d; margin-top: 30px;">
-
-We are currently building something amazing for you. Stay tuned for updates!
-
-</p>
-
-<p style="font-size: 1.2em; color: #95a5a6; margin-top: 50px;">
-
-Meanwhile, feel free to explore other sections of our site.
-
-</p>
+::: {#hero-heading}
+Hi there! 👋 We are a trio-team of **Information Systems students** from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under **Prof. Kam Tin Seong**! 🌍
 :::
+
+![](images/clipboard-1233832149.png){width="1300"}
