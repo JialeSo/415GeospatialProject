@@ -58,7 +58,7 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
 ------------------------------------------------------------------------
 
-1.  ** Ride-hailing Data 
+1.  **Ride-hailing Data**
 
     -   Contains GPS pings from ride-hailing vehicles, including **timestamps, route data, and vehicle type** (motorcycle/car).
 
@@ -102,15 +102,13 @@ The proposed methodology involves a combination of
 
 2.  **Exploratory Spatial Data Analysis (ESDA)**, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.
 
-<<<<<<< Updated upstream
+
 3.  ***Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.*
 
 4.  ***Geographically Weighted Regression (GWR)**, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.*
 
-5.  ***Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.*
-=======
-3.  **Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.
->>>>>>> Stashed changes
+5.  **Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.
+
 
 # **6.0 Planned Features**
 
@@ -252,7 +250,6 @@ OpenStreetMaps, 2024. *Jakarta Mobility and Points of Interest Data*. Available 
 
 Data Portal Asia, 2024. *Points of Interest in Indonesia*. Available at: <https://dataportal.asia/en/dataset> \[Accessed 13 Oct. 2024\].
 
-Grab Indonesia, 2022. *Reducing Reckless Driving in Indonesia Using Telematics Data*. Grab Press Release. Available at: <https://www.grab.com/id/en/press/tech-product/grab-kurangi-kebut-kebutan-di-indonesia-dengan-data-telematika/> \[Accessed 13 Oct. 2024\].
 
 Jakarta Smart City, 2019. *Visualizing Jakarta’s Mobility Trends and Traffic*. Available at: <https://medium.com/jakartasmartcity/data-science-trainee-program-visualizing-jakartas-mobility-trends-and-traffic-830bf5a5ba8f> \[Accessed 13 Oct. 2024\].
 
