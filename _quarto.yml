@@ -20,6 +20,8 @@ website:
       - href: index.qmd
         text: "Home"
         icon: fas fa-home
+      - href: About/about.qmd
+        text: "About Us"
    
 format:
   html:
