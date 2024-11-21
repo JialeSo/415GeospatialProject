@@ -13,7 +13,7 @@ library(sp)
 library(reshape2)
 library(tidyverse)
 library(RColorBrewer)
-library(viridis)
+library(plotly)
 
 # UI
 od_analysis_ui <- function(id) {
@@ -163,7 +163,7 @@ od_analysis_ui <- function(id) {
         title = "Push Pull Factor Analysis",
         width = 5,
         collapsible = TRUE,
-        plotOutput(ns("coeff_summary"))
+        plotlyOutput(ns("coeff_summary"))
       ),
     ),
   )
@@ -395,6 +395,7 @@ od_analysis_server <- function(id, datasets) {
     od_map_data <- eventReactive(input$apply_od_filter, {
       od_trip_data <- filtered_data()
       odMAP <- reactive_data$map
+
       if (input$level_of_analysis == 'all') {
         od_data_fij  <- od_trip_data %>%
         filter(origin_district != "outside of jakarta" & destination_district != "outside of jakarta") %>%
@@ -422,7 +423,17 @@ od_analysis_server <- function(id, datasets) {
           total_trips = outgoing_trips + incoming_trips
         )
 
-        final_map <- odMAP %>% left_join(district_trip_totals, by = c("district" = "district"))
+        poi_counts <- jakarta_poi_final() %>%
+          st_drop_geometry() %>%
+          group_by(district, category) %>%
+          summarise(count = n(), .groups = "drop") %>%
+          pivot_wider(names_from = category, values_from = count, values_fill = 0) # Wide format for categories
+
+        final_map <- odMAP %>% 
+          left_join(district_trip_totals, by = c("district" = "district")) %>%
+          left_join(poi_counts, by = c("district" = "district")) # Add POI counts to map data
+
+
         flow_lines <- od2line(flow = od_data_fij, zones = final_map, zone_code = "district")
       } else if ((input$level_of_analysis == 'district')) {
 
@@ -453,7 +464,20 @@ od_analysis_server <- function(id, datasets) {
           incoming_trips = coalesce(incoming_trips, 0), 
           total_trips = outgoing_trips + incoming_trips
         )
-        final_map <- odMAP %>% left_join(village_trip_totals, by = c("village" = "village"))
+
+
+        # Add POI counts per category to each village #CHANGE HERE
+        poi_counts <- jakarta_poi_final() %>%
+          st_drop_geometry() %>%
+          group_by(village, category) %>%
+          summarise(count = n(), .groups = "drop") %>%
+          pivot_wider(names_from = category, values_from = count, values_fill = 0) # Wide format for categories
+
+        final_map <- odMAP %>%
+          left_join(village_trip_totals, by = c("village" = "village")) %>%
+          left_join(poi_counts, by = c("village" = "village")) # Add POI counts to map data
+
+
         flow_lines <- od2line(flow = od_data_fij, zones = final_map, zone_code = "village")
       }
       
@@ -474,7 +498,18 @@ od_analysis_server <- function(id, datasets) {
           title = "Total Trips",
           border.col = "grey",
           lwd = 0.5,
-          popup.vars = c("Total Trips" = "total_trips")  # Show district and total trips in popup
+          popup.vars = c(
+            "District" = "district",
+            "Total Trips" = "total_trips",
+            "Cultural Attractions" = "Cultural_Attractions", 
+            "Essentials" = "Essentials",                    
+            "Facilities & Services" = "Facilities_Services",
+            "Offices & Business" = "Offices_Business",     
+            "Others" = "Others",                           
+            "Restaurants & Food" = "Restaurants_Food",    
+            "Shops" = "Shops",                              
+            "Recreation & Entertainment" = "Recreation_Entertainment"  
+          )  # Show district and total trips in popup
         ) +
         tm_shape(flow_lines) +
         tm_lines(
@@ -545,10 +580,14 @@ od_analysis_server <- function(id, datasets) {
       list(origSIM_district = origSIM_district, destSIM_district = destSIM_district, dbcSIM_district = dbcSIM_district)
     })
 
-    output$coeff_summary <- renderPlot({
+    output$coeff_summary <- renderPlotly({
+      # Ensure coeffencient_data() is not NULL or invalid
+      req(coeffencient_data())  
+
+      # Extract the results from the reactive coeffencient_data()
       results <- coeffencient_data()
 
-      # Determine the coefficients based on the selected spatial model
+      # Process the coefficients based on the selected spatial model
       coefficients_district_df <- switch(
         input$spatial_model,
         "Origin-Constrained" = {
@@ -603,22 +642,34 @@ od_analysis_server <- function(id, datasets) {
         }
       )
 
+      # Filter coefficients based on user selection
       filtered_data <- switch(
         input$factors,
-        "push_pull" = coefficients_district_df,  # Show all coefficients
-        "push_only" = coefficients_district_df %>% filter(Coefficient < 0),  # Show only negative coefficients
-        "pull_only" = coefficients_district_df %>% filter(Coefficient > 0)   # Show only positive coefficients
+        "push_pull" = coefficients_district_df,  # Include all coefficients
+        "push_only" = coefficients_district_df %>% filter(Coefficient < 0),  # Only push factors (negative)
+        "pull_only" = coefficients_district_df %>% filter(Coefficient > 0)   # Only pull factors (positive)
       )
 
-      # Reorder categories based on coefficients for better visualization
+      # Reorder categories by coefficient for better visualization
       filtered_data <- filtered_data %>%
         mutate(Category = fct_reorder(Category, Coefficient, .desc = TRUE))
 
-      # Generate the plot
-      ggplot(filtered_data, aes(y = Category, x = Coefficient, fill = Coefficient)) +
+      # Create the ggplot object
+      gg <- ggplot(filtered_data, aes(
+        y = Category, 
+        x = Coefficient, 
+        fill = Coefficient, 
+        text = paste("Category:", Category, "<br>", "Coefficient:", round(Coefficient, 2)) # Tooltip
+      )) +
         geom_bar(stat = "identity") +
+         scale_fill_gradient2(
+          low = "#FF7F7F",    
+          mid = "#F8F9F9",  
+          high = "#66CDAA",   
+          midpoint = 0,       
+          guide = "none"     
+        ) +
         theme_minimal() +
-        scale_fill_viridis(option = "D", direction = -1, guide = "none") +
         labs(
           title = paste(input$spatial_model, "Model (", input$factors, ")", sep = " "),
           x = "Coefficient",
@@ -630,11 +681,25 @@ od_analysis_server <- function(id, datasets) {
           legend.position = "none"
         ) +
         scale_x_continuous(
-          position = "top", 
-          limits = c(-max(abs(coefficients_district_df$Coefficient)),
-                    max(abs(coefficients_district_df$Coefficient)))
+          position = "top",
+          limits = c(
+            -max(abs(filtered_data$Coefficient), na.rm = TRUE),
+            max(abs(filtered_data$Coefficient), na.rm = TRUE)
+          )
         )
+
+      # Convert ggplot to an interactive Plotly object
+      ggplotly(gg, tooltip = "text") %>%
+        layout(
+          title = list(
+            x = 0,  # Align the title to the left
+            font = list(size = 16)
+          )
+        )
+
     })
+
+
 
     #LOGIC FOR INFO BOXES
     output$highest_push_box <- renderInfoBox({
@@ -695,9 +760,6 @@ od_analysis_server <- function(id, datasets) {
       )
     })
 
-
-
-
     output$highest_pull_box <- renderInfoBox({
       req(coeffencient_data())  # Ensure coefficients data is available
       results <- coeffencient_data()
@@ -754,7 +816,6 @@ od_analysis_server <- function(id, datasets) {
         icon = icon("arrow-up"),
       )
     })
-
 
     output$highest_trips_box <- renderInfoBox({
       trip_data <- filtered_data()
