@@ -16,6 +16,12 @@ kernel_density_ui <- function(id) {
   # UI structure
   tabItem(
     tabName = id,
+    jumbotron(
+      title = "Kernel Density Estimation",
+      lead = "Discover spatial patterns in ride-hailing trip densities using Kernel Density Estimation (KDE). 
+      This page highlights areas with concentrated trip activity, providing a visual representation of hotspots and sparse regions. Explore how ride-hailing trips are distributed across Jakarta by dynamically adjusting bandwidth, kernel types, and filtering options.",
+      btnName = NULL
+    ),
     tags$head(
       tags$style(HTML("
         .small-value-box .small-box {

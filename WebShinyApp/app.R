@@ -11,16 +11,17 @@ library(tmap)
 library(shinyBS)
 thematic_shiny()
 
-# Source all component files and tab modules
-source("components/sidebar.R")
-source("components/header.R")
-source("components/footer.R")
-source("tabs/project_overview.R")
-source("tabs/datasets.R")
-source("tabs/exploratory_data.R")
-source("tabs/kernel_density.R")
-source("tabs/lisa_analysis.R")
-source("tabs/od_analysis.R")
+# Source all component files and tab modulesLine 15Filepaths are case-sensitive on deployment server.v
+source("components/sidebar.r")
+source("components/header.r")
+source("components/footer.r")
+source("tabs/project_overview.r")
+source("tabs/datasets.r")
+source("tabs/exploratory_data.r")
+source("tabs/kernel_density.r")
+source("tabs/lisa_analysis.r")
+source("tabs/od_analysis.r")
+source("tabs/kernel_density_network.r")
 
 # Define the main UI
 ui <- dashboardPage(
@@ -35,6 +36,7 @@ ui <- dashboardPage(
       project_overview_ui("project_overview"),
       exploratory_data_ui("exploratory_data"),
       kernel_density_ui("kernel_density"),
+      kernel_network_density_ui("kernel_network_density"),
       lisa_analysis_ui("lisa_analysis"),
       od_analysis_ui("od_analysis"),
       datasets_ui("datasets")
@@ -53,7 +55,8 @@ server <- function(input, output, session) {
   jakarta_district <- reactive({readRDS("datasource/jakarta_district.rds")})
   jakarta_district_population <- reactive({readRDS("datasource/jakarta_district_population.rds")})
   jakarta_village_population <- reactive({readRDS("datasource/jakarta_village_population.rds")})
-  
+  jakarta_roads <- reactive({readRDS("datasource/jakarta_road.rds")})
+
   desire_line_district <- reactive({readRDS("datasource/desire_line_district.rds")})
   desire_line_village<- reactive({readRDS("datasource/desire_line_village.rds")})
   coefficients_long_district <- reactive({readRDS("datasource/coefficients_long_district.rds")})
@@ -70,7 +73,7 @@ server <- function(input, output, session) {
     jakarta_district = jakarta_district,
     jakarta_district_population = jakarta_district_population,
     jakarta_village_population = jakarta_village_population,
-    
+    jakarta_roads = jakarta_roads, 
     desire_line_district = desire_line_district,
     desire_line_village = desire_line_village,
     coefficients_long_district = coefficients_long_district,
@@ -82,6 +85,7 @@ server <- function(input, output, session) {
   # Call each tab module's server function with the datasets as needed
   exploratory_data_server("exploratory_data", datasets)
   kernel_density_server("kernel_density", datasets)
+  kernel_network_density_server("kernel_network_density", datasets)
   lisa_analysis_server("lisa_analysis", datasets)
   od_analysis_server("od_analysis", datasets)
   datasets_server("datasets", datasets)
