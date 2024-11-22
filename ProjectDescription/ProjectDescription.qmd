@@ -1,0 +1,254 @@
+---
+title: "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data" 
+author: "Group 2: Jezelei, Jiale, Samantha"
+date: "October  13, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+---
+
+# **1.0 Background**
+
+------------------------------------------------------------------------
+
+![](images/clipboard-2612382224.png)
+
+Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms offer an alternative means of transportation, yet the relationship between **mobility patterns and congestion** is still not fully understood.
+
+With the availability of comprehensivenride-hailing data, which provides real-time movement patterns, we can study the **demand for ride-hailing services** around different **points of interest (POIs)** such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify **bottlenecks and high-demand zones** to optimize urban mobility and support better traffic management strategies.
+
+------------------------------------------------------------------------
+
+# **2.0 Problem Statement**
+
+![](images/clipboard-3096906590.png){width="668"}
+
+Jakarta’s increasing urbanization drives a growing need for **on-demand transportation services** like ride-hailing services, particularly in areas with high concentrations of **POIs**. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:
+
+-   Which POIs generate the most ride-hailing traffic?
+
+-   How does demand vary across different times of the day, week, and seasons?
+
+-   Can ride-hailing services improve access to key locations while alleviating congestion?
+
+Answering these questions will provide insights into **Jakarta’s mobility patterns** and inform strategies to **reduce traffic bottlenecks** while maintaining access to key locations.
+
+## **2.1 Motivation**
+
+![](images/ride-hailing.jpg)
+
+The increasing availability of **ride-hailing data** presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and **which POIs generate the most demand** can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a **user-centric approach** by identifying **ride-hailing hotspots** around key locations.
+
+Our analysis will focus on the broader mobility landscape of Jakarta, examining how ride-hailing services are utilized across the city. The insights gained will support **policymakers, urban planners, and transportation authorities** in optimizing traffic management and public transport, with the potential to **serve as a model for other urban areas**.
+
+## **2.2 Project Objectives**
+
+1.  **Analyze ride-hailing demand** across Jakarta to identify patterns at key POIs and traffic bottlenecks.
+
+2.  **Investigate spatial and temporal trends** in usage of Ride-Hailing Vehicles to understand how ride demand fluctuates.
+
+3.  **Optimize mobility services** by understanding possible bottlenecks in district flows.
+
+4.  **Develop a scalable framework** that other cities can use to address similar urban mobility challenges.
+
+# **3.0 Dataset**
+
+------------------------------------------------------------------------
+
+1.  **Ride-hailing Data**
+
+    -   Contains GPS pings from ride-hailing vehicles, including **timestamps, route data, and vehicle type** (motorcycle/car).
+
+    -   Provides insights into **ride-hailing demand, traffic hotspots, and movement patterns** around key locations in Jakarta.
+
+2.  **Supporting Datasets**
+
+    -   **Jakarta Points of Interest (POI) [(HumData)](https://data.humdata.org/dataset/hotosm_idn_points_of_interest?)**: Includes office buildings, shopping malls, parks, and other key locations.
+
+    -   **Indonesia Population Density Data** [**(ArcGIS)**](https://storymaps.arcgis.com/stories/36e38ceefab0455eb6059a734381723c)[:](WorldPop%20Indonesia%20Population%20Density) Adds demographic context for understanding mobility trends.
+
+    -   **Jakarta Map [(HDX)](https://data.humdata.org/dataset/cod-ab-idn?): Visualize the** geographical districts of the City-State.
+
+# **4.0 Expected Outcomes**
+
+------------------------------------------------------------------------
+
+This project aims to **offer a comprehensive data-driven dashboard** that provides insights into Jakarta’s traffic network based on a comprehensive ride-hailing dataset. The dashboard will serve as a **platform for exploration and learning**, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using **interactive visualizations and analysis tools**, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.
+
+The primary objective is to **provide a rich dataset and analytical interface**, allowing users to **conduct their own analyses** and **interpret trends** based on real-time and historical data. The dashboard does not offer prescriptive recommendations but acts as a **data point reference** where users can explore key questions such as:
+
+-   Which points of interest (POIs) generate the highest ride-hailing traffic?
+
+-   How does ride-hailing demand fluctuate across different times of the day or seasons?
+
+-   Where are the primary traffic bottlenecks forming, and how do they shift over time?
+
+This project will provide an opportunity for **users to draw their own conclusions** about Jakarta’s traffic system and mobility patterns. By offering access to detailed data visualizations—such as **heatmaps, demand clusters, and desire line maps**—the dashboard empowers users to **experiment with the data** and explore **what-if scenarios** without enforcing specific solutions.
+
+For **Jakarta officials and transportation planners**, the dashboard will act as a **decision-support tool**, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage **exploration and deeper inquiry** into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that **multiple stakeholders** can use the insights to make data-informed decisions based on their unique contexts and priorities.
+
+# 5.0 Proposed Scope
+
+------------------------------------------------------------------------
+
+The proposed methodology involves a combination of
+
+1.  **Exploratory Data Analysis (EDA)** will include both aspatial and temporal insights. Bar charts will reveal the top five points of interest (POIs) generating the highest demand for ride-hailing services. Histograms will compare trip durations across different vehicle types, such as cars and motorcycles, while line graphs will track demand trends throughout the day, segmented into morning, afternoon, evening, and night.
+
+2.  **Exploratory Spatial Data Analysis (ESDA)**, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.
+
+3.  ***Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.*
+
+4.  ***Geographically Weighted Regression (GWR)**, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.*
+
+5.  **Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.
+
+# **6.0 Planned Features**
+
+------------------------------------------------------------------------
+
+## **6.1 A Shiny Web App & Website for Analysis**
+
+![An Example of Shiny Web App Dashboard](images/clipboard-1753788649.png){fig-align="center"}
+
+The Shiny web application will feature an **interactive dashboard** designed to explore Jakarta’s ride-hailing demand. Users will have access to filters that allow them to narrow data by date, time, vehicle type, and specific POIs. The visualizations will include heatmaps and choropleth maps to provide spatial insights, as well as desire line maps to track movement patterns between origins and destinations. Additionally, data tables will offer further breakdowns, enabling detailed analysis of rides segmented by POI, time, and vehicle type.
+
+## **6.2 Wireframe**
+
+The dashboard will consist of a sidebar with filters to customize the displayed data, including options to select vehicle type, date ranges, and specific POIs. The central section will showcase interactive maps and visualizations that respond dynamically to the applied filters. A summary section at the bottom of the interface will display key statistics, such as the POIs with the highest demand and the most frequently traveled routes. This layout ensures that users can seamlessly explore traffic patterns and mobility behavior while interacting with the data.
+
+### **6.2.1 About the dataset**
+
+This section introduces users to the dataset used for the analysis, providing context on the data sources, columns, and key features. It includes a selection interface allowing users to filter specific columns and datasets, facilitating exploration and understanding of the available data.
+
+![](images/clipboard-519845278.png)
+
+### 6.2.2 EDA
+
+The EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.
+
+![](images/clipboard-2375845328.png)
+
+### 6.2.3 ESDA
+
+The ESDA section offers spatial insights into ride-hailing demand. Choropleth maps visualize demand across the city, while corresponding heatmaps highlight high-activity areas. Users can adjust the time range using an interactive slider to view traffic patterns during specific hours, and filters allow exploration by vehicle type and location point, segmented by weekday or weekend activity.
+
+![](images/clipboard-3249265897.png)
+
+### 6.2.4 Flow Data Analysis
+
+This section focuses on analyzing movement patterns between POIs using desire line maps. It visualizes frequently traveled routes and helps identify traffic flow patterns across peak times (morning, afternoon, evening, night). Users can switch between car and motorcycle data to compare travel behavior and assess which routes experience the highest demand.
+
+![](images/clipboard-2619441323.png)
+
+# **7.0 Planned Timeline**
+
+------------------------------------------------------------------------
+
+![](images/clipboard-1820776631.png)
+
+**Phase 1 – Data Collection and Preparation:**\
+This phase involves gathering and cleaning the **Ride-Hailing data** along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing **background research** on Jakarta’s mobility challenges to contextualize the study.
+
+**Phase 2 – Exploratory Data Analysis (EDA) & Exploratory Spatial Data Analysis (ESDA):**\
+In this phase, **aspatial EDA** methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The **spatial component (ESDA)** will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through **Kernel Density Estimation (KDE).**
+
+**Phase 3 – Traffic Flow Analysis**\
+This phase focuses on **GWR analysis** to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The GWR results will reveal **spatial variations** in demand patterns and provide deeper insights into mobility trends at the local level.
+
+**Phase 4 – R Markdown Development for Functionality Checks:**\
+R Markdown will be used to document the analysis workflow and perform functionality checks on the scripts. This ensures that all analysis components are working as expected and will serve as a foundation for the final dashboard integration.
+
+**Phase 5 – R-Shiny App Development for User Interactivity:**\
+The **Shiny web app** will be developed to provide users with an interactive dashboard. It will allow users to explore demand patterns dynamically using filters, visualizations, and maps, enabling personalized data exploration through intuitive interfaces.
+
+**Phase 6 – Testing, Optimization, and Final Submission:**\
+The final phase involves **user testing and optimization** of the dashboard to ensure it performs efficiently and meets user expectations. After refining the app based on feedback, it will be **deployed on Netlify**, followed by final project submission.
+
+# **8.0 Software Tools**
+
+------------------------------------------------------------------------
+
+## 8.1 Software Architecture
+
+![](images/Test.png){width="708"}
+
+The project will use **RStudio** for data analysis, visualization, and Shiny app development.
+
+**Shiny** will enable the creation of an interactive dashboard with dynamic visualizations, whilePlotly, Leaflet, and tmap will support interactive charts and geospatial maps. Spatial data will be handled through **sf** and **rgeos** for accurate mapping.
+
+For version control and collaboration, **GitHub** will track changes, manage updates, and store project files. Once developed, the dashboard will be deployed using **Netlify**, which integrates with GitHub to enable automated and continuous deployment. This setup ensures the app remains accessible and up-to-date with every change pushed to the repository.
+
+## 8.2 R Packages
+
+With majority of the analysis will be done through R, below are some packages the team will be using to help with the bulk chunk of analysis.
+
+-   [**shiny**](https://shiny.rstudio.com): For building interactive web applications in R.
+
+-   [**shinythemes**](https://cran.r-project.org/web/packages/shinythemes): Provides ready-to-use themes for Shiny apps.
+
+-   [**shinyWidgets**](https://cran.r-project.org/web/packages/shinyWidgets): Enhances Shiny apps with additional UI widgets.
+
+-   [**RColorBrewer**](https://cran.r-project.org/web/packages/RColorBrewer): Color palettes for R, especially useful in maps and visualizations.
+
+-   [**tidyverse**](https://www.tidyverse.org): A collection of R packages for data science, including dplyr, ggplot2, tidyr, and others.
+
+-   [**leaflet**](https://cran.r-project.org/web/packages/leaflet): For interactive maps within Shiny or RMarkdown.
+
+-   [**tmap**](https://cran.r-project.org/web/packages/tmap): Thematic mapping for visualizing spatial data.
+
+-   [**sfdep**](https://cran.r-project.org/web/packages/sfdep): Tools for spatial dependence and autocorrelation analysis.
+
+-   [**rgeos**](https://cran.r-project.org/web/packages/rgeos): Geometry operations for spatial data.
+
+-   [**sf**](https://cran.r-project.org/web/packages/sf): Simple Features for R for handling and analyzing spatial data.
+
+-   [**sp**](https://cran.r-project.org/web/packages/sp): Provides classes and methods for spatial data analysis.
+
+-   [**rgdal**](https://cran.r-project.org/web/packages/rgdal): Interface to GDAL for reading and writing spatial data.
+
+-   [**plotly**](https://cran.r-project.org/web/packages/plotly): Interactive plots and graphs.
+
+-   [**ClustGeo**](https://cran.r-project.org/web/packages/ClustGeo): Hierarchical clustering with spatial constraints.
+
+-   [**dendextend**](https://cran.r-project.org/web/packages/dendextend): Extending R's dendrogram functionality for better visualization.
+
+-   [**GGally**](https://cran.r-project.org/web/packages/GGally): Extensions to ggplot2 for correlation matrices and other visualizations.
+
+-   [**ggdendro**](https://cran.r-project.org/web/packages/ggdendro): Tools for creating dendrograms using ggplot2.
+
+-   [**corrplot**](https://cran.r-project.org/web/packages/corrplot): Visualization of correlation matrices.
+
+-   [**DT**](https://cran.r-project.org/web/packages/DT): Provides data tables for R with interactive features.
+
+# **9.0 Team Members**
+
+------------------------------------------------------------------------
+
+**Jezelei Manangan** \| 01465785 \| jmanangan.2022\@scis.smu.edu.sg
+
+**Foo Jia Yi Samantha** \| 01461144 \| samanthafoo.2022\@scis.smu.edu.sg
+
+**Jia le So.** \| 01455940 \| jiale.so.2022\@scis.smu.edu.sg
+
+Consulting Professor: **KAM Tin Seong \|** tskam\@smu.edu.sg
+
+# 10.0 References
+
+------------------------------------------------------------------------
+
+WorldPop, 2024. *Indonesia Population Data*. Available at: <https://www.worldpop.org> \[Accessed 13 Oct. 2024\].
+
+OpenStreetMaps, 2024. *Jakarta Mobility and Points of Interest Data*. Available at: <https://www.openstreetmap.org> \[Accessed 13 Oct. 2024\].
+
+Data Portal Asia, 2024. *Points of Interest in Indonesia*. Available at: <https://dataportal.asia/en/dataset> \[Accessed 13 Oct. 2024\].
+
+Jakarta Smart City, 2019. *Visualizing Jakarta’s Mobility Trends and Traffic*. Available at: <https://medium.com/jakartasmartcity/data-science-trainee-program-visualizing-jakartas-mobility-trends-and-traffic-830bf5a5ba8f> \[Accessed 13 Oct. 2024\].
+
+Jakarta Globe, 2023. *Jakarta Among Top 10 Most Congested Cities – INRIX Traffic Scorecard*. Available at: <https://jakartaglobe.id/lifestyle/jakarta-among-top-10-most-congested-cities-inrix-traffic-scorecard> \[Accessed 13 Oct. 2024\].
+
+Humdata, 2024. *WorldPop Population Counts for Indonesia*. Available at: <https://data.humdata.org/dataset/worldpop-population-counts-for-indonesia?force_layout=desktop> \[Accessed 13 Oct. 2024\].
+
+Humdata, 2024. *Points of Interest Dataset – Indonesia*. Available at: <https://data.humdata.org/dataset/hotosm_idn_points_of_interest> \[Accessed 13 Oct. 2024\].

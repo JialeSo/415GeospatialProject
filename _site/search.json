@@ -4,54 +4,54 @@
     "href": "WebShinyApp/WebAppShiny.html",
     "title": "Shiny App",
     "section": "",
-    "text": "Shiny App\n\npacman::p_load(sf,st,arrow,lubridate,tidyverse,raster,tmap,ggplot2, patchwork,spatstat,spNetwork,classInt,viridis,gifski,dplyr, geosphere, httr, jsonlite, DT, stplanr, chorddiag)\n\nWarning: package 'chorddiag' is not available for this version of R\n\nA version of this package for your version of R might be available elsewhere,\nsee the ideas at\nhttps://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages\n\n\nWarning in p_install(package, character.only = TRUE, ...):\n\n\nWarning in library(package, lib.loc = lib.loc, character.only = TRUE,\nlogical.return = TRUE, : there is no package called 'chorddiag'\n\n\nWarning in pacman::p_load(sf, st, arrow, lubridate, tidyverse, raster, tmap, : Failed to install/load:\nchorddiag\n\n\n\ntrip_data &lt;- read_rds(\"datasource/trip_data.rds\")\ncolnames(trip_data)\n\n [1] \"trj_id\"                   \"driving_mode\"            \n [3] \"origin_time\"              \"destination_time\"        \n [5] \"total_duration_minutes\"   \"total_distance_km\"       \n [7] \"average_speed_kmh\"        \"origin_rawlat\"           \n [9] \"origin_rawlng\"            \"destination_rawlat\"      \n[11] \"destination_rawlng\"       \"origin_lat\"              \n[13] \"origin_lng\"               \"destination_lat\"         \n[15] \"destination_lng\"          \"origin_province\"         \n[17] \"origin_district\"          \"origin_village\"          \n[19] \"destination_province\"     \"destination_district\"    \n[21] \"destination_village\"      \"origin_datetime\"         \n[23] \"destination_datetime\"     \"origin_day\"              \n[25] \"origin_hour\"              \"destination_day\"         \n[27] \"destination_hour\"         \"origin_time_cluster\"     \n[29] \"destination_time_cluster\""
+    "text": "Shiny App\n\npacman::p_load(sf,st,arrow,lubridate,tidyverse,raster,tmap,ggplot2, patchwork,spatstat,spNetwork,classInt,viridis,gifski,dplyr, geosphere, httr, jsonlite, DT, stplanr, chorddiag)\n\n\ntrip_data &lt;- read_rds(\"datasource/trip_data.rds\")\ncolnames(trip_data)\n\n [1] \"trj_id\"                   \"driving_mode\"            \n [3] \"origin_time\"              \"destination_time\"        \n [5] \"total_duration_minutes\"   \"total_distance_km\"       \n [7] \"average_speed_kmh\"        \"origin_rawlat\"           \n [9] \"origin_rawlng\"            \"destination_rawlat\"      \n[11] \"destination_rawlng\"       \"origin_lat\"              \n[13] \"origin_lng\"               \"destination_lat\"         \n[15] \"destination_lng\"          \"origin_province\"         \n[17] \"origin_district\"          \"origin_village\"          \n[19] \"destination_province\"     \"destination_district\"    \n[21] \"destination_village\"      \"origin_datetime\"         \n[23] \"destination_datetime\"     \"origin_day\"              \n[25] \"origin_hour\"              \"destination_day\"         \n[27] \"destination_hour\"         \"origin_time_cluster\"     \n[29] \"destination_time_cluster\""
   },
   {
-    "objectID": "Proposal/Proposal.html",
-    "href": "Proposal/Proposal.html",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html",
+    "href": "ProjectDescription/ProjectDescription.html",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "",
     "text": "Jakarta, one of the largest urban centers in Southeast Asia, faces severe traffic congestion due to rapid urban growth, high vehicle ownership, and an over-reliance on private transportation. While interventions like the odd-even license plate system and public transport expansion have been introduced, they have had limited success. Ride-hailing platforms offer an alternative means of transportation, yet the relationship between mobility patterns and congestion is still not fully understood.\nWith the availability of comprehensivenride-hailing data, which provides real-time movement patterns, we can study the demand for ride-hailing services around different points of interest (POIs) such as office complexes, shopping districts, recreational parks, and public amenities. This project aims to uncover how ride-hailing demand is distributed across the city and identify bottlenecks and high-demand zones to optimize urban mobility and support better traffic management strategies."
   },
   {
-    "objectID": "Proposal/Proposal.html#motivation",
-    "href": "Proposal/Proposal.html#motivation",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html#motivation",
+    "href": "ProjectDescription/ProjectDescription.html#motivation",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "2.1 Motivation",
     "text": "2.1 Motivation\n\nThe increasing availability of ride-hailing data presents a unique opportunity to analyze real-time mobility trends and address urban traffic challenges. Understanding where people travel frequently and which POIs generate the most demand can guide more efficient urban planning and traffic management. Unlike traditional traffic studies, which focus mainly on road usage metrics, this project will adopt a user-centric approach by identifying ride-hailing hotspots around key locations.\nOur analysis will focus on the broader mobility landscape of Jakarta, examining how ride-hailing services are utilized across the city. The insights gained will support policymakers, urban planners, and transportation authorities in optimizing traffic management and public transport, with the potential to serve as a model for other urban areas."
   },
   {
-    "objectID": "Proposal/Proposal.html#project-objectives",
-    "href": "Proposal/Proposal.html#project-objectives",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html#project-objectives",
+    "href": "ProjectDescription/ProjectDescription.html#project-objectives",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "2.2 Project Objectives",
     "text": "2.2 Project Objectives\n\nAnalyze ride-hailing demand across Jakarta to identify patterns at key POIs and traffic bottlenecks.\nInvestigate spatial and temporal trends in usage of Ride-Hailing Vehicles to understand how ride demand fluctuates.\nOptimize mobility services by understanding possible bottlenecks in district flows.\nDevelop a scalable framework that other cities can use to address similar urban mobility challenges."
   },
   {
-    "objectID": "Proposal/Proposal.html#a-shiny-web-app-website-for-analysis",
-    "href": "Proposal/Proposal.html#a-shiny-web-app-website-for-analysis",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html#a-shiny-web-app-website-for-analysis",
+    "href": "ProjectDescription/ProjectDescription.html#a-shiny-web-app-website-for-analysis",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "6.1 A Shiny Web App & Website for Analysis",
     "text": "6.1 A Shiny Web App & Website for Analysis\n\n\n\nAn Example of Shiny Web App Dashboard\n\n\nThe Shiny web application will feature an interactive dashboard designed to explore Jakarta’s ride-hailing demand. Users will have access to filters that allow them to narrow data by date, time, vehicle type, and specific POIs. The visualizations will include heatmaps and choropleth maps to provide spatial insights, as well as desire line maps to track movement patterns between origins and destinations. Additionally, data tables will offer further breakdowns, enabling detailed analysis of rides segmented by POI, time, and vehicle type."
   },
   {
-    "objectID": "Proposal/Proposal.html#wireframe",
-    "href": "Proposal/Proposal.html#wireframe",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html#wireframe",
+    "href": "ProjectDescription/ProjectDescription.html#wireframe",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "6.2 Wireframe",
     "text": "6.2 Wireframe\nThe dashboard will consist of a sidebar with filters to customize the displayed data, including options to select vehicle type, date ranges, and specific POIs. The central section will showcase interactive maps and visualizations that respond dynamically to the applied filters. A summary section at the bottom of the interface will display key statistics, such as the POIs with the highest demand and the most frequently traveled routes. This layout ensures that users can seamlessly explore traffic patterns and mobility behavior while interacting with the data.\n\n6.2.1 About the dataset\nThis section introduces users to the dataset used for the analysis, providing context on the data sources, columns, and key features. It includes a selection interface allowing users to filter specific columns and datasets, facilitating exploration and understanding of the available data.\n\n\n\n6.2.2 EDA\nThe EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.\n\n\n\n6.2.3 ESDA\nThe ESDA section offers spatial insights into ride-hailing demand. Choropleth maps visualize demand across the city, while corresponding heatmaps highlight high-activity areas. Users can adjust the time range using an interactive slider to view traffic patterns during specific hours, and filters allow exploration by vehicle type and location point, segmented by weekday or weekend activity.\n\n\n\n6.2.4 Flow Data Analysis\nThis section focuses on analyzing movement patterns between POIs using desire line maps. It visualizes frequently traveled routes and helps identify traffic flow patterns across peak times (morning, afternoon, evening, night). Users can switch between car and motorcycle data to compare travel behavior and assess which routes experience the highest demand."
   },
   {
-    "objectID": "Proposal/Proposal.html#software-architecture",
-    "href": "Proposal/Proposal.html#software-architecture",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html#software-architecture",
+    "href": "ProjectDescription/ProjectDescription.html#software-architecture",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "8.1 Software Architecture",
     "text": "8.1 Software Architecture\n\nThe project will use RStudio for data analysis, visualization, and Shiny app development.\nShiny will enable the creation of an interactive dashboard with dynamic visualizations, whilePlotly, Leaflet, and tmap will support interactive charts and geospatial maps. Spatial data will be handled through sf and rgeos for accurate mapping.\nFor version control and collaboration, GitHub will track changes, manage updates, and store project files. Once developed, the dashboard will be deployed using Netlify, which integrates with GitHub to enable automated and continuous deployment. This setup ensures the app remains accessible and up-to-date with every change pushed to the repository."
   },
   {
-    "objectID": "Proposal/Proposal.html#r-packages",
-    "href": "Proposal/Proposal.html#r-packages",
-    "title": "Project Proposal: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
+    "objectID": "ProjectDescription/ProjectDescription.html#r-packages",
+    "href": "ProjectDescription/ProjectDescription.html#r-packages",
+    "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "8.2 R Packages",
     "text": "8.2 R Packages\nWith majority of the analysis will be done through R, below are some packages the team will be using to help with the bulk chunk of analysis.\n\nshiny: For building interactive web applications in R.\nshinythemes: Provides ready-to-use themes for Shiny apps.\nshinyWidgets: Enhances Shiny apps with additional UI widgets.\nRColorBrewer: Color palettes for R, especially useful in maps and visualizations.\ntidyverse: A collection of R packages for data science, including dplyr, ggplot2, tidyr, and others.\nleaflet: For interactive maps within Shiny or RMarkdown.\ntmap: Thematic mapping for visualizing spatial data.\nsfdep: Tools for spatial dependence and autocorrelation analysis.\nrgeos: Geometry operations for spatial data.\nsf: Simple Features for R for handling and analyzing spatial data.\nsp: Provides classes and methods for spatial data analysis.\nrgdal: Interface to GDAL for reading and writing spatial data.\nplotly: Interactive plots and graphs.\nClustGeo: Hierarchical clustering with spatial constraints.\ndendextend: Extending R’s dendrogram functionality for better visualization.\nGGally: Extensions to ggplot2 for correlation matrices and other visualizations.\nggdendro: Tools for creating dendrograms using ggplot2.\ncorrplot: Visualization of correlation matrices.\nDT: Provides data tables for R with interactive features."
   },
@@ -60,7 +60,7 @@
     "href": "index.html",
     "title": "Team’s 2 IS415 Geospatial Analytics Project Experience",
     "section": "",
-    "text": "Hi there! 👋 We are a trio-team of Information Systems students from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under Prof. Kam Tin Seong! 🌍\nWe invite you to explore the contents of our project website below!\n\n\n\n\n\nOct 13, 2024\nPhase 0\n\nProject Proposal\nTake a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline."
+    "text": "Hi there! 👋 We are a trio-team of Information Systems students from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under Prof. Kam Tin Seong! 🌍\nWe invite you to explore the contents of our project website below!\n\n\n\n\n\n\n\n\n\n\nOct 13, 2024\nPhase 0\n\nProject Description\nTake a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline."
   },
   {
     "objectID": "About/about.html",
@@ -77,24 +77,10 @@
     "text": "About this site\n\n1 + 1\n\n[1] 2"
   },
   {
-    "objectID": "Poster/Poster.html",
-    "href": "Poster/Poster.html",
-    "title": "Project Poster",
-    "section": "",
-    "text": "&lt;img src=\"poster.jpg\" /&gt;"
-  },
-  {
     "objectID": "UserGuide/UserGuide.html",
     "href": "UserGuide/UserGuide.html",
     "title": "User Guide",
     "section": "",
     "text": "🚧 Page Coming Soon 🚧\n\n\nWe are currently building something amazing for you. Stay tuned for updates!\n\n\nMeanwhile, feel free to explore other sections of our site."
-  },
-  {
-    "objectID": "ForFunMockDataDashboardShiny/csv.html",
-    "href": "ForFunMockDataDashboardShiny/csv.html",
-    "title": "Dynamic Jakarta & LTA Comprehensive Analysis Dashboard",
-    "section": "",
-    "text": "ui &lt;- dashboardPage(\n  dashboardHeader(\n    color = \"blue\", \n    inverted = TRUE, \n    title = div(icon(\"chart bar\"), \"Jakarta & LTA EDA Dashboard\")\n  ),\n\n  dashboardSidebar(\n    size = \"thin\", \n    color = \"teal\",\n    sidebarMenu(\n      menuItem(\"EDA\", tabName = \"eda\", icon = icon(\"chart line\")),\n      menuItem(\"Data Preview\", tabName = \"data_preview\", icon = icon(\"table\")),\n      menuItem(\"Settings\", tabName = \"settings\", icon = icon(\"cogs\"))\n    )\n  ),\n\n  dashboardBody(\n    # Top Row with KPI Cards\n    fluidRow(\n      infoBoxOutput(\"total_trips\", width = 3),\n      infoBoxOutput(\"avg_duration\", width = 3),\n      infoBoxOutput(\"most_popular_mode\", width = 3),\n      infoBoxOutput(\"peak_hour\", width = 3)\n    ),\n\n    # Filters Row (Floating Filter Section)\n    fluidRow(\n      column(\n        width = 12,\n        box(\n          title = \"Filters\", color = \"blue\", ribbon = TRUE, width = 12,\n          checkboxGroupInput(\"transport_modes\", \"Select Transport Modes\", \n                             choices = c(\"Bus\", \"Train\", \"Bike\", \"Car\")),\n          dateRangeInput(\"daterange\", \"Select Date Range\", \n                         start = Sys.Date() - 30, end = Sys.Date()),\n          actionButton(\"apply_filters\", \"Apply Filters\", icon = icon(\"filter\")),\n          checkboxInput(\"dynamic_filters\", \"Enable Dynamic Filters\", value = FALSE)\n        )\n      )\n    ),\n\n    # Charts Section\n    fluidRow(\n      box(title = \"Trips Over Time\", color = \"blue\", width = 6, ribbon = TRUE, \n          plotOutput(\"trips_time_series\")),\n      box(title = \"Transport Mode Distribution\", color = \"green\", width = 6, ribbon = TRUE, \n          plotOutput(\"mode_distribution\"))\n    ),\n    \n    fluidRow(\n      box(title = \"Trip Duration Distribution\", color = \"purple\", width = 6, ribbon = TRUE, \n          plotOutput(\"duration_histogram\")),\n      box(title = \"Trips by Hour of Day\", color = \"orange\", width = 6, ribbon = TRUE, \n          plotOutput(\"hourly_trips\"))\n    )\n  )\n)\n\n\nserver &lt;- function(input, output, session) {\n  # Mock data (same structure as provided earlier)\n  mock_data &lt;- data.frame(\n    trip_id = 1:100,\n    start_time = Sys.time() + seq(1, by = 60, length.out = 100),\n    end_time = Sys.time() + seq(601, by = 60, length.out = 100),\n    mode_of_transport = sample(c(\"Car\", \"Bus\", \"Bike\", \"Train\"), 100, replace = TRUE),\n    start_to_end_duration = sample(10:60, 100, replace = TRUE)\n  )\n\n  # Reactive data filtered based on inputs\n  filtered_data &lt;- reactive({\n    data &lt;- mock_data\n    if (!is.null(input$transport_modes)) {\n      data &lt;- data[data$mode_of_transport %in% input$transport_modes, ]\n    }\n    if (!is.null(input$daterange)) {\n      data &lt;- data[data$start_time &gt;= input$daterange[1] & \n                     data$start_time &lt;= input$daterange[2], ]\n    }\n    data\n  })\n\n  # Render plots based on filtered data\n  output$trips_time_series &lt;- renderPlot({\n    filtered_data() %&gt;%\n      mutate(date = as.Date(start_time)) %&gt;%\n      count(date) %&gt;%\n      ggplot(aes(x = date, y = n)) +\n      geom_line() +\n      theme_minimal()\n  })\n\n  output$mode_distribution &lt;- renderPlot({\n    filtered_data() %&gt;%\n      count(mode_of_transport) %&gt;%\n      ggplot(aes(x = mode_of_transport, y = n, fill = mode_of_transport)) +\n      geom_bar(stat = \"identity\") +\n      theme_minimal()\n  })\n\n  output$duration_histogram &lt;- renderPlot({\n    filtered_data() %&gt;%\n      ggplot(aes(x = start_to_end_duration)) +\n      geom_histogram(binwidth = 5, fill = \"steelblue\", color = \"black\") +\n      theme_minimal()\n  })\n\n  output$hourly_trips &lt;- renderPlot({\n    filtered_data() %&gt;%\n      mutate(hour = as.integer(format(start_time, \"%H\"))) %&gt;%\n      count(hour) %&gt;%\n      ggplot(aes(x = hour, y = n)) +\n      geom_line() +\n      theme_minimal()\n  })\n}"
   }
 ]

@@ -4,11 +4,11 @@ preview:
   exclude:
     - "Take_Home_Exercises/Take_Home_Exercise_1/Take_Home_Exercise1.qmd"
 website:
-  title: "IS415-GAA: "
+  title: "Street Surfers"
   navbar:
     left:
-      - text: "Proposal"
-        href: "Proposal/Proposal.html"
+      - text: "Project Description"
+        href: "ProjectDescription/ProjectDescription.html"
       - text: "Poster"
         href: "Poster/Poster.html"
       - text: "Application User Guide"
@@ -25,7 +25,7 @@ website:
    
 format:
   html:
-    theme: Darkly 
+    theme: Zephyr 
     freeze: false
     css: styles.css # Custom styles for non-code elements
     toc: true

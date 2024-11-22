@@ -22,7 +22,7 @@ We invite you to explore the contents of our project website below!
 :::
 
 +-------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
-| <p id="contents"> | ## [**Project Proposal**](https://is415-streetsurfers-g2.netlify.app/proposal/proposal)                     | <p id="contents">                                 |
+| <p id="contents"> | ## Project Description                                                                                      | <p id="contents">                                 |
 |                   |                                                                                                             |                                                   |
 | Oct 13, 2024      | Take a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline. | ![](images/clipboard-2612382224.png){width="300"} |
 |                   |                                                                                                             |                                                   |

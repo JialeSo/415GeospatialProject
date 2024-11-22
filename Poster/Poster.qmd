@@ -10,6 +10,6 @@ execute:
   freeze: true
 ---
 
-::: {style="margin-top: 100px; align-items: center; width: 100%"}
+::: {style="margin-top: 50px; align-items: center; width: 100%"}
 ![](images/poster.jpg)
 :::
