@@ -101,7 +101,7 @@ The proposed methodology employs a series of analytical techniques to uncover sp
 
 **Kernel Density Estimation (KDE) and Network KDE (NKDE):** KDE maps demand hotspots, showing areas with the highest concentrations of ride-hailing activity. NKDE refines this by aligning hotspots with the road network, offering actionable insights into demand clustering along key transportation corridors, critical for addressing congestion and improving route efficiency.
 
-**Local Indicators of Spatial Association (LISA): L**ISA highlights clusters and outliers in demand, uncovering localized factors such as commercial hubs or underutilized areas. It adds a granular understanding of demand distribution that complements broader density analyses.
+**Local Indicators of Spatial Association (LISA):** LISA highlights clusters and outliers in demand, uncovering localized factors such as commercial hubs or underutilized areas. It adds a granular understanding of demand distribution that complements broader density analyses.
 
 **Origin-Destination (OD) Analysis:** OD analysis ties everything together by mapping the flow of trips between districts. It reveals key mobility patterns, identifies bottlenecks, and provides a holistic view of how ride-hailing demand shifts across the city.
 
@@ -123,27 +123,39 @@ The dashboard will consist of a sidebar with filters to customize the displayed 
 
 ### **6.2.1 About the dataset**
 
-This section introduces users to the dataset used for the analysis, providing context on the data sources, columns, and key features. It includes a selection interface allowing users to filter specific columns and datasets, facilitating exploration and understanding of the available data.
+This dashboard showcases datasets on trips and points of interest (POIs). The trips dataset includes details such as origins, destinations, time of day and day of week. The POI dataset provides information on key locations, including categories and POI type. Together, these datasets enable spatial analysis and insights into travel behaviours and attraction patterns.
 
-![](images/clipboard-519845278.png)
+![](images/About the Dataset (2)-01.png)
 
-### 6.2.2 EDA
+### **6.2.2 Exploratory Data Analysis**
 
-The EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.
+This page enables the user to gain quick insights into the distribution of trips, driving mode, propulsive and attractive factors of trips within the districts.
 
-![](images/clipboard-2375845328.png)
+![](images/EDA (3) (2).png)
 
-### 6.2.3 ESDA
+### **6.2.3 Kernel Density Estimation**
 
-The ESDA section offers spatial insights into ride-hailing demand. Choropleth maps visualize demand across the city, while corresponding heatmaps highlight high-activity areas. Users can adjust the time range using an interactive slider to view traffic patterns during specific hours, and filters allow exploration by vehicle type and location point, segmented by weekday or weekend activity.
+This page explores spatial concentrations of ride-hailing trips in relation to the distribution of POIs across Jakarta. It highlights potential hotspots and visualizes trip patterns, emphasizing density along key road networks.
 
-![](images/clipboard-3249265897.png)
+![](images/KDE (2).png)
 
-### 6.2.4 Flow Data Analysis
+### **6.2.4 Network Kernel Density Estimation**
 
-This section focuses on analyzing movement patterns between POIs using desire line maps. It visualizes frequently traveled routes and helps identify traffic flow patterns across peak times (morning, afternoon, evening, night). Users can switch between car and motorcycle data to compare travel behavior and assess which routes experience the highest demand.
+This page is used to map the density of ride-hailing trips along Jakarta's road networks, highlighting how trip activity can uncover network-specific hotspots.
 
-![](images/clipboard-2619441323.png)
+![](images/NKDE (2).png)
+
+### **6.2.5 Local Indicator Spatial Autocorrelation**
+
+This page utilizes Local Moran’s I to identify areas of significant clustering or anomalies in ride-hailing trip activity. It provides insights into spatial variations in travel demand and highlights localized patterns or disparities.
+
+![](images/LISA (3) (2).png)
+
+### **6.2.6 Origin and Destination Push Full Factor**
+
+This page uses Spatial Interaction Modelling to analyse movement patterns in Jakarta, emphasizing flow intensity, and connectivity between different districts or villages.
+
+![](images/OD (1) (2).png)
 
 # **7.0 Timeline**
 

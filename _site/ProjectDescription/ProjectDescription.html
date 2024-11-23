@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.4.555">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Group 2: Jezelei, Jiale, Samantha">
 <meta name="dcterms.date" content="2024-10-13">
 
-<title>Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data – Street Surfers</title>
+<title>Street Surfers - Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -85,7 +85,7 @@ ul.task-list li input[type="checkbox"] {
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -119,7 +119,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -148,9 +148,11 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#wireframe" id="toc-wireframe" class="nav-link" data-scroll-target="#wireframe"><strong>6.2 Wireframe</strong></a>
   <ul class="collapse">
   <li><a href="#about-the-dataset" id="toc-about-the-dataset" class="nav-link" data-scroll-target="#about-the-dataset"><strong>6.2.1 About the dataset</strong></a></li>
-  <li><a href="#eda" id="toc-eda" class="nav-link" data-scroll-target="#eda">6.2.2 EDA</a></li>
-  <li><a href="#esda" id="toc-esda" class="nav-link" data-scroll-target="#esda">6.2.3 ESDA</a></li>
-  <li><a href="#flow-data-analysis" id="toc-flow-data-analysis" class="nav-link" data-scroll-target="#flow-data-analysis">6.2.4 Flow Data Analysis</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><strong>6.2.2 Exploratory Data Analysis</strong></a></li>
+  <li><a href="#kernel-density-estimation" id="toc-kernel-density-estimation" class="nav-link" data-scroll-target="#kernel-density-estimation"><strong>6.2.3 Kernel Density Estimation</strong></a></li>
+  <li><a href="#network-kernel-density-estimation" id="toc-network-kernel-density-estimation" class="nav-link" data-scroll-target="#network-kernel-density-estimation"><strong>6.2.4 Network Kernel Density Estimation</strong></a></li>
+  <li><a href="#local-indicator-spatial-autocorrelation" id="toc-local-indicator-spatial-autocorrelation" class="nav-link" data-scroll-target="#local-indicator-spatial-autocorrelation"><strong>6.2.5 Local Indicator Spatial Autocorrelation</strong></a></li>
+  <li><a href="#origin-and-destination-push-full-factor" id="toc-origin-and-destination-push-full-factor" class="nav-link" data-scroll-target="#origin-and-destination-push-full-factor"><strong>6.2.6 Origin and Destination Push Full Factor</strong></a></li>
   </ul></li>
   </ul></li>
   <li><a href="#timeline" id="toc-timeline" class="nav-link" data-scroll-target="#timeline"><strong>7.0 Timeline</strong></a></li>
@@ -275,7 +277,7 @@ ul.task-list li input[type="checkbox"] {
 <p>The proposed methodology employs a series of analytical techniques to uncover spatial and temporal patterns in Jakarta’s ride-hailing demand. Each step builds on the previous, creating a layered understanding of mobility dynamics.</p>
 <p><strong>Exploratory Data Analysis (EDA):</strong> EDA provides an initial overview of demand patterns, identifying key districts with the highest activity for origins and destinations through bar charts. Charts to help compare trip durations across vehicle types like cars and motorcycles, while line graphs reveal temporal trends by segmenting demand into morning, afternoon, evening, and night. This sets the foundation for deeper spatial analysis.</p>
 <p><strong>Kernel Density Estimation (KDE) and Network KDE (NKDE):</strong> KDE maps demand hotspots, showing areas with the highest concentrations of ride-hailing activity. NKDE refines this by aligning hotspots with the road network, offering actionable insights into demand clustering along key transportation corridors, critical for addressing congestion and improving route efficiency.</p>
-<p><strong>Local Indicators of Spatial Association (LISA): L</strong>ISA highlights clusters and outliers in demand, uncovering localized factors such as commercial hubs or underutilized areas. It adds a granular understanding of demand distribution that complements broader density analyses.</p>
+<p><strong>Local Indicators of Spatial Association (LISA):</strong> LISA highlights clusters and outliers in demand, uncovering localized factors such as commercial hubs or underutilized areas. It adds a granular understanding of demand distribution that complements broader density analyses.</p>
 <p><strong>Origin-Destination (OD) Analysis:</strong> OD analysis ties everything together by mapping the flow of trips between districts. It reveals key mobility patterns, identifies bottlenecks, and provides a holistic view of how ride-hailing demand shifts across the city.</p>
 <p><strong>How It Comes Together:</strong> EDA sets the stage with key trends, KDE and NKDE identify spatial hotspots, LISA adds localized insights, and OD analysis connects these patterns to broader flows. Together, these methods provide a comprehensive framework for understanding Jakarta’s ride-hailing demand and informing strategies to address traffic congestion and improve mobility.</p>
 </section>
@@ -297,23 +299,33 @@ ul.task-list li input[type="checkbox"] {
 <p>The dashboard will consist of a sidebar with filters to customize the displayed data, including options to select vehicle type, date ranges, and specific POIs. The central section will showcase interactive maps and visualizations that respond dynamically to the applied filters. A summary section at the bottom of the interface will display key statistics, such as the POIs with the highest demand and the most frequently traveled routes. This layout ensures that users can seamlessly explore traffic patterns and mobility behavior while interacting with the data.</p>
 <section id="about-the-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="about-the-dataset"><strong>6.2.1 About the dataset</strong></h3>
-<p>This section introduces users to the dataset used for the analysis, providing context on the data sources, columns, and key features. It includes a selection interface allowing users to filter specific columns and datasets, facilitating exploration and understanding of the available data.</p>
-<p><img src="images/clipboard-519845278.png" class="img-fluid"></p>
+<p>This dashboard showcases datasets on trips and points of interest (POIs). The trips dataset includes details such as origins, destinations, time of day and day of week. The POI dataset provides information on key locations, including categories and POI type. Together, these datasets enable spatial analysis and insights into travel behaviours and attraction patterns.</p>
+<p><img src="images/About the Dataset (2)-01.png" class="img-fluid"></p>
 </section>
-<section id="eda" class="level3">
-<h3 class="anchored" data-anchor-id="eda">6.2.2 EDA</h3>
-<p>The EDA section allows users to explore and visualize ride-hailing demand trends through various charts. Users can analyze trip duration distributions with histograms, identify the most and least active points of interest (POIs) using bar charts, and monitor trends across different times of the day with line graphs. Filters by vehicle type, location points (origin/destination), and time of day provide further customization.</p>
-<p><img src="images/clipboard-2375845328.png" class="img-fluid"></p>
+<section id="exploratory-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="exploratory-data-analysis"><strong>6.2.2 Exploratory Data Analysis</strong></h3>
+<p>This page enables the user to gain quick insights into the distribution of trips, driving mode, propulsive and attractive factors of trips within the districts.</p>
+<p><img src="images/EDA (3) (2).png" class="img-fluid"></p>
 </section>
-<section id="esda" class="level3">
-<h3 class="anchored" data-anchor-id="esda">6.2.3 ESDA</h3>
-<p>The ESDA section offers spatial insights into ride-hailing demand. Choropleth maps visualize demand across the city, while corresponding heatmaps highlight high-activity areas. Users can adjust the time range using an interactive slider to view traffic patterns during specific hours, and filters allow exploration by vehicle type and location point, segmented by weekday or weekend activity.</p>
-<p><img src="images/clipboard-3249265897.png" class="img-fluid"></p>
+<section id="kernel-density-estimation" class="level3">
+<h3 class="anchored" data-anchor-id="kernel-density-estimation"><strong>6.2.3 Kernel Density Estimation</strong></h3>
+<p>This page explores spatial concentrations of ride-hailing trips in relation to the distribution of POIs across Jakarta. It highlights potential hotspots and visualizes trip patterns, emphasizing density along key road networks.</p>
+<p><img src="images/KDE (2).png" class="img-fluid"></p>
 </section>
-<section id="flow-data-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="flow-data-analysis">6.2.4 Flow Data Analysis</h3>
-<p>This section focuses on analyzing movement patterns between POIs using desire line maps. It visualizes frequently traveled routes and helps identify traffic flow patterns across peak times (morning, afternoon, evening, night). Users can switch between car and motorcycle data to compare travel behavior and assess which routes experience the highest demand.</p>
-<p><img src="images/clipboard-2619441323.png" class="img-fluid"></p>
+<section id="network-kernel-density-estimation" class="level3">
+<h3 class="anchored" data-anchor-id="network-kernel-density-estimation"><strong>6.2.4 Network Kernel Density Estimation</strong></h3>
+<p>This page is used to map the density of ride-hailing trips along Jakarta’s road networks, highlighting how trip activity can uncover network-specific hotspots.</p>
+<p><img src="images/NKDE (2).png" class="img-fluid"></p>
+</section>
+<section id="local-indicator-spatial-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="local-indicator-spatial-autocorrelation"><strong>6.2.5 Local Indicator Spatial Autocorrelation</strong></h3>
+<p>This page utilizes Local Moran’s I to identify areas of significant clustering or anomalies in ride-hailing trip activity. It provides insights into spatial variations in travel demand and highlights localized patterns or disparities.</p>
+<p><img src="images/LISA (3) (2).png" class="img-fluid"></p>
+</section>
+<section id="origin-and-destination-push-full-factor" class="level3">
+<h3 class="anchored" data-anchor-id="origin-and-destination-push-full-factor"><strong>6.2.6 Origin and Destination Push Full Factor</strong></h3>
+<p>This page uses Spatial Interaction Modelling to analyse movement patterns in Jakarta, emphasizing flow intensity, and connectivity between different districts or villages.</p>
+<p><img src="images/OD (1) (2).png" class="img-fluid"></p>
 </section>
 </section>
 </section>
@@ -428,7 +440,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -460,29 +483,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -490,7 +491,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
