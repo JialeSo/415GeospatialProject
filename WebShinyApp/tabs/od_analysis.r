@@ -125,13 +125,6 @@ od_analysis_ui <- function(id) {
               ),
               selected = "push_pull",
               inline = TRUE
-            ),
-            sliderInput(
-              inputId = ns("trip_volume"), 
-              label = "Filter by Trip Volume:", 
-              min = 1, 
-              max = 400, 
-              value = c(25, 400), 
             )
     
           ),
@@ -249,37 +242,11 @@ od_analysis_server <- function(id, datasets) {
     })
 
     observe({
-      reactive_data$district_choices <- jakarta_district() %>% distinct(district)
+        reactive_data$district_choices <- jakarta_district() %>%
+        distinct(district) %>%
+        filter(!district %in% c("danau sunter", "johar baru", "danau sunter dll"))
     })
-
-    # Update the slider range and step based on the OD data
-    observe({
-      # Extract trip volumes dynamically from the dataset
-      trip_volumes <- reactive({
-        req(filtered_data())  # Ensure filtered data is available
-        trip_data <- filtered_data()
-        
-        # Calculate trip counts for each OD pair
-        trip_counts <- trip_data %>%
-          count(origin_district, destination_district, name = "trip_count")
-        
-        # Cap the max trip volume to 400 for consistent filtering
-        max_trip_volume <- min(max(trip_counts$trip_count, na.rm = TRUE), 400)
-        
-        list(min = 0, max = max_trip_volume)
-      })
-      
-      # Dynamically update the slider input
-      updateSliderInput(
-        session = session,
-        inputId = "trip_volume",
-        min = 0,
-        max = 400,
-        value = c(25,400),  # Default to full range
-      )
-    })
-
-
+    
     # Filter the map data according to Trip Filter Input 
     observeEvent(input$apply_od_filter, {      
       if (input$level_of_analysis == "all") {
@@ -376,17 +343,6 @@ od_analysis_server <- function(id, datasets) {
       } else {
         return(NULL)  # Invalid level_of_analysis
       }
-
-
-      # filter by trip volume (slider)
-      data <- data %>%
-        group_by(origin_district, destination_district) %>%
-        mutate(trip_count = n()) %>%
-        ungroup() %>%
-        filter(
-          trip_count >= max(input$trip_volume[1], 25),  # Ensure minimum is at least 1
-          trip_count <= input$trip_volume[2]
-        )
       
 
       return(data)
@@ -395,138 +351,166 @@ od_analysis_server <- function(id, datasets) {
     od_map_data <- eventReactive(input$apply_od_filter, {
       od_trip_data <- filtered_data()
       odMAP <- reactive_data$map
-
+      
       if (input$level_of_analysis == 'all') {
-        od_data_fij  <- od_trip_data %>%
-        filter(origin_district != "outside of jakarta" & destination_district != "outside of jakarta") %>%
-        filter(origin_district != destination_district) %>% 
-        count(origin_district, destination_district, name = "trip_count") %>%
-        rename(origin = origin_district, destination = destination_district)
-
-      jakarta_trip_counts <- od_trip_data %>%
-        filter(origin_district != "outside of jakarta" & destination_district != "outside of jakarta") %>%
-        filter(origin_district != destination_district) %>% 
-        count(origin_district, destination_district, name = "trip_count")
-
-       district_trip_totals <- jakarta_trip_counts %>%
-        group_by(district = origin_district) %>%
-        summarise(outgoing_trips = sum(trip_count)) %>%
-        left_join(
-          jakarta_trip_counts %>%
-            group_by(district = destination_district) %>%
-            summarise(incoming_trips = sum(trip_count)),
-          by = "district"
-        ) %>%
-        mutate(
-          outgoing_trips = coalesce(outgoing_trips, 0),  
-          incoming_trips = coalesce(incoming_trips, 0), 
-          total_trips = outgoing_trips + incoming_trips
-        )
-
+        od_data_fij <- od_trip_data %>%
+          filter(origin_district != "outside of jakarta" & destination_district != "outside of jakarta") %>%
+          filter(origin_district != destination_district) %>%
+          count(origin_district, destination_district, name = "trip_count") %>%
+          rename(origin = origin_district, destination = destination_district)
+        
+        jakarta_trip_counts <- od_trip_data %>%
+          filter(origin_district != "outside of jakarta" & destination_district != "outside of jakarta") %>%
+          filter(origin_district != destination_district) %>%
+          count(origin_district, destination_district, name = "trip_count")
+        
+        district_trip_totals <- jakarta_trip_counts %>%
+          group_by(district = origin_district) %>%
+          summarise(outgoing_trips = sum(trip_count)) %>%
+          left_join(
+            jakarta_trip_counts %>%
+              group_by(district = destination_district) %>%
+              summarise(incoming_trips = sum(trip_count)),
+            by = "district"
+          ) %>%
+          mutate(
+            outgoing_trips = coalesce(outgoing_trips, 0),
+            incoming_trips = coalesce(incoming_trips, 0),
+            total_trips = outgoing_trips + incoming_trips
+          )
+        
         poi_counts <- jakarta_poi_final() %>%
           st_drop_geometry() %>%
           group_by(district, category) %>%
           summarise(count = n(), .groups = "drop") %>%
-          pivot_wider(names_from = category, values_from = count, values_fill = 0) # Wide format for categories
-
-        final_map <- odMAP %>% 
+          pivot_wider(names_from = category, values_from = count, values_fill = 0)
+        
+        final_map <- odMAP %>%
           left_join(district_trip_totals, by = c("district" = "district")) %>%
-          left_join(poi_counts, by = c("district" = "district")) # Add POI counts to map data
-
-
+          left_join(poi_counts, by = c("district" = "district"))
+        
         flow_lines <- od2line(flow = od_data_fij, zones = final_map, zone_code = "district")
-      } else if ((input$level_of_analysis == 'district')) {
-
-        od_data_fij  <- od_trip_data %>%
-        filter(origin_village != "outside of jakarta" & destination_village != "outside of jakarta") %>%
-        filter(origin_district %in% input$district & destination_district %in% input$district,) %>%
-        filter(origin_village != destination_village) %>% 
-        count(origin_village, destination_village, name = "trip_count") %>%
-        rename(origin = origin_village, destination = destination_village)
+        
+        flow_map <- tm_shape(final_map) +
+          tm_polygons(
+            col = "total_trips",
+            palette = "YlOrRd",
+            title = "Total Trips",
+            border.col = "grey",
+            lwd = 0.5,
+            popup.vars = c(
+              "District" = "district",
+              "Total Trips" = "total_trips",
+              "Cultural Attractions" = "Cultural_Attractions",
+              "Essentials" = "Essentials",
+              "Facilities & Services" = "Facilities_Services",
+              "Offices & Business" = "Offices_Business",
+              "Others" = "Others",
+              "Restaurants & Food" = "Restaurants_Food",
+              "Shops" = "Shops",
+              "Recreation & Entertainment" = "Recreation_Entertainment"
+            )
+          ) +
+          tm_shape(flow_lines) +
+          tm_lines(
+            col = "trip_count",
+            palette = "-Blues",
+            lwd = "trip_count",
+            scale = 10,
+            title.col = "Trip Volume",
+            alpha = 0.8,
+            popup.vars = c("Origin" = "origin", "Destination" = "destination", "Trips" = "trip_count")
+          ) +
+          tm_layout(
+            title = "Interactive Origin-Destination Traffic Flow within Jakarta",
+            legend.outside = TRUE,
+            frame = FALSE
+          )
+      } else if (input$level_of_analysis == 'district') {
+        od_data_fij <- od_trip_data %>%
+          filter(origin_village != "outside of jakarta" & destination_village != "outside of jakarta") %>%
+          filter(origin_district %in% input$district & destination_district %in% input$district) %>%
+          filter(origin_village != destination_village) %>%
+          count(origin_village, destination_village, name = "trip_count") %>%
+          rename(origin = origin_village, destination = destination_village)
         
         jakarta_trip_counts <- od_trip_data %>%
-        filter(origin_village != "outside of jakarta" & destination_village != "outside of jakarta") %>%
-        filter(origin_district %in% input$district & destination_district %in% input$district,) %>%
-        filter(origin_village != destination_village) %>% 
-        count(origin_village, destination_village, name = "trip_count")
-
-       village_trip_totals <- jakarta_trip_counts %>%
-        group_by(village = origin_village) %>%
-        summarise(outgoing_trips = sum(trip_count)) %>%
-        left_join(
-          jakarta_trip_counts %>%
-            group_by(village = origin_village) %>%
-            summarise(incoming_trips = sum(trip_count)),
-          by = "village"
-        ) %>%
-        mutate(
-          outgoing_trips = coalesce(outgoing_trips, 0),  
-          incoming_trips = coalesce(incoming_trips, 0), 
-          total_trips = outgoing_trips + incoming_trips
-        )
-
-
-        # Add POI counts per category to each village #CHANGE HERE
+          filter(origin_village != "outside of jakarta" & destination_village != "outside of jakarta") %>%
+          filter(origin_district %in% input$district & destination_district %in% input$district) %>%
+          filter(origin_village != destination_village) %>%
+          count(origin_village, destination_village, name = "trip_count")
+        
+        village_trip_totals <- jakarta_trip_counts %>%
+          group_by(village = origin_village) %>%
+          summarise(outgoing_trips = sum(trip_count)) %>%
+          left_join(
+            jakarta_trip_counts %>%
+              group_by(village = destination_village) %>%
+              summarise(incoming_trips = sum(trip_count)),
+            by = "village"
+          ) %>%
+          mutate(
+            outgoing_trips = coalesce(outgoing_trips, 0),
+            incoming_trips = coalesce(incoming_trips, 0),
+            total_trips = outgoing_trips + incoming_trips
+          )
+        
         poi_counts <- jakarta_poi_final() %>%
           st_drop_geometry() %>%
           group_by(village, category) %>%
           summarise(count = n(), .groups = "drop") %>%
-          pivot_wider(names_from = category, values_from = count, values_fill = 0) # Wide format for categories
-
+          pivot_wider(names_from = category, values_from = count, values_fill = 0)
+        
         final_map <- odMAP %>%
           left_join(village_trip_totals, by = c("village" = "village")) %>%
-          left_join(poi_counts, by = c("village" = "village")) # Add POI counts to map data
-
-
+          left_join(poi_counts, by = c("village" = "village"))
+        
         flow_lines <- od2line(flow = od_data_fij, zones = final_map, zone_code = "village")
+        
+        flow_map <- tm_shape(final_map) +
+          tm_polygons(
+            col = "total_trips",
+            palette = "YlOrRd",
+            title = "Total Trips",
+            border.col = "grey",
+            lwd = 0.5,
+            id = "village",
+            popup.vars = c(
+              "Village" = "village",
+              "Total Trips" = "total_trips",
+              "Cultural Attractions" = "Cultural_Attractions",
+              "Essentials" = "Essentials",
+              "Facilities & Services" = "Facilities_Services",
+              "Offices & Business" = "Offices_Business",
+              "Others" = "Others",
+              "Restaurants & Food" = "Restaurants_Food",
+              "Shops" = "Shops",
+              "Recreation & Entertainment" = "Recreation_Entertainment"
+            )
+          ) +
+          tm_shape(flow_lines) +
+          tm_lines(
+            col = "trip_count",
+            palette = "-Blues",
+            lwd = "trip_count",
+            scale = 10,
+            title.col = "Trip Volume",
+            alpha = 0.8,
+            popup.vars = c("Origin" = "origin", "Destination" = "destination", "Trips" = "trip_count")
+          ) +
+          tm_layout(
+            title = "Interactive Origin-Destination Traffic Flow within Jakarta",
+            legend.outside = TRUE,
+            frame = FALSE
+          )
       }
       
-        list(flow_lines = flow_lines, final_map = final_map)
+      flow_map
     })
 
     output$odMAP <- renderTmap({
-      map_data <- od_map_data()  # Triggered only when apply_od_filter is pressed
-      # Extract the map and raster data from the reactive result
-      flow_lines <- map_data$flow_lines
-      final_map <- map_data$final_map
-
-      # Generate the tmap object
-      flow_map <- tm_shape(final_map) +
-        tm_polygons(
-          col = "total_trips",                    # Color by total trips for each district
-          palette = "YlOrRd",                     # Yellow-Orange-Red color palette
-          title = "Total Trips",
-          border.col = "grey",
-          lwd = 0.5,
-          popup.vars = c(
-            "District" = "district",
-            "Total Trips" = "total_trips",
-            "Cultural Attractions" = "Cultural_Attractions", 
-            "Essentials" = "Essentials",                    
-            "Facilities & Services" = "Facilities_Services",
-            "Offices & Business" = "Offices_Business",     
-            "Others" = "Others",                           
-            "Restaurants & Food" = "Restaurants_Food",    
-            "Shops" = "Shops",                              
-            "Recreation & Entertainment" = "Recreation_Entertainment"  
-          )  # Show district and total trips in popup
-        ) +
-        tm_shape(flow_lines) +
-        tm_lines(
-          col = "trip_count",                     # Color by trip volume between OD pairs
-          palette = "-Blues",                     # Blue shades for flow lines
-          lwd = "trip_count",                     # Line width based on trip volume
-          scale = 10,                              # Scale line width for better visualization
-          title.col = "Trip Volume",
-          alpha = 0.8,
-          popup.vars = c("Origin" = "origin", "Destination" = "destination", "Trips" = "trip_count")  # Show OD and trip count in popup
-        ) +
-        tm_layout(
-          title = "Interactive Origin-Destination Traffic Flow within Jakarta",
-          legend.outside = TRUE,
-          frame = FALSE
-        )
-    }) 
+      od_map_data()  # Simply render the map returned from od_map_data
+    })
 
     coeffencient_data <- eventReactive(input$apply_od_filter, {
       # Load necessary data

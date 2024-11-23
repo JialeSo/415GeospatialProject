@@ -179,7 +179,7 @@ exploratory_data_ui <- function(id) {
     ),
     fluidRow(
       box(
-        title = "Choord Diagram Between Villages",
+        title = "Choord Diagram Between Locations",
         width = 12,
         solidHeader = TRUE,
         collapsible = TRUE,

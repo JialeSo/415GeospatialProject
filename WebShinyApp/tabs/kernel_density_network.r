@@ -332,10 +332,8 @@ kernel_network_density_server <- function(id, datasets) {
       kde_trip_data <- result$kde_trip_data
       lixels <- result$lixels
       
-      # Filter out lixels with densities <= 0.00
-      lixels <- lixels %>%
-        filter(densities > 0)  # Only keep rows where densities > 0
-
+      showLoadingModal() # Show loading modal
+      on.exit(removeLoadingModal()) # Ensure modal is removed when computation finishes
       # Render the map with pop-ups and tooltips
       tmap_mode('view')
       tm_shape(lixels) +
