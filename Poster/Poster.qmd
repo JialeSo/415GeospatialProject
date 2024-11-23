@@ -1,15 +1,12 @@
 ---
-title: "Project Poster" 
-subtitle: "Explore Key Aspects of our Approach to Revealing Ride-hailing Trends in Jakarta"
-author: "Group 2: Jezelei, Jiale, Samantha"
-date: "November  23, 2024"
-date-modified: "last-modified"
-execute: 
-  eval: true
-  echo: true
-  freeze: true
+format:
+  html:
+    toc: false
+    smooth-scroll: true
 ---
 
-::: {style="margin-top: 50px; align-items: center; width: 100%"}
-![](images/poster.jpg)
+::: {style="text-align: center;"}
+# Project Poster  {style="text-align: center;"}
+
+# ![](images/poster.jpg) {style="text-align: center;"}
 :::

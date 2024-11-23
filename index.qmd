@@ -6,18 +6,23 @@ format:
 ---
 
 <div style="text-align: center;">
-# Welcome to StreetSurfers: Navigating Jakarta’s Traffic Network 🌍 
+
+# Welcome to StreetSurfers: Navigating Jakarta’s Traffic Network 🌍
+
 ![](images/logo.png){fig-align="center" width="175"}
 
 <div style="text-align: left;">
+
 StreetSurfers is an interactive Shiny web application designed to reveal the dynamic flow of Jakarta's ride-hailing traffic. From vibrant shopping districts to bustling office hubs, this platform empowers users to explore, analyze, and interact with mobility patterns across the city.
 
 Our mission is to turn complex ride-hailing data into actionable insights, helping policymakers, urban planners, and mobility enthusiasts optimize traffic systems and improve accessibility. With a focus on user-centric mobility trends, StreetSurfers takes a fresh look at transportation challenges in one of Southeast Asia’s most dynamic cities.
+
 <div>
 
-<div style="text-align: center;">
+::: {style="text-align: center;"}
 ## 🌟 What Can You Do with StreetSurfers?
-</div>
+:::
+
 ::: {layout-ncol="3"}
 **🗺️ Explore Jakarta’s Mobility**
 
@@ -31,5 +36,5 @@ Filter by vehicle type, time ranges, and Points of Interest (POIs) to uncover ac
 
 Use advanced spatial tools like Kernel Density Estimation (KDE) and Local Indicators of Spatial Association (LISA) to analyze demand and traffic patterns.
 :::
-</div>
 
+</div>
