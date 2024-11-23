@@ -8,22 +8,10 @@ This project focuses on analyzing traffic and mobility patterns in Jakarta using
 
 ---
 
-## **Deployment**
-
-This project is simple to set up and run locally with minimal prerequisites. It uses modern web technologies and geospatial tools to deliver interactive insights.
-
-### **Prerequisites**
-
-Before you begin, ensure the following are installed on your system:
-
-- [Node.js](https://nodejs.org) (v16 or higher recommended)
-- [npm](https://www.npmjs.com/) (included with Node.js)
-
----
-
 ## **Getting Started**
 
-Click here to view our Shiny Application: 
+Click here to learn more about the project: https://is415-streetsurfers-g2.netlify.app/
+Click here to view our Shiny Application:  https://streetsurfers.shinyapps.io/StreetSurfers/
 
 ---
 
@@ -36,9 +24,6 @@ Click here to view our Shiny Application:
 ├── Geospatial.Rproj
 ├── Poster/
 ├── Proposal/
-│   └── images/
-│       ├── Test.png
-│       ├── clipboard-*.png (other relevant images)
 ├── README.md
 ├── UserGuide/
 ├── WebShinyApp/
@@ -49,9 +34,12 @@ Click here to view our Shiny Application:
 │   │   └── sidebar.r
 │   ├── datasource/
 │   │   ├── jakarta_district.rds
-│   │   ├── jakarta_district_centroid.rds
 │   │   ├── jakarta_district_population.rds
+│   │   ├── jakarta_village.rds
+│   │   ├── jakarta_village_population.rds
 │   │   ├── jakarta_poi_final.rds
+│   │   ├── jakarta_roads.rds
+│   │   ├── trip_data.rds
 │   ├── tabs/
 │   │   ├── datasets.r
 │   │   ├── exploratory_data.r
@@ -67,28 +55,6 @@ Click here to view our Shiny Application:
 ├── images/
 ├── index.qmd
 └── styles.css
-
-```
-
-## **Stopping the Application**
-
-To stop the development server, press `Ctrl + C` in the terminal where it is running.
-
----
-
-## **Troubleshooting**
-
-If you encounter any issues:
-
-1. Ensure you have the required Node.js and npm versions installed.
-2. Run `npm install` again to make sure all dependencies are correctly installed.
-3. Check the terminal logs for errors during `npm run dev`.
-
----
-
-## **Logs**
-
-This application logs server events directly to the terminal where the `npm run dev` command is executed.
 
 ---
 

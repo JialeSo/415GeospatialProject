@@ -141,7 +141,7 @@ This page explores spatial concentrations of ride-hailing trips in relation to t
 
 ### **6.2.4 Network Kernel Density Estimation**
 
-This page is used to map the density of ride-hailing trips along Jakarta's road networks, highlighting how trip activity can uncover network-specific hotspots.
+This page is used to map the density of ride-hailing trips along Jakarta's road networks, highlighting how trip activity can uncover network-specific hotspot.
 
 ![](images/NKDE (2).png)
 

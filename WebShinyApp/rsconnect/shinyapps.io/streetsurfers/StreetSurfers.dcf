@@ -5,7 +5,7 @@ account: streetsurfers
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13422113
-bundleId: 9405781
+bundleId: 9406396
 url: https://streetsurfers.shinyapps.io/StreetSurfers/
 version: 1
 asMultiple: FALSE
