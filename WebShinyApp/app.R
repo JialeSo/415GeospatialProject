@@ -9,6 +9,7 @@ library(DT)
 library(plotly)
 library(tmap)
 library(shinyBS)
+
 thematic_shiny()
 
 # Source all component files and tab modulesLine 15Filepaths are case-sensitive on deployment server.v
@@ -65,7 +66,7 @@ server <- function(input, output, session) {
   tripsVillage <- reactive({readRDS("datasource/tripsVillage.rds")})
 
   
-  # Create a list to hold all datasets for easier passing
+  # Create a list to hold all datasets for easier passing 
   datasets <- list(
     trip_data = trip_data,
     jakarta_village = jakarta_village,

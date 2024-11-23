@@ -98,7 +98,7 @@ kernel_network_density_ui <- function(id) {
           ),
           column(
             width = 6,
-            h4("KDE Parameters"),
+            h4("NKDE Parameters"),
              # Lixel Size
             tags$div(
               tags$label("Lixel Size"),
@@ -163,6 +163,7 @@ kernel_network_density_ui <- function(id) {
         title = "Network Kernel Density Map",
         width = 8,
         collapsible = TRUE,
+        maximizable = TRUE,
         tmapOutput(ns("kdeMAP"))
       ),
       box(
@@ -193,6 +194,28 @@ kernel_network_density_server <- function(id, datasets) {
     observeEvent(input$apply_nkde_filter, {      
       reactive_data$roads <-  jakarta_roads() %>% filter(district %in% input$district)
     })
+
+     showLoadingModal <- function() {
+      showModal(modalDialog(
+        title = "Processing",
+        div(
+          style = "text-align: center;",
+          tags$div(
+            class = "spinner-border text-primary", role = "status",
+            tags$span(class = "sr-only", "Loading...")
+          ),
+          tags$p("Please be patient while loading!", style = "margin-top: 10px; font-weight: bold;")
+        ),
+        footer = NULL,
+        easyClose = FALSE
+      ))
+    }
+
+    # Remove modal after computation
+    removeLoadingModal <- function() {
+      removeModal()
+    }
+
 
     output$selectdistrict <- renderUI({
         selectizeInput(ns("district"), 
@@ -252,6 +275,8 @@ kernel_network_density_server <- function(id, datasets) {
 
     # Reactive computation for densities and lixelization, triggered by the Apply Filter button
     density_computation <- eventReactive(input$apply_nkde_filter, {
+      showLoadingModal() # Show loading modal
+      on.exit(removeLoadingModal()) # Ensure modal is removed when computation finishes
       kde_trip_data <- filtered_data()
       kde_trip_data <- kde_trip_data %>%
         st_as_sf(coords = c("new_lng", "new_lat"), crs = 6384)
@@ -302,10 +327,13 @@ kernel_network_density_server <- function(id, datasets) {
     # Render the map, triggered by density computation
     output$kdeMAP <- renderTmap({
       result <- density_computation()
-
       if (is.null(result)) return(NULL)  # Exit if data is not valid
+
       kde_trip_data <- result$kde_trip_data
       lixels <- result$lixels
+      
+      showLoadingModal() # Show loading modal
+      on.exit(removeLoadingModal()) # Ensure modal is removed when computation finishes
       # Render the map with pop-ups and tooltips
       tmap_mode('view')
       tm_shape(lixels) +
@@ -319,9 +347,8 @@ kernel_network_density_server <- function(id, datasets) {
         tm_shape(kde_trip_data) +
         tm_dots(size = 0.001) +
         tm_view(
-          set.zoom.limits = c(8, 15),  # Minimum and maximum zoom levels
-          bbox = st_bbox(lixels),      # Dynamically focus on the bounding box of your lixels
-          zoom.level = 10              # Set an initial zoom level
+          set.zoom.limits = c(12, 20),  # Minimum and maximum zoom levels
+          bbox = st_bbox(lixels)       # Dynamically focus on the bounding box of filtered lixels
         )
     })
       

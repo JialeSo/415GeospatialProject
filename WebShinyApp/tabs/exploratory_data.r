@@ -10,6 +10,8 @@ library(sf)
 library(treemap)
 library(tibble)
 library(circlize)
+library(chorddiag)
+library(RColorBrewer)
 
 # UI
 exploratory_data_ui <- function(id) {
@@ -126,32 +128,23 @@ exploratory_data_ui <- function(id) {
     
     # Reduced Height Plot Boxes
     fluidRow(
-      box(
-        title = "Most Popular Locations",
-        width = 4,
+     box(
+        title = "Top 5 Most Popular Locations",
+        width = 6,
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        height = "250px",  # Set the box height
-        plotOutput(ns("top_5_locations"), height = "100%")  # Set plot to take full box height
+        height = "400px",  # Set the box height
+        plotlyOutput(ns("top_5_locations"), height = "100%")  # Use plotlyOutput, set height to fill the box
       ),
       box(
-        title = "Least Popular Locations",
-        width = 4,
+        title = "Least 5 Popular Locations",
+        width = 6,
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        height = "250px",  # Set the box height
-        plotOutput(ns("bottom_5_locations"), height = "100%")  # Set plot to take full box height
-      ),
-      box(
-        title = "Push-Pull Factors",
-        width = 4,
-        solidHeader = TRUE,
-        collapsible = TRUE,
-        maximizable = TRUE,
-        height = "250px",  # Set the box height
-        plotOutput(ns("chord_diagram"), height = "100%")  # Set plot to take full box height
+        height = "400px",  # Set the box height
+        plotlyOutput(ns("bottom_5_locations"), height = "100%")  # Set plot to take full box height
       )
     ),
     
@@ -162,7 +155,7 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        height = "250px",  # Set the box height
+        height = "400px",  # Set the box height
         plotlyOutput(ns("top_poi_categories"), height = "100%")  # Set plot to take full box height
       ),
       box(
@@ -171,7 +164,7 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        height = "250px",  # Set the box height
+        height = "400px",  # Set the box height
         plotlyOutput(ns("num_trips_plot"), height = "100%")  # Set plot to take full box height
       ),
       box(
@@ -180,8 +173,17 @@ exploratory_data_ui <- function(id) {
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
-        height = "250px",  # Set the box height
+        height = "400px",  # Set the box height
         tmapOutput(ns("trips_choropleth"), height = "100%")  # Set plot to take full box height
+      )
+    ),
+    fluidRow(
+      box(
+        title = "Choord Diagram Between Locations",
+        width = 12,
+        solidHeader = TRUE,
+        collapsible = TRUE,
+        htmlOutput(ns("chord_diagram"), height = "100%")  # Set plot to take full box height
       )
     )
   )
@@ -401,28 +403,33 @@ exploratory_data_server <- function(id, datasets) {
     
     
     # Plot bar chart of most popular location
-    output$top_5_locations <- renderPlot({
-      top_locations_data <- filtered_data() %>%
-        group_by(location, driving_mode) %>%
-        summarise(total_trips = sum(num_of_trips), .groups = "drop") %>%
+    output$top_5_locations <- renderPlotly({
+      # Summarize data to find top 5 locations
+      top_locations_summary <- filtered_data() %>%
         group_by(location) %>%
-        summarise(total_trips_location = sum(total_trips), .groups = "drop") %>%
-        arrange(desc(total_trips_location)) %>%
-        slice_head(n = 5) %>%
+        summarise(total_trips_location = sum(num_of_trips), .groups = "drop") %>%
+        arrange(desc(total_trips_location)) %>%  # Sort by least to most trips
+        slice_head(n = 5) %>%  # Get the bottom 5 least popular locations
         left_join(filtered_data() %>%
                     group_by(location, driving_mode) %>%
                     summarise(total_trips = sum(num_of_trips), .groups = "drop"), 
                   by = "location")
-      
-      # Convert driving_mode to a factor explicitly
-      top_locations_data$driving_mode <- factor(top_locations_data$driving_mode, levels = c("car", "motorcycle"))
-      
-      ggplot(top_locations_data, aes(x = total_trips, y = reorder(location, total_trips_location), fill = driving_mode)) +
+
+
+      # Ensure driving_mode is a factor
+      top_locations_summary$driving_mode <- factor(top_locations_summary$driving_mode, levels = c("car", "motorcycle"))
+
+      # Create the ggplot visualization
+      p <- ggplot(top_locations_summary, aes(
+        x = total_trips, 
+        y = reorder(location, total_trips),  # Negative for descending order
+        fill = driving_mode
+      )) +
         geom_bar(stat = "identity", position = "stack") +
         geom_text(aes(label = total_trips), 
                   position = position_stack(vjust = 0.5), 
                   color = "black", 
-                  size = 3) +
+                  size = 2) +
         scale_fill_manual(values = c("car" = "#A8DADC", "motorcycle" = "#EBA3B4"), 
                           labels = c("Car", "Motorcycle")) +  # Set labels for legend
         labs(
@@ -432,12 +439,19 @@ exploratory_data_server <- function(id, datasets) {
         ) +
         theme_minimal() +
         theme(
-          legend.position = "top"
+          legend.position = "top",
+          axis.title.x = element_text(size = 10),  # Increased for better readability
+          axis.title.y = element_text(size = 10),  # Increased for better readability
+          axis.text.x = element_text(size = 8),    # X-axis text size
+          axis.text.y = element_text(size = 8)     # Y-axis text size
         )
+
+      # Convert ggplot to plotly for interactivity
+      ggplotly(p)
     })
-    
+        
     # Plot bar chart of least popular locations
-    output$bottom_5_locations <- renderPlot({
+    output$bottom_5_locations <- renderPlotly({
       # Prepare the data for least popular locations
       least_locations_data <- filtered_data() %>%
         group_by(location, driving_mode) %>%
@@ -470,7 +484,11 @@ exploratory_data_server <- function(id, datasets) {
         ) +
         theme_minimal() +
         theme(
-          legend.position = "top"
+          legend.position = "top",
+          axis.title.x = element_text(size = 12),  # X-axis label size
+          axis.title.y = element_text(size = 12),  # Y-axis label size
+          axis.text.x = element_text(size = 12),   # X-axis text size
+          axis.text.y = element_text(size = 12)    # Y-axis text size
         )
     })
     
@@ -510,58 +528,54 @@ exploratory_data_server <- function(id, datasets) {
           origin_day %in% input$day_of_week | destination_day %in% input$day_of_week,
           origin_time_cluster %in% input$time_cluster | destination_time_cluster %in% input$time_cluster
         )
-      
-      # Summarize data for chord diagram
-      trips_combined_origin_dest <- trip_data %>%
-        group_by(origin_district, destination_district) %>%
-        summarise(trips_count = n(), .groups = "drop") %>%
-        filter(!is.na(origin_district) & !is.na(destination_district))
-      
+  
       # Return summarized data
-      trips_combined_origin_dest
+      trip_data
     }, ignoreNULL = FALSE) # Set ignoreNULL to FALSE so the data is shown without filtering initially
     
+
     # Render chord diagram based on filtered or unfiltered data
-    output$chord_diagram <- renderPlot({
+    output$chord_diagram <- renderUI({
       # Get filtered data when "Apply Filter" is clicked; show unfiltered data initially
       chord_data <- filtered_data_chord()
-      
-      # Create a matrix for the chord diagram
-      chord_matrix <- chord_data %>%
-        spread(key = destination_district, value = trips_count, fill = 0) %>%
-        tibble::column_to_rownames(var = "origin_district") %>%
-        as.matrix()
-      
-      # Generate unique colors
-      categories <- unique(c(chord_data$origin_district, chord_data$destination_district))
-      category_colors <- colorRampPalette(c("lightblue", "lightpink", "lightgreen", "lightcoral", "lightyellow"))(length(categories))
-      
-      # Plot the chord diagram
-      chordDiagram(
-        chord_matrix,
-        grid.col = category_colors,
-        transparency = 0.3,
-        annotationTrack = "grid",
-        annotationTrackHeight = mm_h(1),
-        preAllocateTracks = list(track.height = 0.05)
+
+      trip_data_filtered <- chord_data %>%
+        filter(origin_district != destination_district)  # Exclude intra-district trips
+
+      # Step 2: Prepare the data in a matrix format
+      od_matrix <- trip_data_filtered %>%
+        count(origin_district, destination_district, name = "trip_count") %>%
+        spread(destination_district, trip_count, fill = 0)
+
+      # Step 3: Convert to matrix for chorddiag
+      od_matrix_data <- as.matrix(od_matrix[,-1])  # Remove origin column for matrix
+      rownames(od_matrix_data) <- od_matrix$origin_district
+
+      # Step 4: Choose an expanded color palette for better differentiation
+      num_districts <- nrow(od_matrix_data)
+      palette <- brewer.pal(min(num_districts, 12), name = "Spectral")  # Use "Spectral" for variety
+
+      # If there are more districts than colors in the palette, interpolate to generate more colors
+      if (num_districts > 12) {
+        palette <- colorRampPalette(palette)(num_districts)
+      }
+       diagram <- chorddiag(
+        od_matrix_data,
+        type = "directional",
+        groupnamePadding = 10,
+        groupColors = palette,
+        showTicks = FALSE,
+        tooltipGroupConnector = " → ",
+        width = 1000,   # Explicitly set width
+        height = 1000   # Explicitly set height
       )
-      
-      # Add custom labels to each sector with reduced space and smaller text
-      circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
-        sector.index <- get.cell.meta.data("sector.index")
-        
-        # Adjust the vertical position (reduce space) and make text smaller
-        circos.text(
-          CELL_META$xcenter, 
-          CELL_META$ylim[1] + mm_y(1),  # Reduce space by changing the offset
-          sector.index, 
-          facing = "clockwise", 
-          niceFacing = TRUE, 
-          adj = c(0, 0.5), 
-          cex = 0.7  # Make text smaller by reducing cex
-        )
-      }, bg.border = NA)
-      
+
+      # Wrap the diagram in a centered div
+      tags$div(
+        style = "display: flex; justify-content: center; align-items: center; padding-top:40px;",
+        diagram
+      )
+            
     })
     
     
