@@ -1,16 +1,18 @@
 ---
-title: "Application User Guide" 
-subtitle: "Learn how to make the most of our application"
-execute: 
-  eval: true
-  echo: true
-  freeze: true
+format:
+  html:
+    toc: false
+    smooth-scroll: true
 ---
-::: {style="text-align:center; align-items:center; width: 1000px"}
-<p style="color: #7f8c8d; text-align: justify;">
-This guide provides step-by-step instructions on how to navigate and use our application effectively. From setup to advanced features, you'll find everything you need to get started and optimize your experience.
+
+::: {.content-container style="display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 1300px; width: 100%;"}
+# Application User Guide
+
+<p style="color: #7f8c8d; text-align: justify; line-height: 1.6; margin-bottom: 20px;">
+This guide provides step-by-step instructions on how to navigate and use our application effectively. 
+From setup to advanced features, you'll find everything you need to get started and optimize your experience.
 </p>
 
-<iframe src="User_Guide.pdf" style="width: 1000px; height:1000px; align-items:center" frameborder="0">
+<iframe src="User_Guide.pdf" style="width: 100%; max-width: 1300px; height: 1000px;">
 </iframe>
 :::
