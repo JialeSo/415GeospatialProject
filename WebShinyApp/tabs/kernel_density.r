@@ -142,12 +142,11 @@ kernel_density_ui <- function(id) {
                           choices = c("Clustered" = "clustered", "Regular" = "regular", "Two-Sided" = "two.sided", "Less" = "less", "Greater" = "greater"),
                           selected = "regular")
             ),
-            tags$div(
-              tags$label("Number of Simulations"),
-              selectInput(ns("num_simulations"), NULL,
-                          choices = c("30 Simulations" = 30, "100 Simulations" = 99, 
-                                      "200 Simulations" = 199, "500 Simulations" = 499),
-                          selected = 99)
+            tags$div( 
+              tags$label("Number of Simulations"), 
+              sliderInput( inputId = ns("num_simulations"), 
+              label = NULL, min = 30, max = 100, value = 30, step = 10 
+              )
             )
           ),
           column(
@@ -167,9 +166,9 @@ kernel_density_ui <- function(id) {
     ),
     fluidRow(
       box(
-        title = "Destination Count Chart",
+        title = "Kernel Density Estimatation Map",
         width = 8,
-        collapsible = TRUE,
+        collapsible = TRUE, 
         tmapOutput(ns("kdeMAP"))
       ),
       box(
@@ -403,7 +402,7 @@ kernel_density_server <- function(id, datasets) {
           alpha = 0.8                             # Transparency for raster layer
         ) +
         tm_layout(
-          title = "Kernel Density Estimation of Trip Origins",
+          title = "Kernel Density Estimation",
           legend.outside = TRUE
         )
       } else {
@@ -566,12 +565,6 @@ kernel_density_server <- function(id, datasets) {
       plot(envelope_result, main = paste(input$selected_spatial_function, "Function Envelope"), 
           xlab = "Distance", ylab = paste(input$selected_spatial_function, "(d)"))
     })
-
-
-
-
-
-
 
 
 

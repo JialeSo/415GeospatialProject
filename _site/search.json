@@ -25,7 +25,7 @@
     "href": "ProjectDescription/ProjectDescription.html#project-objectives",
     "title": "Project Description: Navigating Jakarta’s Traffic Network - A Geospatial Analysis Using Ride-Hailing Vehicle Data",
     "section": "2.2 Project Objectives",
-    "text": "2.2 Project Objectives\n\nAnalyze ride-hailing demand across Jakarta to identify patterns at key POIs and traffic bottlenecks.\nInvestigate spatial and temporal trends in usage of Ride-Hailing Vehicles to understand how ride demand fluctuates.\nOptimize mobility services by understanding possible bottlenecks in district flows.\nDevelop a scalable framework that other cities can use to address similar urban mobility challenges."
+    "text": "2.2 Project Objectives\nThis project aims to:\n\nAnalyze ride-hailing demand across Jakarta at both district and township levels to identify traffic bottlenecks.\nEnable users to explore and interact with the dataset, facilitating the evaluation of demand fluctuations over time and the identification of spatial and temporal trends.\nInvestigate clustering patterns in trip demand, including where trips originate and end. Identify demand hotspots and examine the factors driving these patterns."
   },
   {
     "objectID": "ProjectDescription/ProjectDescription.html#a-shiny-web-app-website-for-analysis",

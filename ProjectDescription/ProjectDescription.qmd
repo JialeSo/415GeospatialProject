@@ -25,15 +25,17 @@ With the availability of comprehensivenride-hailing data, which provides real-ti
 
 ![](images/clipboard-3096906590.png){width="668"}
 
-Jakarta’s increasing urbanization drives a growing need for **on-demand transportation services** like ride-hailing services, particularly in areas with high concentrations of **POIs**. However, there is limited understanding of how these points influence traffic congestion across the city. Key questions include:
+Jakarta’s rapid urbanization has amplified the need for on-demand transportation services like ride-hailing, particularly in districts with a high concentration of points of interest (POIs). However, there is a limited understanding of how these districts influence traffic congestion across the city. Key questions include:
 
--   Which POIs generate the most ride-hailing traffic?
+-   Which districts generate the highest ride-hailing traffic for origins and destinations?
 
--   How does demand vary across different times of the day, week, and seasons?
+-   What factors contribute to the high demand in these districts?
 
--   Can ride-hailing services improve access to key locations while alleviating congestion?
+-   How does ride-hailing demand fluctuate across different times of the day, week, and seasons?
 
-Answering these questions will provide insights into **Jakarta’s mobility patterns** and inform strategies to **reduce traffic bottlenecks** while maintaining access to key locations.
+-   Can ride-hailing services enhance access to key locations while mitigating traffic congestion?
+
+Addressing these questions will shed light on Jakarta’s mobility patterns and guide strategies to minimize traffic bottlenecks while maintaining efficient access to critical areas.
 
 ## **2.1 Motivation**
 
@@ -45,13 +47,13 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
 ## **2.2 Project Objectives**
 
-1.  **Analyze ride-hailing demand** across Jakarta to identify patterns at key POIs and traffic bottlenecks.
+**This project aims to:**
 
-2.  **Investigate spatial and temporal trends** in usage of Ride-Hailing Vehicles to understand how ride demand fluctuates.
+1.  Analyze ride-hailing demand across Jakarta at both district and township levels to identify traffic bottlenecks.
 
-3.  **Optimize mobility services** by understanding possible bottlenecks in district flows.
+2.  Enable users to explore and interact with the dataset, facilitating the evaluation of demand fluctuations over time and the identification of spatial and temporal trends.
 
-4.  **Develop a scalable framework** that other cities can use to address similar urban mobility challenges.
+3.  Investigate clustering patterns in trip demand, including where trips originate and end. Identify demand hotspots and examine the factors driving these patterns.
 
 # **3.0 Dataset**
 
@@ -75,35 +77,37 @@ Our analysis will focus on the broader mobility landscape of Jakarta, examining 
 
 ------------------------------------------------------------------------
 
-This project aims to **offer a comprehensive data-driven dashboard** that provides insights into Jakarta’s traffic network based on a comprehensive ride-hailing dataset. The dashboard will serve as a **platform for exploration and learning**, enabling users to interact with various traffic patterns, demand trends, and mobility flows across the city. Using **interactive visualizations and analysis tools**, Jakarta officials, planners, and researchers can gain a deeper understanding of traffic conditions and mobility behavior in different parts of the city.
+This project aims to deliver a comprehensive, data-driven dashboard that provides actionable insights into Jakarta’s mobility network using an extensive ride-hailing dataset. The dashboard will serve as an interactive platform for users to explore traffic patterns, demand trends, and mobility flows at district and township levels across the city. By leveraging advanced visualizations and analytical tools, Jakarta officials, urban planners, and researchers can gain deeper insights into traffic bottlenecks, demand fluctuations, and clustering patterns of trips.
 
-The primary objective is to **provide a rich dataset and analytical interface**, allowing users to **conduct their own analyses** and **interpret trends** based on real-time and historical data. The dashboard does not offer prescriptive recommendations but acts as a **data point reference** where users can explore key questions such as:
+The primary objective is to create an intuitive analytical interface that empowers users to conduct their own analyses and interpret trends based on real-time and historical data. Rather than offering prescriptive recommendations, the dashboard acts as a reference point for answering key questions such as:
 
--   Which points of interest (POIs) generate the highest ride-hailing traffic?
+-   **Which districts generate the highest ride-hailing demand for origins and destinations?**
 
--   How does ride-hailing demand fluctuate across different times of the day or seasons?
+-   **What factors drive high demand in these districts, and how does demand fluctuate over different times of the day, week, and year?**
 
--   Where are the primary traffic bottlenecks forming, and how do they shift over time?
+-   **Where are the primary traffic bottlenecks forming, and how do they evolve over time?**
 
-This project will provide an opportunity for **users to draw their own conclusions** about Jakarta’s traffic system and mobility patterns. By offering access to detailed data visualizations—such as **heatmaps, demand clusters, and desire line maps**—the dashboard empowers users to **experiment with the data** and explore **what-if scenarios** without enforcing specific solutions.
+-   **Are there clustering patterns in demand for trips, and what are the factors influencing these hotspots?**
 
-For **Jakarta officials and transportation planners**, the dashboard will act as a **decision-support tool**, enhancing their ability to analyze mobility trends and traffic dynamics with real-time data. It will encourage **exploration and deeper inquiry** into traffic behavior rather than prescribe rigid policies or recommendations. This approach ensures that **multiple stakeholders** can use the insights to make data-informed decisions based on their unique contexts and priorities.
+Through tools such as heatmaps, clustering visualizations, demand trend graphs, and interactive flow maps, users can explore spatial and temporal trends, experiment with the data, and evaluate what-if scenarios. The dashboard provides a rich dataset and flexible interface, fostering exploration and enabling stakeholders to draw their own conclusions about Jakarta’s traffic system and mobility patterns.
 
-# 5.0 Proposed Scope
+For Jakarta officials and transportation planners, this platform acts as a decision-support tool that facilitates a better understanding of mobility dynamics and traffic behavior without imposing rigid solutions. Instead, it encourages informed decision-making by providing the data and flexibility needed to address specific challenges and priorities unique to different stakeholders.
+
+# **5.0 Scope** Of Analysis
 
 ------------------------------------------------------------------------
 
-The proposed methodology involves a combination of
+The proposed methodology employs a series of analytical techniques to uncover spatial and temporal patterns in Jakarta’s ride-hailing demand. Each step builds on the previous, creating a layered understanding of mobility dynamics.
 
-1.  **Exploratory Data Analysis (EDA)** will include both aspatial and temporal insights. Bar charts will reveal the top five points of interest (POIs) generating the highest demand for ride-hailing services. Histograms will compare trip durations across different vehicle types, such as cars and motorcycles, while line graphs will track demand trends throughout the day, segmented into morning, afternoon, evening, and night.
+**Exploratory Data Analysis (EDA):** EDA provides an initial overview of demand patterns, identifying key districts with the highest activity for origins and destinations through bar charts. Histograms compare trip durations across vehicle types like cars and motorcycles, while line graphs reveal temporal trends by segmenting demand into morning, afternoon, evening, and night. This sets the foundation for deeper spatial analysis.
 
-2.  **Exploratory Spatial Data Analysis (ESDA)**, choropleth maps will visualize the distribution of ride-hailing demand across Jakarta, offering a city-wide overview of activity levels. Heatmaps will highlight high-demand zones or hotspots, while point pattern analysis using Kernel Density Estimation (KDE) will help identify areas where demand clusters are most prominent.
+**Kernel Density Estimation (KDE) and Network KDE (NKDE):** KDE maps demand hotspots, showing areas with the highest concentrations of ride-hailing activity. NKDE refines this by aligning hotspots with the road network, offering actionable insights into demand clustering along key transportation corridors, critical for addressing congestion and improving route efficiency.
 
-3.  ***Traffic Flow Analysis**, desire line maps will be used to visualize movement patterns between key POIs, providing insights into frequently traveled routes. This analysis will also help identify bottlenecks, optimal travel routes, and how different POIs influence commuting behavior during different times of the day.*
+**Local Indicators of Spatial Association (LISA): L**ISA highlights clusters and outliers in demand, uncovering localized factors such as commercial hubs or underutilized areas. It adds a granular understanding of demand distribution that complements broader density analyses.
 
-4.  ***Geographically Weighted Regression (GWR)**, will further deepen the analysis by examining how demographic factors, proximity to POIs, and traffic conditions influence ride-hailing demand within different neighborhoods. This regression technique will detect spatial variations in the significance of these factors, revealing how demand shifts across various areas of the city.*
+**Origin-Destination (OD) Analysis:** OD analysis ties everything together by mapping the flow of trips between districts. It reveals key mobility patterns, identifies bottlenecks, and provides a holistic view of how ride-hailing demand shifts across the city.
 
-5.  **Forecasting and Optimization** will apply advanced time series models such as **ARIMA** and **LSTM** to predict future demand patterns. These forecasts will inform vehicle allocation strategies, aimed at minimizing wait times for passengers and reducing congestion across high-demand areas.
+**How It Comes Together:** EDA sets the stage with key trends, KDE and NKDE identify spatial hotspots, LISA adds localized insights, and OD analysis connects these patterns to broader flows. Together, these methods provide a comprehensive framework for understanding Jakarta’s ride-hailing demand and informing strategies to address traffic congestion and improve mobility.
 
 # **6.0 Planned Features**
 
@@ -143,7 +147,7 @@ This section focuses on analyzing movement patterns between POIs using desire li
 
 ![](images/clipboard-2619441323.png)
 
-# **7.0 Planned Timeline**
+# **7.0 Timeline**
 
 ------------------------------------------------------------------------
 
@@ -235,7 +239,7 @@ With majority of the analysis will be done through R, below are some packages th
 
 Consulting Professor: **KAM Tin Seong \|** tskam\@smu.edu.sg
 
-# 10.0 References
+# **10.0 References**
 
 ------------------------------------------------------------------------
 

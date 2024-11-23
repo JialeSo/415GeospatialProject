@@ -159,13 +159,13 @@ kernel_network_density_ui <- function(id) {
     ),
     fluidRow(
       box(
-        title = "Destination Count Chart",
+        title = "Network Kernel Density Map",
         width = 8,
         collapsible = TRUE,
         tmapOutput(ns("kdeMAP"))
       ),
       box(
-        title = "Test",
+        title = "Spatial Function Chart",
         width = 4,
         collapsible = TRUE,
         plotOutput(ns("kdePlot"))
@@ -255,7 +255,10 @@ kernel_network_density_server <- function(id, datasets) {
       kde_trip_data <- kde_trip_data %>%
         st_as_sf(coords = c("new_lng", "new_lat"), crs = 6384)
 
-      kde_roads <-  jakarta_roads() %>% filter(district %in% input$district)
+    kde_roads <- jakarta_roads() %>%
+      filter(district %in% input$district) %>%
+      st_simplify(dTolerance = 10)
+
 
       # Check if data is valid
       if (is.null(kde_trip_data) || nrow(kde_trip_data) == 0 || 
@@ -268,7 +271,6 @@ kernel_network_density_server <- function(id, datasets) {
       print("Processing lixels...")
       lixels <- lixelize_lines(kde_roads, input$lixel_size, mindist = input$mindist)
       samples <- lines_center(lixels)
-
       densities <- nkde(
         kde_roads, 
         events = kde_trip_data,
@@ -314,7 +316,12 @@ kernel_network_density_server <- function(id, datasets) {
           tooltip.vars = c("Road Name" = "name")  # Display road name on hover
         ) +
         tm_shape(kde_trip_data) +
-        tm_dots(size = 0.01)
+        tm_dots(size = 0.001) +
+        tm_view(
+          set.zoom.limits = c(8, 15),  # Minimum and maximum zoom levels
+          bbox = st_bbox(lixels),      # Dynamically focus on the bounding box of your lixels
+          zoom.level = 10              # Set an initial zoom level
+        )
     })
       
       kfun_result <- eventReactive(input$apply_nkde_filter, {
