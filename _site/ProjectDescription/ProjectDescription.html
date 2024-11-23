@@ -103,7 +103,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Application User Guide</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../WebShinyApp/WebShiny.html"> 
+    <a class="nav-link" href="https://streetsurfers.shinyapps.io/StreetSurfers/"> 
 <span class="menu-text">Web Shiny App</span></a>
   </li>  
 </ul>
@@ -141,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset"><strong>3.0 Dataset</strong></a></li>
   <li><a href="#expected-outcomes" id="toc-expected-outcomes" class="nav-link" data-scroll-target="#expected-outcomes"><strong>4.0 Expected Outcomes</strong></a></li>
-  <li><a href="#scope-of-analysis" id="toc-scope-of-analysis" class="nav-link" data-scroll-target="#scope-of-analysis"><strong>5.0 Scope</strong> Of Analysis</a></li>
+  <li><a href="#scope-of-analysis" id="toc-scope-of-analysis" class="nav-link" data-scroll-target="#scope-of-analysis"><strong>5.0 Scope Of Analysis</strong></a></li>
   <li><a href="#planned-features" id="toc-planned-features" class="nav-link" data-scroll-target="#planned-features"><strong>6.0 Planned Features</strong></a>
   <ul class="collapse">
   <li><a href="#a-shiny-web-app-website-for-analysis" id="toc-a-shiny-web-app-website-for-analysis" class="nav-link" data-scroll-target="#a-shiny-web-app-website-for-analysis"><strong>6.1 A Shiny Web App &amp; Website for Analysis</strong></a></li>
@@ -193,7 +193,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 22, 2024</p>
+      <p class="date-modified">November 23, 2024</p>
     </div>
   </div>
     
@@ -263,18 +263,17 @@ ul.task-list li input[type="checkbox"] {
 <p>The primary objective is to create an intuitive analytical interface that empowers users to conduct their own analyses and interpret trends based on real-time and historical data. Rather than offering prescriptive recommendations, the dashboard acts as a reference point for answering key questions such as:</p>
 <ul>
 <li><p><strong>Which districts generate the highest ride-hailing demand for origins and destinations?</strong></p></li>
-<li><p><strong>What factors drive high demand in these districts, and how does demand fluctuate over different times of the day, week, and year?</strong></p></li>
+<li><p><strong>What factors drive high demand in these districts, and how does demand fluctuate over different times of the day, week?</strong></p></li>
 <li><p><strong>Where are the primary traffic bottlenecks forming, and how do they evolve over time?</strong></p></li>
 <li><p><strong>Are there clustering patterns in demand for trips, and what are the factors influencing these hotspots?</strong></p></li>
 </ul>
 <p>Through tools such as heatmaps, clustering visualizations, demand trend graphs, and interactive flow maps, users can explore spatial and temporal trends, experiment with the data, and evaluate what-if scenarios. The dashboard provides a rich dataset and flexible interface, fostering exploration and enabling stakeholders to draw their own conclusions about Jakarta’s traffic system and mobility patterns.</p>
-<p>For Jakarta officials and transportation planners, this platform acts as a decision-support tool that facilitates a better understanding of mobility dynamics and traffic behavior without imposing rigid solutions. Instead, it encourages informed decision-making by providing the data and flexibility needed to address specific challenges and priorities unique to different stakeholders.</p>
 </section>
 <section id="scope-of-analysis" class="level1">
-<h1><strong>5.0 Scope</strong> Of Analysis</h1>
+<h1><strong>5.0 Scope Of Analysis</strong></h1>
 <hr>
 <p>The proposed methodology employs a series of analytical techniques to uncover spatial and temporal patterns in Jakarta’s ride-hailing demand. Each step builds on the previous, creating a layered understanding of mobility dynamics.</p>
-<p><strong>Exploratory Data Analysis (EDA):</strong> EDA provides an initial overview of demand patterns, identifying key districts with the highest activity for origins and destinations through bar charts. Histograms compare trip durations across vehicle types like cars and motorcycles, while line graphs reveal temporal trends by segmenting demand into morning, afternoon, evening, and night. This sets the foundation for deeper spatial analysis.</p>
+<p><strong>Exploratory Data Analysis (EDA):</strong> EDA provides an initial overview of demand patterns, identifying key districts with the highest activity for origins and destinations through bar charts. Charts to help compare trip durations across vehicle types like cars and motorcycles, while line graphs reveal temporal trends by segmenting demand into morning, afternoon, evening, and night. This sets the foundation for deeper spatial analysis.</p>
 <p><strong>Kernel Density Estimation (KDE) and Network KDE (NKDE):</strong> KDE maps demand hotspots, showing areas with the highest concentrations of ride-hailing activity. NKDE refines this by aligning hotspots with the road network, offering actionable insights into demand clustering along key transportation corridors, critical for addressing congestion and improving route efficiency.</p>
 <p><strong>Local Indicators of Spatial Association (LISA): L</strong>ISA highlights clusters and outliers in demand, uncovering localized factors such as commercial hubs or underutilized areas. It adds a granular understanding of demand distribution that complements broader density analyses.</p>
 <p><strong>Origin-Destination (OD) Analysis:</strong> OD analysis ties everything together by mapping the flow of trips between districts. It reveals key mobility patterns, identifies bottlenecks, and provides a holistic view of how ride-hailing demand shifts across the city.</p>
@@ -321,13 +320,13 @@ ul.task-list li input[type="checkbox"] {
 <section id="timeline" class="level1">
 <h1><strong>7.0 Timeline</strong></h1>
 <hr>
-<p><img src="images/clipboard-1820776631.png" class="img-fluid"></p>
+<p><img src="images/clipboard-825814461.png" class="img-fluid"></p>
 <p><strong>Phase 1 – Data Collection and Preparation:</strong><br>
 This phase involves gathering and cleaning the <strong>Ride-Hailing data</strong> along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing <strong>background research</strong> on Jakarta’s mobility challenges to contextualize the study.</p>
-<p><strong>Phase 2 – Exploratory Data Analysis (EDA) &amp; Exploratory Spatial Data Analysis (ESDA):</strong><br>
-In this phase, <strong>aspatial EDA</strong> methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The <strong>spatial component (ESDA)</strong> will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through <strong>Kernel Density Estimation (KDE).</strong></p>
-<p><strong>Phase 3 – Traffic Flow Analysis</strong><br>
-This phase focuses on <strong>GWR analysis</strong> to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The GWR results will reveal <strong>spatial variations</strong> in demand patterns and provide deeper insights into mobility trends at the local level.</p>
+<p><strong>Phase 2 – Exploratory Data Analysis (EDA) &amp; Exploratory Spatial Data Analysis (KDE):</strong><br>
+In this phase, <strong>aspatial EDA</strong> methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. Disistribution of demand across Jakarta and detect hotspots through <strong>Kernel Density Estimation (KDE).</strong></p>
+<p><strong>Phase 3 – Traffic Flow Analysis and LISA</strong><br>
+This phase focuses on LISA and OD analysis to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The OD and LISA results will reveal demand patterns and provide deeper insights into mobility trends at the local level.</p>
 <p><strong>Phase 4 – R Markdown Development for Functionality Checks:</strong><br>
 R Markdown will be used to document the analysis workflow and perform functionality checks on the scripts. This ensures that all analysis components are working as expected and will serve as a foundation for the final dashboard integration.</p>
 <p><strong>Phase 5 – R-Shiny App Development for User Interactivity:</strong><br>

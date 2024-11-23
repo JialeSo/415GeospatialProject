@@ -83,7 +83,7 @@ The primary objective is to create an intuitive analytical interface that empowe
 
 -   **Which districts generate the highest ride-hailing demand for origins and destinations?**
 
--   **What factors drive high demand in these districts, and how does demand fluctuate over different times of the day, week, and year?**
+-   **What factors drive high demand in these districts, and how does demand fluctuate over different times of the day, week?**
 
 -   **Where are the primary traffic bottlenecks forming, and how do they evolve over time?**
 
@@ -91,15 +91,13 @@ The primary objective is to create an intuitive analytical interface that empowe
 
 Through tools such as heatmaps, clustering visualizations, demand trend graphs, and interactive flow maps, users can explore spatial and temporal trends, experiment with the data, and evaluate what-if scenarios. The dashboard provides a rich dataset and flexible interface, fostering exploration and enabling stakeholders to draw their own conclusions about Jakarta’s traffic system and mobility patterns.
 
-For Jakarta officials and transportation planners, this platform acts as a decision-support tool that facilitates a better understanding of mobility dynamics and traffic behavior without imposing rigid solutions. Instead, it encourages informed decision-making by providing the data and flexibility needed to address specific challenges and priorities unique to different stakeholders.
-
-# **5.0 Scope** Of Analysis
+# **5.0 Scope Of Analysis**
 
 ------------------------------------------------------------------------
 
 The proposed methodology employs a series of analytical techniques to uncover spatial and temporal patterns in Jakarta’s ride-hailing demand. Each step builds on the previous, creating a layered understanding of mobility dynamics.
 
-**Exploratory Data Analysis (EDA):** EDA provides an initial overview of demand patterns, identifying key districts with the highest activity for origins and destinations through bar charts. Histograms compare trip durations across vehicle types like cars and motorcycles, while line graphs reveal temporal trends by segmenting demand into morning, afternoon, evening, and night. This sets the foundation for deeper spatial analysis.
+**Exploratory Data Analysis (EDA):** EDA provides an initial overview of demand patterns, identifying key districts with the highest activity for origins and destinations through bar charts. Charts to help compare trip durations across vehicle types like cars and motorcycles, while line graphs reveal temporal trends by segmenting demand into morning, afternoon, evening, and night. This sets the foundation for deeper spatial analysis.
 
 **Kernel Density Estimation (KDE) and Network KDE (NKDE):** KDE maps demand hotspots, showing areas with the highest concentrations of ride-hailing activity. NKDE refines this by aligning hotspots with the road network, offering actionable insights into demand clustering along key transportation corridors, critical for addressing congestion and improving route efficiency.
 
@@ -151,16 +149,16 @@ This section focuses on analyzing movement patterns between POIs using desire li
 
 ------------------------------------------------------------------------
 
-![](images/clipboard-1820776631.png)
+![](images/clipboard-825814461.png)
 
 **Phase 1 – Data Collection and Preparation:**\
 This phase involves gathering and cleaning the **Ride-Hailing data** along with supporting datasets, including points of interest (POI), traffic data, and population density. The goal is to ensure data quality and consistency for analysis while performing **background research** on Jakarta’s mobility challenges to contextualize the study.
 
-**Phase 2 – Exploratory Data Analysis (EDA) & Exploratory Spatial Data Analysis (ESDA):**\
-In this phase, **aspatial EDA** methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. The **spatial component (ESDA)** will use choropleth and heatmaps to visualize the distribution of demand across Jakarta and detect hotspots through **Kernel Density Estimation (KDE).**
+**Phase 2 – Exploratory Data Analysis (EDA) & Exploratory Spatial Data Analysis (KDE):**\
+In this phase, **aspatial EDA** methods will uncover trends in ride-hailing demand using histograms, bar charts, and line graphs. Disistribution of demand across Jakarta and detect hotspots through **Kernel Density Estimation (KDE).**
 
-**Phase 3 – Traffic Flow Analysis**\
-This phase focuses on **GWR analysis** to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The GWR results will reveal **spatial variations** in demand patterns and provide deeper insights into mobility trends at the local level.
+**Phase 3 – Traffic Flow Analysis and LISA**\
+This phase focuses on LISA and OD analysis to explore how demographic, traffic, and POI-related factors influence ride-hailing demand across neighborhoods. The OD and LISA results will reveal demand patterns and provide deeper insights into mobility trends at the local level.
 
 **Phase 4 – R Markdown Development for Functionality Checks:**\
 R Markdown will be used to document the analysis workflow and perform functionality checks on the scripts. This ensures that all analysis components are working as expected and will serve as a foundation for the final dashboard integration.

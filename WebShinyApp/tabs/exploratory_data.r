@@ -63,7 +63,6 @@ exploratory_data_ui <- function(id) {
         title = "Filter Trip Data",
         width = 12,
         collapsible = TRUE, collapsed = TRUE,
-        status = 'primary',
         pickerInput(ns("district"), "District", 
                     choices = NULL, 
                     selected = NULL,  # Select all districts by default in the server
@@ -130,7 +129,6 @@ exploratory_data_ui <- function(id) {
       box(
         title = "Most Popular Locations",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
@@ -140,7 +138,6 @@ exploratory_data_ui <- function(id) {
       box(
         title = "Least Popular Locations",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
@@ -150,7 +147,6 @@ exploratory_data_ui <- function(id) {
       box(
         title = "Push-Pull Factors",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
@@ -163,7 +159,6 @@ exploratory_data_ui <- function(id) {
       box(
         title = "Distribution of POIs",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
@@ -173,7 +168,6 @@ exploratory_data_ui <- function(id) {
       box(
         title = "Trips Distribution by Time",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,
@@ -183,7 +177,6 @@ exploratory_data_ui <- function(id) {
       box(
         title = "Trips Distribution by Location",
         width = 4,
-        status = "primary",
         solidHeader = TRUE,
         collapsible = TRUE,
         maximizable = TRUE,

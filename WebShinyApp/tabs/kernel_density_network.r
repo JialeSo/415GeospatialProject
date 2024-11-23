@@ -20,7 +20,8 @@ kernel_network_density_ui <- function(id) {
     tabName = id,
     jumbotron(
       title = "Network Kernel Density Estimation",
-      lead = "(NKDE). Unlike traditional KDE, NKDE considers road networks to highlight trip densities along actual paths traveled. This page reveals hotspots and sparse areas with precision, helping you understand urban mobility in the context of road infrastructure. Adjust kernel types, bandwidth, and filtering options to explore trip distributions and identify trends linked to Points of Interest (POIs), road intersections, or transportation hubs across Jakarta.",
+      lead = "(NKDE). Unlike traditional KDE, NKDE considers road networks to highlight trip densities along actual paths traveled. This page reveals hotspots and sparse areas with precision, helping you understand urban mobility in the context of road infrastructure. Adjust kernel types, bandwidth, and filtering options to explore trip distributions and identify trends linked to Points of Interest (POIs), road intersections, or transportation hubs across Jakarta.
+       Click on Apply Filter to Start Analysing.",
       btnName = NULL
     ),
     tags$head(

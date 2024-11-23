@@ -14,7 +14,7 @@ website:
       - text: "Application User Guide"
         href: "UserGuide/UserGuide.html"
       - text: "Web Shiny App"
-        href: "WebShinyApp/WebShiny.html"
+        href: "https://streetsurfers.shinyapps.io/StreetSurfers/"
 
     right:
       - href: index.qmd

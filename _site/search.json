@@ -58,9 +58,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Team’s 2 IS415 Geospatial Analytics Project Experience",
+    "title": "Welcome to StreetSurfers: Navigating Jakarta’s Traffic Network 🌍",
     "section": "",
-    "text": "Hi there! 👋 We are a trio-team of Information Systems students from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under Prof. Kam Tin Seong! 🌍\nWe invite you to explore the contents of our project website below!\n\n\n\n\n\n\n\n\n\n\nOct 13, 2024\nPhase 0\n\nProject Description\nTake a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline."
+    "text": "StreetSurfers is an interactive Shiny web application designed to reveal the dynamic flow of Jakarta’s ride-hailing traffic. From vibrant shopping districts to bustling office hubs, this platform empowers users to explore, analyze, and interact with mobility patterns across the city.\nOur mission is to turn complex ride-hailing data into actionable insights, helping policymakers, urban planners, and mobility enthusiasts optimize traffic systems and improve accessibility. With a focus on user-centric mobility trends, StreetSurfers takes a fresh look at transportation challenges in one of Southeast Asia’s most dynamic cities.\n\n\n\n\n\n\n\n\n\n\n🗺️ Explore Jakarta’s Mobility\n\n\n🎛️ Customize Your Analysis\n\n\n🔍 Uncover Clustering Patterns\n\n\n\n\nDiscover hotspots, bottlenecks, and trip flows using heatmaps, desire lines, and interactive dashboards.\n\n\nFilter by vehicle type, time ranges, and Points of Interest (POIs) to uncover actionable insights tailored to your needs.\n\n\nUse advanced spatial tools like Kernel Density Estimation (KDE) and Local Indicators of Spatial Association (LISA) to analyze demand and traffic patterns."
   },
   {
     "objectID": "About/about.html",
@@ -82,5 +82,89 @@
     "title": "User Guide",
     "section": "",
     "text": "🚧 Page Coming Soon 🚧\n\n\nWe are currently building something amazing for you. Stay tuned for updates!\n\n\nMeanwhile, feel free to explore other sections of our site."
+  },
+  {
+    "objectID": "index.html#hi-there",
+    "href": "index.html#hi-there",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Journey",
+    "section": "",
+    "text": "We are a passionate team of Information Systems students from the School of Computing & Information Systems (SCIS) at SMU. Welcome to our IS415 Geospatial Analytics Project website, where we dive deep into the world of spatial patterns and data visualizations under the mentorship of Prof. Kam Tin Seong! 🌍\nOur project showcases the power of geospatial analytics through the analysis of real-world datasets, interactive visualizations, and dynamic dashboards. Thank you for joining us on this exciting journey! 🚀"
+  },
+  {
+    "objectID": "index.html#whats-on-our-website",
+    "href": "index.html#whats-on-our-website",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Journey",
+    "section": "What’s on Our Website? 🖥️",
+    "text": "What’s on Our Website? 🖥️\n\n📌 Project Overview\nDiscover our project’s problem statement, the datasets we’ve worked with, and the tools we used to craft solutions.\n\n\n🎯 Goals and Objectives\nLearn about the specific outcomes we aimed to achieve, from identifying geospatial patterns to building intuitive dashboards.\n\n\n🚀 Our Progress\nFollow our timeline as we navigate through different project phases: - Phase 0 (Oct 13, 2024): Project preparation and exploratory analysis. - Phase 1: Data preprocessing, spatial analysis techniques, and initial visualizations. - Phase 2: Interactive dashboards and final project deliverables.\n\n\n🌟 Meet the Team\nGet to know Samantha, Jia Le, and Jezelei! Feel free to connect with us on LinkedIn (links above ⬆️)."
+  },
+  {
+    "objectID": "index.html#project-description",
+    "href": "index.html#project-description",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Journey",
+    "section": "🗺️ Project Description",
+    "text": "🗺️ Project Description\n\nThe Problem Statement\nHow can geospatial data help uncover patterns in [specific project topic, e.g., urban development, transportation, etc.]? Our project focuses on analyzing [key focus area] to drive better insights and decision-making.\n\n\nDatasets\n\n[Dataset Name 1]: Description of the dataset.\n[Dataset Name 2]: Description of the dataset.\nFormat: CSV, GeoJSON\nTools: R, Shiny, tmap, sf\n\n\n\nDeliverables\n\nShiny App: An interactive app designed to explore and visualize our geospatial data.\nDynamic Dashboards: Dive into insights with user-friendly filters and controls."
+  },
+  {
+    "objectID": "index.html#project-timeline",
+    "href": "index.html#project-timeline",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Journey",
+    "section": "🗓️ Project Timeline",
+    "text": "🗓️ Project Timeline\n\n\n\nPhase\nDescription\nDate\n\n\n\n\nPhase 0\nPreparation & Exploratory Analysis\nOct 13, 2024\n\n\nPhase 1\nData Wrangling & Initial Findings\nOct 20, 2024\n\n\nPhase 2\nInteractive Dashboard Development\nNov 3, 2024\n\n\nFinal Phase\nPresentation & Project Submission\nNov 10, 2024"
+  },
+  {
+    "objectID": "index.html#explore-our-journey",
+    "href": "index.html#explore-our-journey",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Journey",
+    "section": "💡 Explore Our Journey",
+    "text": "💡 Explore Our Journey\nCheck out the tabs and sections for more details: - Analysis Techniques: Explore how we analyzed and visualized our data. - Interactive Visualizations: Play with dashboards to uncover insights. - Findings & Conclusions: What did we learn? How can it make an impact?\n\n\nThank you for visiting our website! 😊\nFeel free to connect with us on LinkedIn for more discussions and insights about geospatial analytics."
+  },
+  {
+    "objectID": "index.html#what-can-you-do-with-streetsurfers",
+    "href": "index.html#what-can-you-do-with-streetsurfers",
+    "title": "Welcome to StreetSurfers: Navigating Jakarta’s Traffic Network 🌍",
+    "section": "",
+    "text": "🗺️ Explore Jakarta’s Mobility\n\n\n🎛️ Customize Your Analysis\n\n\n🔍 Uncover Clustering Patterns\n\n\n\n\nDiscover hotspots, bottlenecks, and trip flows using heatmaps, desire lines, and interactive dashboards.\n\n\nFilter by vehicle type, time ranges, and Points of Interest (POIs) to uncover actionable insights tailored to your needs.\n\n\nUse advanced spatial tools like Kernel Density Estimation (KDE) and Local Indicators of Spatial Association (LISA) to analyze demand and traffic patterns."
+  },
+  {
+    "objectID": "index.html#key-features",
+    "href": "index.html#key-features",
+    "title": "StreetSurfers: Navigating Jakarta’s Traffic Network",
+    "section": "",
+    "text": "Explanatory Data Analysis (EDA):\n\nAnalyze ride-hailing demand with interactive charts, histograms, and bar plots to uncover temporal and spatial trends.\n\nSpatial Interaction Modelling (SIM):\n\nEstimate and visualize trip flows between origins and destinations, uncovering what attracts or hinders mobility in key zones.\n\nDynamic Dashboards:\n\nCustomize data visualizations and experiment with “what-if” scenarios, enabling stakeholders to interact with the data intuitively.\n\nIntegrated Filters:\n\nAdjust datasets by date, time, vehicle type, and POI to zoom into specific mobility trends."
+  },
+  {
+    "objectID": "index.html#project-objectives",
+    "href": "index.html#project-objectives",
+    "title": "StreetSurfers: Navigating Jakarta’s Traffic Network",
+    "section": "",
+    "text": "Analyze demand hotspots at district and township levels, highlighting key bottlenecks and traffic zones.\nExplore temporal trends in ride-hailing data to understand fluctuations over time.\nIdentify clustering patterns using KDE and LISA for insights into localized traffic behavior.\nDevelop an intuitive Shiny web app for users to dynamically interact with data and visualizations."
+  },
+  {
+    "objectID": "index.html#tools-and-technologies",
+    "href": "index.html#tools-and-technologies",
+    "title": "StreetSurfers: Navigating Jakarta’s Traffic Network",
+    "section": "",
+    "text": "Visualization: Shiny, leaflet, tmap, plotly\nGeospatial Analysis: sf, rgeos, sfdep\nProgramming: R\nInteractive Dashboards: R-Shiny\nCollaboration: GitHub, Netlify"
+  },
+  {
+    "objectID": "index.html#meet-the-team",
+    "href": "index.html#meet-the-team",
+    "title": "StreetSurfers: Navigating Jakarta’s Traffic Network",
+    "section": "",
+    "text": "Name\nEmail\nRole\n\n\n\n\nJezelei Manangan\njmanangan.2022@scis.smu.edu.sg\nData Analyst\n\n\nFoo Jia Yi Samantha\nsamanthafoo.2022@scis.smu.edu.sg\nVisualization Lead\n\n\nJia Le So\njiale.so.2022@scis.smu.edu.sg\nProject Manager\n\n\n\n\n\nProf. Kam Tin Seong | Email"
+  },
+  {
+    "objectID": "index.html#about-the-project",
+    "href": "index.html#about-the-project",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Experience: Jakarta Ride Haiing Demand",
+    "section": "About the Project",
+    "text": "About the Project\n\n\n\n\n\n\n\n\n\nOct 13, 2024\nPhase 0\n\nProject Description\nTake a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline."
+  },
+  {
+    "objectID": "index.html#welcome-to-streetsurfers",
+    "href": "index.html#welcome-to-streetsurfers",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Experience: Jakarta Ride-Hailing Demand",
+    "section": "🌍 Welcome to StreetSurfers",
+    "text": "🌍 Welcome to StreetSurfers\n\n\n&lt;h2&gt;Discover Jakarta’s Mobility&lt;/h2&gt;\n&lt;p&gt;\n  Using geospatial analytics, **StreetSurfers** dives into real-time ride-hailing data to uncover the pulse of Jakarta’s traffic system. From identifying high-demand zones to analyzing traffic bottlenecks, our platform is here to empower urban planners and policymakers.\n&lt;/p&gt;\n&lt;p&gt;\n  Join us as we explore Jakarta’s traffic dynamics and pave the way for **data-driven decisions** to improve urban mobility.\n&lt;/p&gt;\n\n\n&lt;img src=\"jakarta-traffic.png\" alt=\"Jakarta Traffic Visualization\" style=\"max-width:100%; border-radius:10px;\"&gt;"
   }
 ]
