@@ -14,8 +14,10 @@ about:
       href: "https://www.linkedin.com/in/jezelei-m/"
 ---
 
-::: {#hero-heading}
+::: {#hero-heading"}
 Hi there! 👋 We are a trio-team of **Information Systems students** from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under **Prof. Kam Tin Seong**! 🌍
 :::
 
-![](images/clipboard-1233832149.png){width="1300"}
+::: {style="display: flex; justify-content: center; align-items: center;"}
+![](images/team_members.jpg){width="1300"}
+:::

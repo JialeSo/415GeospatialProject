@@ -1,40 +1,32 @@
 ---
-format:
-  html:
-    toc: false
-    smooth-scroll: true
+title: "Team's 2 IS415 Geospatial Analytics Project Experience"
+about:
+  template: jolla
+  id: about-block
+  links:
+    - icon: linkedin
+      text: Samantha Foo
+      href: "https://www.linkedin.com/in/samantha-foo-30bab1148/"
+    - icon: linkedin
+      text: So Jia Le
+      href: "https://www.linkedin.com/in/jialeso/"
+    - icon: linkedin
+      text: Jezelei Manangan
+      href: "https://www.linkedin.com/in/jezelei-m/"
 ---
 
-<div style="text-align: center;">
+::: {#hero-heading}
+Hi there! 👋 We are a trio-team of **Information Systems students** from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under **Prof. Kam Tin Seong**! 🌍
 
-# Welcome to StreetSurfers: Navigating Jakarta’s Traffic Network 🌍
-
-![](images/logo.png){fig-align="center" width="175"}
-
-<div style="text-align: left;">
-
-StreetSurfers is an interactive Shiny web application designed to reveal the dynamic flow of Jakarta's ride-hailing traffic. From vibrant shopping districts to bustling office hubs, this platform empowers users to explore, analyze, and interact with mobility patterns across the city.
-
-Our mission is to turn complex ride-hailing data into actionable insights, helping policymakers, urban planners, and mobility enthusiasts optimize traffic systems and improve accessibility. With a focus on user-centric mobility trends, StreetSurfers takes a fresh look at transportation challenges in one of Southeast Asia’s most dynamic cities.
-
-<div>
-
-::: {style="text-align: center;"}
-## 🌟 What Can You Do with StreetSurfers?
+We invite you to explore the contents of our project website below!
 :::
 
-::: {layout-ncol="3"}
-**🗺️ Explore Jakarta’s Mobility**
-
-**🎛️ Customize Your Analysis**
-
-**🔍 Uncover Clustering Patterns**
-
-Discover hotspots, bottlenecks, and trip flows using heatmaps, desire lines, and interactive dashboards.
-
-Filter by vehicle type, time ranges, and Points of Interest (POIs) to uncover actionable insights tailored to your needs.
-
-Use advanced spatial tools like Kernel Density Estimation (KDE) and Local Indicators of Spatial Association (LISA) to analyze demand and traffic patterns.
-:::
-
-</div>
++-------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------+
+| <p id="contents"> | ## [**Project Proposal**](https://is415-streetsurfers-g2.netlify.app/proposal/proposal)                     | <p id="contents">                                 |
+|                   |                                                                                                             |                                                   |
+| Oct 13, 2024      | Take a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline. | ![](images/clipboard-2612382224.png){width="300"} |
+|                   |                                                                                                             |                                                   |
+| *Phase 0*         |                                                                                                             | </p>                                              |
+|                   |                                                                                                             |                                                   |
+| </p>              |                                                                                                             |                                                   |
++-------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------+

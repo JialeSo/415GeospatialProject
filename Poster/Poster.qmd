@@ -6,7 +6,7 @@ format:
 ---
 
 ::: {style="text-align: center;"}
-# Project Poster  {style="text-align: center;"}
+# Project Poster {style="text-align: center;"}
 
 # ![](images/poster.jpg) {style="text-align: center;"}
 :::

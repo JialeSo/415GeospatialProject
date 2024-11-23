@@ -60,7 +60,7 @@ lisa_analysis_ui <- function(id) {
     fluidRow(
       # Combined Filter Box
       box(
-        title = "Filter Options",
+        title = "Filters and Parameters",
         width = 12,
         collapsible = TRUE, collapsed = TRUE,
         status = 'primary',

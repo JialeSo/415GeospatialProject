@@ -58,9 +58,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Welcome to StreetSurfers: Navigating Jakarta’s Traffic Network 🌍",
+    "title": "Team’s 2 IS415 Geospatial Analytics Project Experience",
     "section": "",
-    "text": "StreetSurfers is an interactive Shiny web application designed to reveal the dynamic flow of Jakarta’s ride-hailing traffic. From vibrant shopping districts to bustling office hubs, this platform empowers users to explore, analyze, and interact with mobility patterns across the city.\nOur mission is to turn complex ride-hailing data into actionable insights, helping policymakers, urban planners, and mobility enthusiasts optimize traffic systems and improve accessibility. With a focus on user-centric mobility trends, StreetSurfers takes a fresh look at transportation challenges in one of Southeast Asia’s most dynamic cities.\n\n\n\n\n\n\n\n\n\n\n🗺️ Explore Jakarta’s Mobility\n\n\n🎛️ Customize Your Analysis\n\n\n🔍 Uncover Clustering Patterns\n\n\n\n\nDiscover hotspots, bottlenecks, and trip flows using heatmaps, desire lines, and interactive dashboards.\n\n\nFilter by vehicle type, time ranges, and Points of Interest (POIs) to uncover actionable insights tailored to your needs.\n\n\nUse advanced spatial tools like Kernel Density Estimation (KDE) and Local Indicators of Spatial Association (LISA) to analyze demand and traffic patterns."
+    "text": "Hi there! 👋 We are a trio-team of Information Systems students from the School of Computing & Information Systems (SCIS) in SMU. Join us in our journey traversing the Geospatial Analytics landscape through this IS415 Geospatial Analytics Project Experience under Prof. Kam Tin Seong! 🌍\nWe invite you to explore the contents of our project website below!\n\n\n\n\n\nOct 13, 2024\nPhase 0\n\nProject Proposal\nTake a glimpse into our project including our problem statement, dataset, ShinyApp UI and project timeline."
   },
   {
     "objectID": "About/about.html",
@@ -79,9 +79,9 @@
   {
     "objectID": "UserGuide/UserGuide.html",
     "href": "UserGuide/UserGuide.html",
-    "title": "User Guide",
+    "title": "Application User Guide",
     "section": "",
-    "text": "🚧 Page Coming Soon 🚧\n\n\nWe are currently building something amazing for you. Stay tuned for updates!\n\n\nMeanwhile, feel free to explore other sections of our site."
+    "text": "This guide provides step-by-step instructions on how to navigate and use our application effectively. From setup to advanced features, you’ll find everything you need to get started and optimize your experience."
   },
   {
     "objectID": "index.html#hi-there",
