@@ -10,7 +10,7 @@ This project focuses on analyzing traffic and mobility patterns in Jakarta using
 
 ## **Getting Started**
 
-Click here to learn more about the project: https://is415-streetsurfers-g2.netlify.app/ \nClick here to view our Shiny Application:  https://streetsurfers.shinyapps.io/StreetSurfers/
+Click here to learn more about the project: https://is415-streetsurfers-g2.netlify.app/ \n Click here to view our Shiny Application:  https://streetsurfers.shinyapps.io/StreetSurfers/
 
 ---
 
